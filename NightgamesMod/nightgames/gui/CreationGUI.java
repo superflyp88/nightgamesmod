@@ -164,6 +164,7 @@ public class CreationGUI extends JPanel {
         panel_2.add(panel_4);
 
         JLabel lblSeduction = new JLabel("Seduction");
+        lblSeduction.setForeground(new Color(240, 240, 255));
         lblSeduction.setFont(new Font("Verdana", Font.BOLD, 15));
         panel_2.add(lblSeduction);
 
@@ -180,6 +181,7 @@ public class CreationGUI extends JPanel {
         panel_2.add(panel_5);
 
         JLabel lblCunning = new JLabel("Cunning");
+        lblCunning.setForeground(new Color(240, 240, 255));
         lblCunning.setFont(new Font("Verdana", Font.BOLD, 15));
         panel_2.add(lblCunning);
 

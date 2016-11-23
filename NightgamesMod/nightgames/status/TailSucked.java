@@ -40,7 +40,7 @@ public class TailSucked extends Status {
             affected.removelist.add(this);
             return "";
         }
-        return String.format("%s tail keeps churning around %s " + "%s, sucking in %s vital energies.",
+        return String.format("%s tail keeps churning around %s %s, sucking in %s vital energies.",
                         sucker.nameOrPossessivePronoun(), affected.nameOrPossessivePronoun(),
                         affected.body.getRandomCock().describe(affected), affected.possessivePronoun());
     }
@@ -54,7 +54,7 @@ public class TailSucked extends Status {
             return;
         }
 
-        c.write(sucker, String.format("%s tail sucks powerfully, and %s" + " some of %s strength being drawn in.",
+        c.write(sucker, String.format("%s tail sucks powerfully, and %s some of %s strength being drawn in.",
                         sucker.nameOrPossessivePronoun(), affected.subjectAction("feel", "feels"),
                         affected.possessivePronoun()));
 
