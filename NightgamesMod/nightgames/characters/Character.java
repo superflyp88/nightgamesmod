@@ -20,8 +20,6 @@ import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
-import javax.swing.plaf.basic.BasicTreeUI.TreeIncrementAction;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
@@ -54,7 +52,6 @@ import nightgames.items.clothing.Outfit;
 import nightgames.json.JsonUtils;
 import nightgames.pet.CharacterPet;
 import nightgames.pet.PetCharacter;
-import nightgames.skills.Command;
 import nightgames.skills.AssFuck;
 import nightgames.skills.Nothing;
 import nightgames.skills.OrgasmicThrust;
@@ -69,7 +66,6 @@ import nightgames.status.Alluring;
 import nightgames.status.BodyFetish;
 import nightgames.status.DivineCharge;
 import nightgames.status.DivineRecoil;
-import nightgames.status.Enthralled;
 import nightgames.status.Falling;
 import nightgames.status.Feral;
 import nightgames.status.Frenzied;
@@ -77,7 +73,6 @@ import nightgames.status.Masochistic;
 import nightgames.status.Resistance;
 import nightgames.status.Status;
 import nightgames.status.Stsflag;
-import nightgames.status.Trance;
 import nightgames.status.addiction.Addiction;
 import nightgames.status.addiction.AddictionType;
 import nightgames.status.addiction.Dominance;

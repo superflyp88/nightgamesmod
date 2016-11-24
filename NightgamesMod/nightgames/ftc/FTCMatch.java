@@ -1,5 +1,6 @@
 package nightgames.ftc;
 
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -9,6 +10,7 @@ import java.util.Map;
 
 import nightgames.actions.Movement;
 import nightgames.areas.Area;
+import nightgames.areas.MapDrawHint;
 import nightgames.characters.Character;
 import nightgames.global.Flag;
 import nightgames.global.Global;
@@ -97,24 +99,24 @@ public class FTCMatch extends Match {
         Area nBase = new Area("North Base",
                         String.format("You are in a small camp on the northern edge of the forest. "
                                         + "%s %s base here.", north.subjectAction("have", "has"),
-                        north.possessivePronoun()), Movement.ftcNorthBase);
+                        north.possessivePronoun()), Movement.ftcNorthBase, new MapDrawHint(new Rectangle(16, 0, 10, 4), "NB", false));
         Area wBase = new Area("West Base",
                         String.format("You are in a small camp on the western edge of the forest. "
                                         + "%s %s base here.", west.subjectAction("have", "has"),
-                        west.possessivePronoun()), Movement.ftcWestBase);
+                        west.possessivePronoun()), Movement.ftcWestBase, new MapDrawHint(new Rectangle(0, 18, 4, 10), "WB", false));
         Area sBase = new Area("South Base",
                         String.format("You are in a small camp on the southern edge of the forest. "
                                         + "%s %s base here.", south.subjectAction("have", "has"),
-                        south.possessivePronoun()), Movement.ftcSouthBase);
+                        south.possessivePronoun()), Movement.ftcSouthBase, new MapDrawHint(new Rectangle(16, 42, 10, 4), "SB", false));
         Area eBase = new Area("East Base",
                         String.format("You are in a small camp on the eastern edge of the forest. "
                                         + "%s %s base here.", east.subjectAction("have", "has"),
-                        east.possessivePronoun()), Movement.ftcEastBase);
+                        east.possessivePronoun()), Movement.ftcEastBase, new MapDrawHint(new Rectangle(38, 18, 4, 10), "EB", false));
         Area pBase = new Area("Central Camp",
                         String.format("You are in a clearing in the middle of the forest. There are no"
                                         + " trees here, just a small camp where %s can "
                                         + "get a new Flag if it gets captured.", prey.subject()),
-                        Movement.ftcCenter);
+                        Movement.ftcCenter, new MapDrawHint(new Rectangle(16, 18, 10, 10), "P", false));
         map.put("North Base", nBase);
         map.put("West Base", wBase);
         map.put("South Base", sBase);
@@ -131,57 +133,57 @@ public class FTCMatch extends Match {
                         "You are at the edge of a small pond surrounded"
                                         + " by shrubbery. You could imagine taking a quick dip here, but it's a"
                                         + " little risky.",
-                        Movement.ftcPond);
+                        Movement.ftcPond, new MapDrawHint(new Rectangle(10, 4, 8, 8), "Pond", false));
         Area glade = new Area("Glade",
                         "You are in a glade under a canopy of tall trees. It's"
                                         + " quite pretty, really. Almost a shame to defile it with the debauchery"
                                         + " that will inevitably take place here at some point.",
-                        Movement.ftcGlade);
+                        Movement.ftcGlade, new MapDrawHint(new Rectangle(24, 4, 8, 8), "Glade", false));
         Area cabin = new Area("Cabin",
                         "You are in a small cabin in the woods. There are lots"
                                         + " of tools here, and if you have the ingredients you could probably make"
                                         + " some decent traps with them.",
-                        Movement.ftcCabin);
+                        Movement.ftcCabin, new MapDrawHint(new Rectangle(4, 12, 8, 8), "Cabin", false));
         Area trail = new Area("Trail",
                         "You are following a trail along some relatively"
                                         + " short trees. If you've got the upper body strength, you could"
                                         + " probably climb up one.",
-                        Movement.ftcTrail);
+                        Movement.ftcTrail, new MapDrawHint(new Rectangle(18, 10, 6, 8), "Trail", false));
         Area lodge = new Area("Lodge",
                         "You are in a quaint wooden lodge. There are numerous"
                                         + " herbs and chemicals here, and you should be able to mix up some good"
                                         + " stuff.",
-                        Movement.ftcLodge);
+                        Movement.ftcLodge, new MapDrawHint(new Rectangle(30, 12, 8, 8), "Lodge", false));
         Area hill = new Area("Hill",
                         "You are on top of a hill overlooking a part of the forest."
                                         + " If you look closely, you might be able to spot other competitors from here.",
-                        Movement.ftcHill);
+                        Movement.ftcHill, new MapDrawHint(new Rectangle(8, 20, 8, 6), "Hill", false));
         Area path = new Area("Path",
                         "You are on a path leading through some bushes. If you can pick"
                                         + " a good bush to hide in, you might be able to get the drop on passers-by.",
-                        Movement.ftcPath);
+                        Movement.ftcPath, new MapDrawHint(new Rectangle(26, 20, 8, 6), "Path", false));
         Area oak = new Area("Oak",
                         "You are standing under a tall, broad oak. There's something about"
                                         + " it that somehow resonates inside you. It's quite a comfortable feeling, actually.",
-                        Movement.ftcOak);
+                        Movement.ftcOak, new MapDrawHint(new Rectangle(4, 26, 8, 8), "Oak", false));
         Area pass = new Area("Narrow Pass",
                         "You are walking through a narrow pass carved through a steep"
                                         + " hill. You could try ambushing someone here, but others could easily do the same"
                                         + " to you.",
-                        Movement.ftcPass);
+                        Movement.ftcPass, new MapDrawHint(new Rectangle(18, 28, 6, 8), "Pass", false));
         Area waterfall = new Area("Waterfall",
                         "You are next to a pretty waterfall. The river it's in"
                                         + " bends sharply here, and only this bit is within the bounds for the Games. Still,"
                                         + " you could use it to take a shower in.",
-                        Movement.ftcWaterfall);
+                        Movement.ftcWaterfall, new MapDrawHint(new Rectangle(30, 26, 8, 8), "Waterfall", false));
         Area monument = new Area("Monument",
                         "You are in an area of the forest dominated by a tall stone"
                                         + " obelisk. It's probably a monument to something, but there's no plaque to tell you.",
-                        Movement.ftcMonument);
+                        Movement.ftcMonument, new MapDrawHint(new Rectangle(10, 34, 8, 8), "Monument", false));
         Area dump = new Area("Dump Site",
                         "You are at the edge of the forest, where people seem to go to dump"
                                         + " unwanted trash. The sight disgusts you, but there might be some useful stuff in there.",
-                        Movement.ftcDump);
+                        Movement.ftcDump, new MapDrawHint(new Rectangle(24, 34, 8, 8), "Dump", false));
         map.put("Small Pond", pond);
         map.put("Glade", glade);
         map.put("Cabin", cabin);

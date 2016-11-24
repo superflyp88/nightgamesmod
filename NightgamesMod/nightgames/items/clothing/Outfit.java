@@ -255,7 +255,7 @@ public class Outfit {
                 if (top == null) {
                     sb.append("{self:subject-action:are|is} topless");
                 } else {
-                    sb.append("{self:subject-action:are|is} wearing " + top.pre() + top.getName() + "");
+                    sb.append("{self:subject-action:are|is} wearing " + top.pre() + top.getName());
                     addedTop = true;
                     described.add(top);
                 }
