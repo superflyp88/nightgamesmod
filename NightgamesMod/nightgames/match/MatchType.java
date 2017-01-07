@@ -1,4 +1,4 @@
-package nightgames.global;
+package nightgames.match;
 
 import nightgames.areas.Area;
 import nightgames.characters.Character;
@@ -7,6 +7,7 @@ import nightgames.combat.Encounter;
 import nightgames.combat.IEncounter;
 import nightgames.ftc.FTCEncounter;
 import nightgames.ftc.FTCPrematch;
+import nightgames.global.Scene;
 
 public enum MatchType {
     NORMAL,

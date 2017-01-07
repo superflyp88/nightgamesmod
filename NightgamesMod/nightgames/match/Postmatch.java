@@ -1,19 +1,22 @@
-package nightgames.global;
+package nightgames.match;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import nightgames.characters.Character;
+import nightgames.global.Flag;
+import nightgames.global.Global;
+import nightgames.global.Scene;
 import nightgames.gui.KeyableButton;
 import nightgames.gui.SceneButton;
 
 public class Postmatch implements Scene {
 
     private Character player;
-    private ArrayList<Character> combatants;
+    private List<Character> combatants;
     private boolean normal;
 
-    public Postmatch(Character player, ArrayList<Character> combatants) {
+    public Postmatch(Character player, List<Character> combatants) {
         this.player = player;
         this.combatants = combatants;
         normal = true;

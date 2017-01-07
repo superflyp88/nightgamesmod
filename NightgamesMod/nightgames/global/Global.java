@@ -100,6 +100,8 @@ import nightgames.gui.HeadlessGui;
 import nightgames.items.Item;
 import nightgames.items.clothing.Clothing;
 import nightgames.json.JsonUtils;
+import nightgames.match.Match;
+import nightgames.match.MatchType;
 import nightgames.modifier.CustomModifierLoader;
 import nightgames.modifier.Modifier;
 import nightgames.modifier.standard.FTCModifier;

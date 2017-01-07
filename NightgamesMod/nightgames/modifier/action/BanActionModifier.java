@@ -14,7 +14,7 @@ import com.google.gson.JsonObject;
 import nightgames.actions.Action;
 import nightgames.characters.Character;
 import nightgames.global.Global;
-import nightgames.global.Match;
+import nightgames.match.Match;
 import nightgames.json.JsonUtils;
 import nightgames.modifier.ModifierComponentLoader;
 

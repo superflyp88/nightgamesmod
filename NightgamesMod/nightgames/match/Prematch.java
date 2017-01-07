@@ -1,4 +1,4 @@
-package nightgames.global;
+package nightgames.match;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,6 +7,9 @@ import java.util.Set;
 
 import nightgames.characters.Airi;
 import nightgames.characters.Player;
+import nightgames.global.Flag;
+import nightgames.global.Global;
+import nightgames.global.Scene;
 import nightgames.gui.KeyableButton;
 import nightgames.gui.SaveButton;
 import nightgames.gui.SceneButton;

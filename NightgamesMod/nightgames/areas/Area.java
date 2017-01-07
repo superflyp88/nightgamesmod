@@ -123,7 +123,7 @@ public class Area implements Serializable {
         if (fight != null && fight.checkIntrude(p)) {
             p.intervene(fight, fight.getPlayer(1), fight.getPlayer(2));
         } else if (present.size() > 1 && canFight(p)) {
-            for (Character opponent : Global.getMatch().combatants) {
+            for (Character opponent : Global.getMatch().getCombatants()) {
                 if (present.contains(opponent) && opponent != p
                                 && canFight(opponent)) {
                     fight = Global.getMatch().getType().buildEncounter(p, opponent, this);

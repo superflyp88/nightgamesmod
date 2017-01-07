@@ -86,6 +86,7 @@ import nightgames.global.*;
 import nightgames.items.Item;
 import nightgames.items.Loot;
 import nightgames.items.clothing.Clothing;
+import nightgames.match.Prematch;
 import nightgames.modifier.standard.NoModifier;
 import nightgames.skills.Skill;
 import nightgames.skills.TacticGroup;

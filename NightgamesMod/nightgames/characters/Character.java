@@ -49,7 +49,7 @@ import nightgames.global.Challenge;
 import nightgames.global.DebugFlags;
 import nightgames.global.Flag;
 import nightgames.global.Global;
-import nightgames.global.Match;
+import nightgames.match.Match;
 import nightgames.items.Item;
 import nightgames.items.clothing.Clothing;
 import nightgames.items.clothing.ClothingSlot;
@@ -972,7 +972,7 @@ public abstract class Character extends Observable implements Cloneable {
         outfit.undress();
         outfit.dress(outfitPlan);
         if (Global.getMatch() != null) {
-            Global.getMatch().condition.handleOutfit(this);
+            Global.getMatch().getCondition().handleOutfit(this);
         }
     }
 
@@ -2379,33 +2379,33 @@ public abstract class Character extends Observable implements Cloneable {
         getWillpower().fill();
         if (location().present.size() > 1) {
             if (location().id() == Movement.dorm) {
-                if (Global.getMatch().gps("Quad").present.isEmpty()) {
+                if (Global.getMatch().gps("Quad").get().present.isEmpty()) {
                     if (human()) {
                         Global.gui()
                                         .message("You hear your opponents searching around the dorm, so once you finish changing, you hop out the window and head to the quad.");
                     }
-                    travel(Global.getMatch().gps("Quad"));
+                    travel(Global.getMatch().gps("Quad").get());
                 } else {
                     if (human()) {
                         Global.gui()
                                         .message("You hear your opponents searching around the dorm, so once you finish changing, you quietly move downstairs to the laundry room.");
                     }
-                    travel(Global.getMatch().gps("Laundry"));
+                    travel(Global.getMatch().gps("Laundry").get());
                 }
             }
             if (location().id() == Movement.union) {
-                if (Global.getMatch().gps("Quad").present.isEmpty()) {
+                if (Global.getMatch().gps("Quad").get().present.isEmpty()) {
                     if (human()) {
                         Global.gui()
                                         .message("You don't want to be ambushed leaving the student union, so once you finish changing, you hop out the window and head to the quad.");
                     }
-                    travel(Global.getMatch().gps("Quad"));
+                    travel(Global.getMatch().gps("Quad").get());
                 } else {
                     if (human()) {
                         Global.gui()
                                         .message("You don't want to be ambushed leaving the student union, so once you finish changing, you sneak out the back door and head to the pool.");
                     }
-                    travel(Global.getMatch().gps("Pool"));
+                    travel(Global.getMatch().gps("Pool").get());
                 }
             }
         }
@@ -3648,9 +3648,9 @@ public abstract class Character extends Observable implements Cloneable {
             location = "Liberal Arts";
             break;
         }
-        m.gps(location).place(new NinjaStash(this));
+        m.gps(location).get().place(new NinjaStash(this));
         if(human()){
-            Global.gui().message("<b>You've arranged for a hidden stash to be placed in the "+m.gps(location).name+".</b>");
+            Global.gui().message("<b>You've arranged for a hidden stash to be placed in the "+m.gps(location).get().name+".</b>");
         }
     }
 

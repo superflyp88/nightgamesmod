@@ -1,0 +1,424 @@
+package nightgames.match;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+
+import nightgames.actions.Movement;
+import nightgames.areas.Area;
+import nightgames.areas.Cache;
+import nightgames.characters.Attribute;
+import nightgames.characters.Character;
+import nightgames.characters.Player;
+import nightgames.characters.State;
+import nightgames.characters.Trait;
+import nightgames.global.Challenge;
+import nightgames.global.Flag;
+import nightgames.global.Global;
+import nightgames.modifier.Modifier;
+import nightgames.status.addiction.Addiction;
+
+public class Match {
+
+    protected int time;
+    protected int dropOffTime;
+    protected Map<String, Area> map;
+    protected List<Character> combatants;
+    protected Map<Character, Integer> score;
+    private int index;
+    private boolean pause;
+    protected Modifier condition;
+    protected MatchData matchData;
+
+    public Match(Collection<Character> combatants, Modifier condition) {
+        this.combatants = new ArrayList<Character>(combatants);
+        matchData = new MatchData(combatants);
+        score = new HashMap<Character, Integer>();
+        this.condition = condition;
+        time = 0;
+        dropOffTime = 0;
+        pause = false;
+        map = buildMap();
+
+        for (Character combatant : combatants) {
+            score.put(combatant, 0);
+            Global.gui()
+                  .message(Global.gainSkills(combatant));
+            Global.learnSkills(combatant);
+            combatant.matchPrep(this);
+            combatant.getStamina()
+                     .fill();
+            combatant.getArousal()
+                     .empty();
+            combatant.getMojo()
+                     .empty();
+            combatant.getWillpower()
+                     .fill();
+            if (combatant.getPure(Attribute.Science) > 0) {
+                combatant.chargeBattery();
+            }
+            manageConditions(combatant);
+            extraMatchPrep(combatant);
+        }
+
+        placeCharacters();
+    }
+
+    public MatchType getType() {
+        return MatchType.NORMAL;
+    }
+    
+    protected void manageConditions(Character player) {
+        condition.handleOutfit(player);
+        condition.handleItems(player);
+        condition.handleStatus(player);
+        condition.handleTurn(player, this);
+        if (player.human()) {
+            Global.getPlayer()
+                  .getAddictions()
+                  .forEach(Addiction::refreshWithdrawal);
+        }
+    }
+
+    protected void extraMatchPrep(Character combatant) {
+
+    }
+
+    protected Map<String, Area> buildMap() {
+        return Global.buildMap();
+    }
+
+    protected void placeCharacters() {
+        Deque<Area> areaList = new ArrayDeque<>();
+        areaList.add(map.get("Dorm"));
+        areaList.add(map.get("Engineering"));
+        areaList.add(map.get("Liberal Arts"));
+        areaList.add(map.get("Dining"));
+        areaList.add(map.get("Union"));
+        areaList.add(map.get("Bridge"));
+        areaList.add(map.get("Library"));
+        areaList.add(map.get("Tunnel"));
+        areaList.add(map.get("Workshop"));
+        areaList.add(map.get("Pool"));
+        combatants.forEach(character -> {
+            if (character.has(Trait.immobile)) {
+                character.place(map.get("Courtyard"));
+            } else {
+                character.place(areaList.pop());
+            }
+        });
+    }
+
+    protected boolean shouldEndMatch() {
+        return time >= 36;
+    }
+
+    protected void handleFullTurn() {
+        if (meanLvl() > 3 && Global.random(10) + dropOffTime >= 12) {
+            dropPackage();
+            dropOffTime = 0;
+        }
+        if (Global.checkFlag(Flag.challengeAccepted) && (time == 6 || time == 12 || time == 18 || time == 24)) {
+            dropChallenge();
+        }
+        time++;
+        dropOffTime++;
+    }
+
+    protected void beforeAllTurns() {
+        getAreas().forEach(area -> area.setPinged(false));
+    }
+
+    protected void beforeTurn(Character combatant) {
+
+    }
+
+    protected void afterTurn(Character combatant) {
+
+    }
+    
+    public void score(Character combatant, int amt) {
+        score(combatant, amt, Optional.empty());
+    }
+    
+    public void score(Character combatant, int amt, Optional<String> message) {
+        score.put(combatant, score.get(combatant) + amt);
+        if (message.isPresent() && (combatant.human() || combatant.location().humanPresent())) {
+            Global.gui().message(Global.format(message.get(), combatant, Global.noneCharacter()));
+        }
+    }
+
+    public final void round() {
+        while (!shouldEndMatch()) {
+            if (index >= combatants.size()) {
+                index = 0;
+                handleFullTurn();
+            }
+            beforeAllTurns();
+            while (index < combatants.size()) {
+                Global.gui()
+                      .refresh();
+                if (combatants.get(index).state != State.quit) {
+                    Character self = combatants.get(index);
+                    beforeTurn(self);
+                    self.upkeep();
+                    manageConditions(self);
+                    self.move();
+                    afterTurn(self);
+                }
+                index++;
+                if (pause) {
+                    return;
+                }
+            }
+        }
+        end();
+    }
+
+    protected void beforeEnd() {
+
+    }
+
+    protected void afterEnd() {
+        new Postmatch(Global.getPlayer(), combatants);
+    }
+
+    protected Optional<Character> decideWinner() {
+        return score.entrySet()
+                    .stream()
+                    .max(Comparator.comparing(Entry::getValue))
+                    .map(Entry::getKey);
+    }
+
+    protected void giveWinnerPrize(Character winner, StringBuilder output) {
+        winner.modMoney(winner.prize() * 5);
+        output.append(Global.capitalizeFirstLetter(winner.subject()))
+          .append(" won the match, earning an additional $")
+          .append(winner.prize() * 5)
+          .append("");
+    }
+
+    protected int calculateReward(Character combatant, StringBuilder output) {
+        int reward = 0;
+        for (Character other : combatants) {
+            while (combatant.has(other.getTrophy())) {
+                combatant.consume(other.getTrophy(), 1, false);
+                reward += other.prize();
+            }
+        }
+        if (combatant.human()) {
+            output.append("You received $")
+                  .append(reward)
+                  .append(" for turning in your collected trophies.\n");
+        }
+        for (Challenge c : combatant.challenges) {
+            if (c.done) {
+                int r = c.reward() + (c.reward() * 3 * combatant.getRank());
+                reward += r;
+                if (combatant.human()) {
+                    output.append("You received $")
+                          .append(r)
+                          .append(" for completing a ")
+                          .append(c.describe());
+                }
+            }
+        }
+        return reward;
+    }
+
+    protected void finalizeCombatant(Character combatant) {
+
+    }
+
+    private void end() {
+        beforeEnd();
+        for (Character next : combatants) {
+            next.finishMatch();
+        }
+        Global.gui()
+              .clearText();
+        StringBuilder sb = new StringBuilder("Tonight's match is over.");
+        Optional<Character> winner = decideWinner();
+        Player player = Global.getPlayer();
+
+        for (Character combatant : score.keySet()) {
+            sb.append(combatant.getTrueName())
+              .append(" scored ")
+              .append(score.get(combatant))
+              .append(" points.");
+            combatant.modMoney(score.get(combatant) * combatant.prize());
+            combatant.modMoney(calculateReward(combatant, sb));
+
+            combatant.challenges.clear();
+            combatant.state = State.ready;
+            condition.undoItems(combatant);
+            combatant.change();
+            finalizeCombatant(combatant);
+        }
+        sb.append("\nYou earned $")
+          .append(score.get(player) * player.prize())
+          .append(" for scoring ")
+          .append(score.get(player))
+          .append(" points.\n");
+        int bonus = score.get(player) * condition.bonus();
+        player.modMoney(bonus);
+        if (bonus > 0) {
+            sb.append("You earned an additional $")
+              .append(bonus)
+              .append(" for accepting the handicap.");
+        }
+        winner.ifPresent(w -> giveWinnerPrize(w, sb));
+        if (winner.filter(Character::human).isPresent()) {
+            Global.flag(Flag.victory);
+        }
+        
+        int maxaffection = 0;
+        for (Character rival : combatants) {
+            if (rival.getAffection(player) > maxaffection) {
+                maxaffection = rival.getAffection(player);
+            }
+        }
+        if (Global.checkFlag(Flag.metLilly) && !Global.checkFlag(Flag.challengeAccepted) && Global.random(10) >= 7) {
+            Global.gui().message(
+                            "\nWhen you gather after the match to collect your reward money, you notice Jewel is holding a crumpled up piece of paper and ask about it. "
+                                            + "<i>\"This? I found it lying on the ground during the match. It seems to be a worthless piece of trash, but I didn't want to litter.\"</i> Jewel's face is expressionless, "
+                                            + "but there's a bitter edge to her words that makes you curious. You uncrumple the note and read it.<br/><br/>'Jewel always acts like the dominant, always-on-top tomboy, "
+                                            + "but I bet she loves to be held down and fucked hard.'<br/><br/><i>\"I was considering finding whoever wrote the note and tying his penis in a knot,\"</i> Jewel says, still "
+                                            + "impassive. <i>\"But I decided to just throw it out instead.\"</i> It's nice that she's learning to control her temper, but you're a little more concerned with the note. "
+                                            + "It mentions Jewel by name and seems to be alluding to the games. You doubt one of the other girls wrote it. You should probably show it to Lilly.<br/><br/><i>\"Oh for fuck's "
+                                            + "sake..\"</i> Lilly sighs, exasperated. <i>\"I thought we'd seen the last of these. I don't know who writes them, but they showed up last year too. I'll have to do a second "
+                                            + "sweep of the grounds each night to make sure they're all picked up by morning. They have competitors' names on them, so we absolutely cannot let a normal student find "
+                                            + "one.\"</i> She toys with a pigtail idly while looking annoyed. <i>\"For what it's worth, they do seem to pay well if you do what the note says that night. Do with them what "
+                                            + "you will.\"</i><br/>");
+            Global.flag(Flag.challengeAccepted);
+        }
+        /*
+         * if (maxaffection >= 15 && closest != null) { closest.afterParty(); } else { Global.gui().message("You walk back to your dorm and get yourself cleaned up."); }
+         */
+        for (Character character : combatants) {
+            if (character.getFlag("heelsTraining") >= 50 && !character.hasPure(Trait.proheels)) {
+                if (character.human()) {
+                    Global.gui().message(
+                                    "<br/>You've gotten comfortable at fighting in heels.<br/><b>Gained Trait: Heels Pro</b>");
+                }
+                character.add(Trait.proheels);
+            }
+            if (character.getFlag("heelsTraining") >= 100 && !character.hasPure(Trait.masterheels)) {
+                if (character.human()) {
+                    Global.gui().message("<br/>You've mastered fighting in heels.<br/><b>Gained Trait: Heels Master</b>");
+                }
+                character.add(Trait.masterheels);
+            }
+        }
+        Global.getPlayer().getAddictions().forEach(Addiction::endNight);
+        
+        afterEnd();
+    }
+    
+    public final int meanLvl() {
+        int mean = 0;
+        for (Character player : combatants) {
+            mean += player.getLevel();
+        }
+        return mean / combatants.size();
+    }
+
+    public void dropPackage() {
+        ArrayList<Area> areas = new ArrayList<Area>();
+        areas.addAll(map.values());
+        for (int i = 0; i < 10; i++) {
+            Area target = areas.get(Global.random(areas.size()));
+            if (!target.corridor() && !target.open() && target.env.size() < 5) {
+                target.place(new Cache(meanLvl() + Global.random(11) - 4));
+                Global.gui()
+                      .message("<br/><b>A new cache has been dropped off at " + target.name + "!</b>");
+                break;
+            }
+        }
+    }
+
+    public void dropChallenge() {
+        ArrayList<Area> areas = new ArrayList<Area>();
+        areas.addAll(map.values());
+        Area target = areas.get(Global.random(areas.size()));
+        if (!target.open() && target.env.size() < 5) {
+            target.place(new Challenge());
+        }
+    }
+
+    public final Optional<Area> gps(String name) {
+        return Optional.ofNullable(map.get(name));
+    }
+
+    public int getHour() {
+        return 10 + time / 12;
+    }
+
+    public String getTime() {
+        int hour = getHour();
+        if (hour > 12) {
+            hour = hour % 12;
+        }
+        if (time % 12 < 2) {
+            return hour + ":0" + time % 12 * 5;
+        } else {
+            return hour + ":" + time % 12 * 5;
+        }
+    }
+
+    public Collection<Movement> getResupplyAreas(Character ch) {
+        return Arrays.asList(Movement.union, Movement.dorm);
+    }
+
+    public final Collection<Area> getAreas() {
+        return map.values();
+    }
+
+    public String genericRoomDescription() {
+        return "room";
+    }
+
+    public final MatchData getMatchData() {
+        return matchData;
+    }
+
+    public final void pause() {
+        pause = true;
+    }
+
+    public final void resume() {
+        pause = false;
+        round();
+    }
+    
+    public final List<Character> getCombatants() {
+        return Collections.unmodifiableList(combatants);
+    }
+
+    public final Modifier getCondition() {
+        return condition;
+    }
+
+    public final void quit() {
+        Character human = Global.getPlayer();
+        if (human.state == State.combat) {
+            if (human.location().fight.getCombat() != null) {
+                human.location().fight.getCombat().forfeit(human);
+            }
+            human.location().endEncounter();
+        }
+        human.travel(new Area("Retirement", "", Movement.retire));
+        human.state = State.quit;
+        resume();
+    }
+
+}

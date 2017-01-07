@@ -216,7 +216,7 @@ public class NPC extends Character {
         if (!target.has(Trait.leveldrainer))
             target.gainXP(getVictoryXP(this));
         arousal.empty();
-        if (!target.human() || !Global.getMatch().condition.name().equals("norecovery")) {
+        if (!target.human() || !Global.getMatch().getCondition().name().equals("norecovery")) {
             target.arousal.empty();
         }
         if (this.has(Trait.insatiable)) {
@@ -516,7 +516,7 @@ public class NPC extends Character {
                 if (Global.checkFlag(Flag.FTC) && allowedActions().isEmpty()) {
                     match = (FTCMatch) Global.getMatch();
                     if (match.isPrey(this) && match.getFlagHolder() == null) {
-                        moves.add(findPath(match.gps("Central Camp")));
+                        moves.add(findPath(match.gps("Central Camp").get()));
                         if (Global.isDebugOn(DebugFlags.DEBUG_FTC))
                             System.out.println(getTrueName() + " moving to get flag (prey)");
                     } else if (!match.isPrey(this) && has(Item.Flag) && !match.isBase(this, location)) {

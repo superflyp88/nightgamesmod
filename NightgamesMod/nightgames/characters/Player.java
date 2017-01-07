@@ -383,7 +383,7 @@ public class Player extends Character {
                     possibleActions.addAll(Global.getActions());
                     for (Action act : possibleActions) {
                         if (act.usable(this) 
-                                        && Global.getMatch().condition.allowAction(act, this, Global.getMatch())) {
+                                        && Global.getMatch().getCondition().allowAction(act, this, Global.getMatch())) {
                             gui.addAction(act, this);
                         }
                     }

@@ -12,8 +12,8 @@ import nightgames.areas.Area;
 import nightgames.characters.Character;
 import nightgames.global.Flag;
 import nightgames.global.Global;
-import nightgames.global.Match;
-import nightgames.global.MatchType;
+import nightgames.match.Match;
+import nightgames.match.MatchType;
 import nightgames.items.Item;
 import nightgames.modifier.standard.FTCModifier;
 
@@ -70,10 +70,10 @@ public class FTCMatch extends Match {
     }
 
     @Override
-    public void end() {
-        super.end();
+    protected void afterEnd() {
         Global.unflag(Flag.FTC);
         combatants.forEach(c -> c.remove(Item.Flag));
+        super.afterEnd();
     }
 
     @Override
