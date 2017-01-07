@@ -5,8 +5,8 @@ import java.util.Collection;
 import nightgames.areas.Area;
 import nightgames.characters.Character;
 import nightgames.characters.Player;
+import nightgames.combat.DefaultEncounter;
 import nightgames.combat.Encounter;
-import nightgames.combat.IEncounter;
 import nightgames.ftc.FTCEncounter;
 import nightgames.ftc.FTCMatch;
 import nightgames.global.Scene;
@@ -33,17 +33,6 @@ public enum MatchType {
         }
     }
     
-    public IEncounter buildEncounter(Character first, Character second, Area location) {
-        switch (this) {
-            case FTC:
-                return new FTCEncounter(first, second, location);
-            case NORMAL:
-                return new Encounter(first, second, location);
-            default:
-                throw new Error();
-        }
-    }
-
     public Prematch buildPrematch(Player player) {
         switch (this) {
             case FTC:

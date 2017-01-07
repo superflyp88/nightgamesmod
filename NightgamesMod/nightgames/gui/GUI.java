@@ -78,7 +78,7 @@ import nightgames.characters.Trait;
 import nightgames.characters.TraitTree;
 import nightgames.combat.Combat;
 import nightgames.combat.CombatSceneChoice;
-import nightgames.combat.IEncounter;
+import nightgames.combat.Encounter;
 import nightgames.daytime.Activity;
 import nightgames.daytime.Store;
 import nightgames.debug.DebugGUIPanel;
@@ -1130,7 +1130,7 @@ public class GUI extends JFrame implements Observer {
         commandPanel.refresh();
     }
 
-    public void promptFF(IEncounter enc, Character target) {
+    public void promptFF(Encounter enc, Character target) {
         clearCommand();
         commandPanel.add(encounterButton("Fight", enc, target, Encs.fight));
         commandPanel.add(encounterButton("Flee", enc, target, Encs.flee));
@@ -1141,7 +1141,7 @@ public class GUI extends JFrame implements Observer {
         commandPanel.refresh();
     }
 
-    public void promptAmbush(IEncounter enc, Character target) {
+    public void promptAmbush(Encounter enc, Character target) {
         clearCommand();
         commandPanel.add(encounterButton("Attack " + target.getName(), enc, target, Encs.ambush));
         commandPanel.add(encounterButton("Wait", enc, target, Encs.wait));
@@ -1149,7 +1149,7 @@ public class GUI extends JFrame implements Observer {
         commandPanel.refresh();
     }
 
-    public void promptOpportunity(IEncounter enc, Character target, Trap trap) {
+    public void promptOpportunity(Encounter enc, Character target, Trap trap) {
         clearCommand();
         commandPanel.add(encounterButton("Attack " + target.getName(), enc, target, Encs.capitalize, trap));
         commandPanel.add(encounterButton("Wait", enc, target, Encs.wait));
@@ -1157,7 +1157,7 @@ public class GUI extends JFrame implements Observer {
         commandPanel.refresh();
     }
 
-    public void promptShower(IEncounter encounter, Character target) {
+    public void promptShower(Encounter encounter, Character target) {
         clearCommand();
         commandPanel.add(encounterButton("Suprise Her", encounter, target, Encs.showerattack));
         if (!target.mostlyNude()) {
@@ -1171,7 +1171,7 @@ public class GUI extends JFrame implements Observer {
         commandPanel.refresh();
     }
 
-    public void promptIntervene(IEncounter enc, Character p1, Character p2) {
+    public void promptIntervene(Encounter enc, Character p1, Character p2) {
         clearCommand();
         commandPanel.add(interveneButton(enc, p1));
         commandPanel.add(interveneButton(enc, p2));
@@ -1495,14 +1495,14 @@ public class GUI extends JFrame implements Observer {
         return button;
     }
 
-    private KeyableButton interveneButton(IEncounter enc, Character assist) {
+    private KeyableButton interveneButton(Encounter enc, Character assist) {
         RunnableButton button = new RunnableButton("Help " + assist.getName(), () -> {
             enc.intrude(Global.getPlayer(), assist);
         });
         return button;
     }
 
-    private KeyableButton encounterButton(String label, IEncounter enc, Character target, Encs choice) {
+    private KeyableButton encounterButton(String label, Encounter enc, Character target, Encs choice) {
         RunnableButton button = new RunnableButton(label, () -> {
             enc.parse(choice, Global.getPlayer(), target);
             Global.getMatch().resume();
@@ -1510,7 +1510,7 @@ public class GUI extends JFrame implements Observer {
         return button;
     }
 
-    private KeyableButton encounterButton(String label, IEncounter enc, Character target, Encs choice, Trap trap) {
+    private KeyableButton encounterButton(String label, Encounter enc, Character target, Encs choice, Trap trap) {
         RunnableButton button = new RunnableButton(label, () -> {
             enc.parse(choice, Global.getPlayer(), target, trap);
             Global.getMatch().resume();
@@ -1518,7 +1518,7 @@ public class GUI extends JFrame implements Observer {
         return button;
     }
 
-    private KeyableButton watchButton(IEncounter enc) {
+    private KeyableButton watchButton(Encounter enc) {
         RunnableButton button = new RunnableButton("Watch them fight", () -> {
             enc.watch();
         });

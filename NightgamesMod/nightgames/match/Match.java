@@ -21,6 +21,8 @@ import nightgames.characters.Character;
 import nightgames.characters.Player;
 import nightgames.characters.State;
 import nightgames.characters.Trait;
+import nightgames.combat.DefaultEncounter;
+import nightgames.combat.Encounter;
 import nightgames.global.Challenge;
 import nightgames.global.Flag;
 import nightgames.global.Global;
@@ -416,6 +418,10 @@ public class Match {
         return condition;
     }
 
+    public Encounter buildEncounter(Character first, Character second, Area location) {
+        return new DefaultEncounter(first, second, location);
+    }
+    
     public final void quit() {
         Character human = Global.getPlayer();
         if (human.state == State.combat) {

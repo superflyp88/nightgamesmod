@@ -25,7 +25,7 @@ import nightgames.characters.custom.CommentSituation;
 import nightgames.characters.custom.RecruitmentData;
 import nightgames.combat.Combat;
 import nightgames.combat.CombatScene;
-import nightgames.combat.IEncounter;
+import nightgames.combat.Encounter;
 import nightgames.combat.Result;
 import nightgames.ftc.FTCMatch;
 import nightgames.global.DebugFlags;
@@ -568,7 +568,7 @@ public class NPC extends Character {
     }
 
     @Override
-    public void faceOff(Character opponent, IEncounter enc) {
+    public void faceOff(Character opponent, Encounter enc) {
         Encs encType;
         if (ai.fightFlight(opponent)) {
             encType = Encs.fight;
@@ -582,7 +582,7 @@ public class NPC extends Character {
     }
 
     @Override
-    public void spy(Character opponent, IEncounter enc) {
+    public void spy(Character opponent, Encounter enc) {
         if (ai.attack(opponent)) {
             // enc.ambush(this, opponent);
             enc.parse(Encs.ambush, this, opponent);
@@ -602,7 +602,7 @@ public class NPC extends Character {
     }
 
     @Override
-    public void showerScene(Character target, IEncounter encounter) {
+    public void showerScene(Character target, Encounter encounter) {
         Encs response;
         if (this.has(Item.Aphrodisiac)) {
             // encounter.aphrodisiactrick(this, target);
@@ -618,7 +618,7 @@ public class NPC extends Character {
     }
 
     @Override
-    public void intervene(IEncounter enc, Character p1, Character p2) {
+    public void intervene(Encounter enc, Character p1, Character p2) {
         if (Global.random(20) + getAffection(p1) + (p1.has(Trait.sympathetic) ? 10 : 0) >= Global.random(20)
                         + getAffection(p2) + (p2.has(Trait.sympathetic) ? 10 : 0)) {
             enc.intrude(this, p1);
@@ -628,7 +628,7 @@ public class NPC extends Character {
     }
 
     @Override
-    public void promptTrap(IEncounter enc, Character target, Trap trap) {
+    public void promptTrap(Encounter enc, Character target, Trap trap) {
         if (ai.attack(target) && (!target.human() || !Global.isDebugOn(DebugFlags.DEBUG_SPECTATE))) {
             enc.trap(this, target, trap);
         } else {

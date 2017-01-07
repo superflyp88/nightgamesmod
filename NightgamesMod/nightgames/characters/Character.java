@@ -42,7 +42,7 @@ import nightgames.characters.custom.AiModifiers;
 import nightgames.characters.custom.CharacterLine;
 import nightgames.combat.Combat;
 import nightgames.combat.CombatantData;
-import nightgames.combat.IEncounter;
+import nightgames.combat.Encounter;
 import nightgames.combat.Result;
 import nightgames.ftc.FTCMatch;
 import nightgames.global.Challenge;
@@ -1502,9 +1502,9 @@ public abstract class Character extends Observable implements Cloneable {
 
     public abstract void detect();
 
-    public abstract void faceOff(Character opponent, IEncounter enc);
+    public abstract void faceOff(Character opponent, Encounter enc);
 
-    public abstract void spy(Character opponent, IEncounter enc);
+    public abstract void spy(Character opponent, Encounter enc);
 
     public abstract String describe(int per, Combat c);
 
@@ -1534,9 +1534,9 @@ public abstract class Character extends Observable implements Cloneable {
 
     public abstract String taunt(Combat c, Character target);
 
-    public abstract void intervene(IEncounter fight, Character p1, Character p2);
+    public abstract void intervene(Encounter fight, Character p1, Character p2);
 
-    public abstract void showerScene(Character target, IEncounter encounter);
+    public abstract void showerScene(Character target, Encounter encounter);
 
     public boolean humanControlled(Combat c) {
         return human() || Global.isDebugOn(DebugFlags.DEBUG_SKILL_CHOICES) && c.getOpponent(this).human();
@@ -2560,7 +2560,7 @@ public abstract class Character extends Observable implements Cloneable {
         busy += i;
     }
 
-    public abstract void promptTrap(IEncounter fight, Character target, Trap trap);
+    public abstract void promptTrap(Encounter fight, Character target, Trap trap);
 
     public int lvlBonus(Character opponent) {
         if (opponent.getLevel() > getLevel()) {

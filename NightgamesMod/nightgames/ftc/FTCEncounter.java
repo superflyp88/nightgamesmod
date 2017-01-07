@@ -5,7 +5,7 @@ import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.State;
 import nightgames.combat.Combat;
-import nightgames.combat.Encounter;
+import nightgames.combat.DefaultEncounter;
 import nightgames.global.Encs;
 import nightgames.global.Global;
 import nightgames.items.Item;
@@ -15,7 +15,7 @@ import nightgames.status.Bound;
 import nightgames.status.Flatfooted;
 import nightgames.trap.Trap;
 
-public class FTCEncounter extends Encounter {
+public class FTCEncounter extends DefaultEncounter {
 
     private static final long serialVersionUID = 5190164935968044626L;
 

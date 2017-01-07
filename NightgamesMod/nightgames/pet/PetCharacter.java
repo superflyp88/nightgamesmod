@@ -16,7 +16,7 @@ import nightgames.characters.Trait;
 import nightgames.characters.WeightedSkill;
 import nightgames.characters.body.BodyPart;
 import nightgames.combat.Combat;
-import nightgames.combat.IEncounter;
+import nightgames.combat.Encounter;
 import nightgames.combat.Result;
 import nightgames.global.DebugFlags;
 import nightgames.global.Global;
@@ -154,10 +154,10 @@ public class PetCharacter extends Character {
     public void detect() {}
 
     @Override
-    public void faceOff(Character opponent, IEncounter enc) {}
+    public void faceOff(Character opponent, Encounter enc) {}
 
     @Override
-    public void spy(Character opponent, IEncounter enc) {}
+    public void spy(Character opponent, Encounter enc) {}
 
     @Override
     public String describe(int per, Combat c) {
@@ -292,10 +292,10 @@ public class PetCharacter extends Character {
     }
 
     @Override
-    public void intervene(IEncounter fight, Character p1, Character p2) {}
+    public void intervene(Encounter fight, Character p1, Character p2) {}
 
     @Override
-    public void showerScene(Character target, IEncounter encounter) {}
+    public void showerScene(Character target, Encounter encounter) {}
     @Override
     public void afterParty() {}
     
@@ -303,7 +303,7 @@ public class PetCharacter extends Character {
     public void emote(Emotion emo, int amt) {}
 
     @Override
-    public void promptTrap(IEncounter fight, Character target, Trap trap) {}
+    public void promptTrap(Encounter fight, Character target, Trap trap) {}
 
     @Override
     public void counterattack(Character target, Tactics type, Combat c) {}

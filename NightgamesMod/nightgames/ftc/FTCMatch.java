@@ -10,6 +10,7 @@ import java.util.Map;
 import nightgames.actions.Movement;
 import nightgames.areas.Area;
 import nightgames.characters.Character;
+import nightgames.combat.Encounter;
 import nightgames.global.Flag;
 import nightgames.global.Global;
 import nightgames.match.Match;
@@ -252,5 +253,10 @@ public class FTCMatch extends Match {
     @Override
     public String genericRoomDescription() {
         return "area";
+    }
+    
+    @Override
+    public Encounter buildEncounter(Character first, Character second, Area location) {
+        return new FTCEncounter(first, second, location);
     }
 }
