@@ -21,6 +21,8 @@ import nightgames.characters.Character;
 import nightgames.characters.Player;
 import nightgames.characters.State;
 import nightgames.characters.Trait;
+import nightgames.combat.Combat;
+import nightgames.combat.CombatListener;
 import nightgames.combat.DefaultEncounter;
 import nightgames.combat.Encounter;
 import nightgames.global.Challenge;
@@ -54,6 +56,10 @@ public class Match {
     
     protected void preStart() {
         
+    }
+    
+    public List<CombatListener> getListeners(Combat c) {
+        return Collections.emptyList();
     }
     
     public final void start() {
@@ -368,7 +374,7 @@ public class Match {
         return Optional.ofNullable(map.get(name));
     }
 
-    public int getHour() {
+    public final int getHour() {
         return 10 + time / 12;
     }
 

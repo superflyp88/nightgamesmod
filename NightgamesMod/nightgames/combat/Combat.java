@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Observable;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import nightgames.areas.Area;
@@ -120,7 +121,8 @@ public class Combat extends Observable implements Cloneable {
     private int postCombatScenesSeen;
     private boolean wroteMessage;
     private boolean cloned;
-
+    private List<CombatListener> listeners;
+    
     String imagePath = "";
 
     public Combat(Character p1, Character p2, Area loc) {
@@ -145,6 +147,7 @@ public class Combat extends Observable implements Cloneable {
         if (doExtendedLog()) {
             log = new CombatLog(this);
         }
+        listeners = new ArrayList<>();
     }
 
     public Combat(Character p1, Character p2, Area loc, Position starting) {
@@ -219,6 +222,8 @@ public class Combat extends Observable implements Cloneable {
     }
 
     public void go() {
+        Global.getMatch().getListeners(this).forEach(listeners::add);
+        listen(CombatListener::preStart);
         if (p1.mostlyNude() && !p2.mostlyNude()) {
             p1.emote(Emotion.nervous, 20);
         }
@@ -434,6 +439,7 @@ public class Combat extends Observable implements Cloneable {
     }
 
     private void doEndOfTurnUpkeep() {
+        listen(l -> l.postActions(p1act, p2act));
         p1.eot(this, p2, p2act);
         p2.eot(this, p1, p1act);
         checkStamina(p1);
@@ -709,6 +715,7 @@ public class Combat extends Observable implements Cloneable {
             }
             return;
         }
+        listen(CombatListener::preTurn);
         if ((p1.orgasmed || p2.orgasmed) && phase != CombatPhase.RESULTS_SCENE && SKIPPABLE_PHASES.contains(phase)) {
             phase = CombatPhase.UPKEEP;
         }
@@ -723,6 +730,7 @@ public class Combat extends Observable implements Cloneable {
                 turn();
                 break;
             case SKILL_SELECTION:
+                listen(CombatListener::preSkillSelection);
                 pickSkills();
                 break;
             case PET_ACTIONS:
@@ -792,6 +800,7 @@ public class Combat extends Observable implements Cloneable {
             p2.act(this);
         } else {
             phase = CombatPhase.PET_ACTIONS;
+            listen(l -> l.postSkillSelection(p1act, p2act));
             turn();
         }
     }
@@ -873,9 +882,14 @@ public class Combat extends Observable implements Cloneable {
             Global.gui().clearText();
         }
 
-        action = checkWorship(self, target, action);
+        listen(l -> l.preAction(self, target, action));
+        
+        Skill skill = checkWorship(self, target, action);
         if (Global.isDebugOn(DebugFlags.DEBUG_SCENE)) {
             System.out.println(self.getTrueName() + " uses " + action.getLabel(this));
+        }
+        if (skill != action) {
+            listen(l -> l.onActionTurnedToWorship(self, target, action, skill));
         }
         /*
          * TODO fix this so it works with the new combat system
@@ -888,9 +902,11 @@ public class Combat extends Observable implements Cloneable {
             useSkills();
         }
         */
-        boolean results = resolveSkill(action, target);
+        boolean results = resolveSkill(skill, target);
         this.write("<br/>");
         updateMessage();
+        
+        listen(l -> l.postAction(self, target, skill));
         return results;
     }
 
@@ -906,6 +922,7 @@ public class Combat extends Observable implements Cloneable {
     }
 
     private CombatPhase doPetActions() {
+        listen(CombatListener::prePetActions);
         Set<PetCharacter> alreadyBattled = new HashSet<>();
         if (otherCombatants.size() > 0) {
             ArrayList<PetCharacter> pets = new ArrayList<>(otherCombatants);
@@ -914,7 +931,9 @@ public class Combat extends Observable implements Cloneable {
                 for (PetCharacter otherPet : pets) {
                     if (!otherCombatants.contains(pet) || alreadyBattled.contains(otherPet)) { continue; }
                     if (!pet.getSelf().owner().equals(otherPet.getSelf().owner()) && Global.random(2) == 0) {
+                        listen(l -> l.prePetBattle(pet, otherPet));
                         petbattle(pet.getSelf(), otherPet.getSelf());
+                        listen(l -> l.postPetBattle(pet, otherPet));
                         alreadyBattled.add(pet);
                         alreadyBattled.add(otherPet);
                     }
@@ -923,15 +942,19 @@ public class Combat extends Observable implements Cloneable {
 
             List<PetCharacter> actingPets = new ArrayList<>(otherCombatants);
             actingPets.stream().filter(pet -> !alreadyBattled.contains(pet)).forEach(pet -> {
+                listen(l -> l.prePetAction(pet));
                 pet.act(this);
                 if (pet.getSelf().owner().has(Trait.devoteeFervor) && Global.random(2) == 0) {
                     write(pet, Global.format("{self:SUBJECT} seems to have gained a second wind from {self:possessive} religious fervor!", pet, pet.getSelf().owner()));
                     pet.act(this);
                 }
+                listen(l -> l.postPetAction(pet));
             });
             write("<br/>");
+            listen(l -> l.postPetActions(true));
             return CombatPhase.DETERMINE_SKILL_ORDER;
         }
+        listen(l -> l.postPetActions(false));
         return CombatPhase.DETERMINE_SKILL_ORDER_AUTONEXT;
     }
 
@@ -1140,10 +1163,16 @@ public class Combat extends Observable implements Cloneable {
             checkStamina(skill.user());
             orgasmed = checkOrgasm(skill.user(), target, skill);
             lastFailed = false;
+            if (success) {
+                listen(l -> l.onActionSuccess(skill.getSelf(), target, skill));
+            } else {
+                listen(l -> l.onActionCountered(skill.getSelf(), target, skill));
+            }
         } else {
             write(skill.user()
                        .possessiveAdjective() + " " + skill.getLabel(this) + " failed.");
             lastFailed = true;
+            listen(l -> l.onActionFailed(skill.getSelf(), target, skill));
         }
         return orgasmed;
     }
@@ -1159,6 +1188,7 @@ public class Combat extends Observable implements Cloneable {
     }
 
     protected CombatPhase determineSkillOrder() {
+        listen(CombatListener::preActions);
         if (p1.init() + p1act.speed() >= p2.init() + p2act.speed()) {
             return CombatPhase.P1_ACT_FIRST;
         } else {
@@ -1228,6 +1258,7 @@ public class Combat extends Observable implements Cloneable {
     public void checkStamina(Character p) {
         if (p.getStamina()
              .isEmpty() && !p.is(Stsflag.stunned)) {
+            listen(l -> l.onWinded(p));
             p.add(this, new Winded(p, 3));
             Character other;
             if (p == p1) {
@@ -1324,6 +1355,7 @@ public class Combat extends Observable implements Cloneable {
      * @return true if it should end the fight, false if there are still more scenes
      */
     public void end() {
+        listen(CombatListener::preEnd);
         clear();
         boolean hasScene = false;
         if (p1.human() || p2.human()) {
@@ -1358,6 +1390,7 @@ public class Combat extends Observable implements Cloneable {
         if (!ding && !shouldAutoresolve()) {
             Global.gui().endCombat();
         }
+        listen(l -> l.postEnd(winner));
     }
 
     private boolean doPostCombatScenes(NPC npc) {
@@ -1558,7 +1591,8 @@ public class Combat extends Observable implements Cloneable {
                             initiator, getOpponent(initiator)));
             initiator.add(this, new Alluring(initiator, 1));
         }
-
+        Position t = newStance; // because it must be final down vv here vv
+        listen(l -> l.onStanceChange(stance, t, initiator, voluntary));
         stance = newStance;
         offerImage(stance.image(), "");
     }
@@ -1672,5 +1706,13 @@ public class Combat extends Observable implements Cloneable {
 
     public boolean isEnded() {
         return phase == CombatPhase.FINISHED;
+    }
+    
+    public void listen(Consumer<CombatListener> cons) {
+        listeners.forEach(cons);
+    }
+    
+    public void addListener(CombatListener listener) {
+        listeners.add(listener);
     }
 }
