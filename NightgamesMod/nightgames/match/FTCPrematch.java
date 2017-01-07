@@ -16,7 +16,7 @@ public class FTCPrematch extends Prematch {
 
     private Character prey;
 
-    public FTCPrematch(Player player) { 
+    public FTCPrematch() { 
         super(new FTCFirstIntroEvent(), new FTCIntroEvent());
     }
 

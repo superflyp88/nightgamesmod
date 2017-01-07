@@ -2,14 +2,9 @@ package nightgames.match;
 
 import java.util.Collection;
 
-import nightgames.areas.Area;
 import nightgames.characters.Character;
 import nightgames.characters.Player;
-import nightgames.combat.DefaultEncounter;
-import nightgames.combat.Encounter;
-import nightgames.ftc.FTCEncounter;
 import nightgames.ftc.FTCMatch;
-import nightgames.global.Scene;
 import nightgames.modifier.Modifier;
 import nightgames.modifier.standard.FTCModifier;
 import nightgames.modifier.standard.NoModifier;
@@ -36,7 +31,7 @@ public enum MatchType {
     public Prematch buildPrematch(Player player) {
         switch (this) {
             case FTC:
-                return new FTCPrematch(player);
+                return new FTCPrematch();
             case NORMAL:
                 return new DefaultPrematch();
             default:
