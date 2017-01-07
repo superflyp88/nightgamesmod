@@ -6,7 +6,6 @@ import nightgames.characters.Player;
 import nightgames.combat.Encounter;
 import nightgames.combat.IEncounter;
 import nightgames.ftc.FTCEncounter;
-import nightgames.ftc.FTCPrematch;
 import nightgames.global.Scene;
 
 public enum MatchType {
@@ -24,14 +23,19 @@ public enum MatchType {
         }
     }
 
-    public Scene buildPrematch(Player player) {
+    public Prematch buildPrematch(Player player) {
         switch (this) {
             case FTC:
                 return new FTCPrematch(player);
             case NORMAL:
-                return new Prematch(player);
+                return new DefaultPrematch();
             default:
                 throw new Error();
         }
     }
+    
+    public void runPrematch(Player player) {
+        buildPrematch(player).run();
+    }
+
 }

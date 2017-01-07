@@ -750,7 +750,7 @@ public class Global {
     }
 
     public static void startNight() {
-        decideMatchType().buildPrematch(human);
+        decideMatchType().runPrematch(human);
     }
 
     public static void setUpMatch(Modifier matchmod) {

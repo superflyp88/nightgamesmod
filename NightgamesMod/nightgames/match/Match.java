@@ -28,7 +28,7 @@ import nightgames.modifier.Modifier;
 import nightgames.status.addiction.Addiction;
 
 public class Match {
-
+    
     protected int time;
     protected int dropOffTime;
     protected Map<String, Area> map;
@@ -38,7 +38,7 @@ public class Match {
     private boolean pause;
     protected Modifier condition;
     protected MatchData matchData;
-
+    
     public Match(Collection<Character> combatants, Modifier condition) {
         this.combatants = new ArrayList<Character>(combatants);
         matchData = new MatchData(combatants);
@@ -72,11 +72,11 @@ public class Match {
 
         placeCharacters();
     }
-
+    
     public MatchType getType() {
         return MatchType.NORMAL;
     }
-    
+
     protected void manageConditions(Character player) {
         condition.handleOutfit(player);
         condition.handleItems(player);
@@ -145,15 +145,17 @@ public class Match {
     protected void afterTurn(Character combatant) {
 
     }
-    
+
     public void score(Character combatant, int amt) {
         score(combatant, amt, Optional.empty());
     }
-    
+
     public void score(Character combatant, int amt, Optional<String> message) {
         score.put(combatant, score.get(combatant) + amt);
-        if (message.isPresent() && (combatant.human() || combatant.location().humanPresent())) {
-            Global.gui().message(Global.format(message.get(), combatant, Global.noneCharacter()));
+        if (message.isPresent() && (combatant.human() || combatant.location()
+                                                                  .humanPresent())) {
+            Global.gui()
+                  .message(Global.format(message.get(), combatant, Global.noneCharacter()));
         }
     }
 
@@ -189,7 +191,11 @@ public class Match {
     }
 
     protected void afterEnd() {
-        new Postmatch(Global.getPlayer(), combatants);
+
+    }
+
+    protected Postmatch buildPostmatch() {
+        return new DefaultPostmatch(combatants);
     }
 
     protected Optional<Character> decideWinner() {
@@ -202,9 +208,9 @@ public class Match {
     protected void giveWinnerPrize(Character winner, StringBuilder output) {
         winner.modMoney(winner.prize() * 5);
         output.append(Global.capitalizeFirstLetter(winner.subject()))
-          .append(" won the match, earning an additional $")
-          .append(winner.prize() * 5)
-          .append("");
+              .append(" won the match, earning an additional $")
+              .append(winner.prize() * 5)
+              .append("");
     }
 
     protected int calculateReward(Character combatant, StringBuilder output) {
@@ -277,53 +283,46 @@ public class Match {
               .append(" for accepting the handicap.");
         }
         winner.ifPresent(w -> giveWinnerPrize(w, sb));
-        if (winner.filter(Character::human).isPresent()) {
+        if (winner.filter(Character::human)
+                  .isPresent()) {
             Global.flag(Flag.victory);
         }
-        
+
         int maxaffection = 0;
         for (Character rival : combatants) {
             if (rival.getAffection(player) > maxaffection) {
                 maxaffection = rival.getAffection(player);
             }
         }
-        if (Global.checkFlag(Flag.metLilly) && !Global.checkFlag(Flag.challengeAccepted) && Global.random(10) >= 7) {
-            Global.gui().message(
-                            "\nWhen you gather after the match to collect your reward money, you notice Jewel is holding a crumpled up piece of paper and ask about it. "
-                                            + "<i>\"This? I found it lying on the ground during the match. It seems to be a worthless piece of trash, but I didn't want to litter.\"</i> Jewel's face is expressionless, "
-                                            + "but there's a bitter edge to her words that makes you curious. You uncrumple the note and read it.<br/><br/>'Jewel always acts like the dominant, always-on-top tomboy, "
-                                            + "but I bet she loves to be held down and fucked hard.'<br/><br/><i>\"I was considering finding whoever wrote the note and tying his penis in a knot,\"</i> Jewel says, still "
-                                            + "impassive. <i>\"But I decided to just throw it out instead.\"</i> It's nice that she's learning to control her temper, but you're a little more concerned with the note. "
-                                            + "It mentions Jewel by name and seems to be alluding to the games. You doubt one of the other girls wrote it. You should probably show it to Lilly.<br/><br/><i>\"Oh for fuck's "
-                                            + "sake..\"</i> Lilly sighs, exasperated. <i>\"I thought we'd seen the last of these. I don't know who writes them, but they showed up last year too. I'll have to do a second "
-                                            + "sweep of the grounds each night to make sure they're all picked up by morning. They have competitors' names on them, so we absolutely cannot let a normal student find "
-                                            + "one.\"</i> She toys with a pigtail idly while looking annoyed. <i>\"For what it's worth, they do seem to pay well if you do what the note says that night. Do with them what "
-                                            + "you will.\"</i><br/>");
-            Global.flag(Flag.challengeAccepted);
-        }
+
         /*
          * if (maxaffection >= 15 && closest != null) { closest.afterParty(); } else { Global.gui().message("You walk back to your dorm and get yourself cleaned up."); }
          */
         for (Character character : combatants) {
             if (character.getFlag("heelsTraining") >= 50 && !character.hasPure(Trait.proheels)) {
                 if (character.human()) {
-                    Global.gui().message(
-                                    "<br/>You've gotten comfortable at fighting in heels.<br/><b>Gained Trait: Heels Pro</b>");
+                    sb.append("<br/>You've gotten comfortable at fighting in heels.<br/><b>Gained Trait: Heels Pro</b>\n");
                 }
                 character.add(Trait.proheels);
             }
             if (character.getFlag("heelsTraining") >= 100 && !character.hasPure(Trait.masterheels)) {
                 if (character.human()) {
-                    Global.gui().message("<br/>You've mastered fighting in heels.<br/><b>Gained Trait: Heels Master</b>");
+                    sb.append("<br/>You've mastered fighting in heels.<br/><b>Gained Trait: Heels Master</b>\n");
                 }
                 character.add(Trait.masterheels);
             }
         }
-        Global.getPlayer().getAddictions().forEach(Addiction::endNight);
-        
+        Global.getPlayer()
+              .getAddictions()
+              .forEach(Addiction::endNight);
+        Global.gui()
+              .message(sb.toString());
+
         afterEnd();
+        Postmatch post = buildPostmatch();
+        post.run();
     }
-    
+
     public final int meanLvl() {
         int mean = 0;
         for (Character player : combatants) {
@@ -399,7 +398,7 @@ public class Match {
         pause = false;
         round();
     }
-    
+
     public final List<Character> getCombatants() {
         return Collections.unmodifiableList(combatants);
     }
@@ -412,9 +411,11 @@ public class Match {
         Character human = Global.getPlayer();
         if (human.state == State.combat) {
             if (human.location().fight.getCombat() != null) {
-                human.location().fight.getCombat().forfeit(human);
+                human.location().fight.getCombat()
+                                      .forfeit(human);
             }
-            human.location().endEncounter();
+            human.location()
+                 .endEncounter();
         }
         human.travel(new Area("Retirement", "", Movement.retire));
         human.state = State.quit;

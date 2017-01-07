@@ -86,7 +86,7 @@ import nightgames.global.*;
 import nightgames.items.Item;
 import nightgames.items.Loot;
 import nightgames.items.clothing.Clothing;
-import nightgames.match.Prematch;
+import nightgames.match.MatchType;
 import nightgames.modifier.standard.NoModifier;
 import nightgames.skills.Skill;
 import nightgames.skills.TacticGroup;
@@ -1232,7 +1232,7 @@ public class GUI extends JFrame implements Observer {
                 } else if (Global.day != null) {
                     Global.getDay().plan();
                 } else {
-                    new Prematch(Global.human);
+                    MatchType.NORMAL.runPrematch(player);
                 }
             }
         }
