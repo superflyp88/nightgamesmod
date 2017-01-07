@@ -50,7 +50,14 @@ public class Match {
         dropOffTime = 0;
         pause = false;
         map = buildMap();
-
+    }
+    
+    protected void preStart() {
+        
+    }
+    
+    public final void start() {
+        preStart();
         for (Character combatant : combatants) {
             score.put(combatant, 0);
             Global.gui()
@@ -73,14 +80,6 @@ public class Match {
         }
 
         placeCharacters();
-    }
-    
-    protected void preStart() {
-        
-    }
-    
-    public final void start() {
-        preStart();
         round();
     }
     
