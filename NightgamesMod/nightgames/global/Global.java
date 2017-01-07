@@ -164,6 +164,7 @@ public class Global {
     public static double xpRate = 1.0;
     public static ContextFactory factory;
     public static Context cx;
+    private static MatchType currentMatchType;
 
     public static final Path COMBAT_LOG_DIR = new File("combatlogs").toPath();
 
@@ -750,7 +751,8 @@ public class Global {
     }
 
     public static void startNight() {
-        decideMatchType().runPrematch(human);
+        currentMatchType = decideMatchType();
+        currentMatchType.runPrematch(human);
     }
 
     public static void setUpMatch(Modifier matchmod) {
@@ -836,7 +838,7 @@ public class Global {
             withEffect.ifPresent(s -> Global.getPlayer().addNonCombat(s));
         });
         Global.gui().startMatch();
-        match.round();
+        match.start();
     }
 
     public static String gainSkills(Character c) {
@@ -1633,15 +1635,7 @@ public class Global {
     }
 
     private static Match buildMatch(Collection<Character> combatants, Modifier mod) {
-        if (mod.name().equals("ftc")) {
-            if (combatants.size() < 5) {
-                return new Match(combatants, new NoModifier());
-            }
-            flag(Flag.FTC);
-            return new FTCMatch(combatants, ((FTCModifier) mod).getPrey());
-        } else {
-            return new Match(combatants, mod);
-        }
+        return currentMatchType.buildMatch(combatants, mod);
     }
 
     public static HashSet<Character> getParticipants() {

@@ -45,6 +45,11 @@ public class FTCMatch extends Match {
     }
 
     @Override
+    protected void preStart() {
+        Global.flag(Flag.FTC);
+    }
+    
+    @Override
     public MatchType getType() {
         return MatchType.FTC;
     }

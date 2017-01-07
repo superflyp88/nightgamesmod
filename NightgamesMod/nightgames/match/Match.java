@@ -73,6 +73,15 @@ public class Match {
         placeCharacters();
     }
     
+    protected void preStart() {
+        
+    }
+    
+    public final void start() {
+        preStart();
+        round();
+    }
+    
     public MatchType getType() {
         return MatchType.NORMAL;
     }
