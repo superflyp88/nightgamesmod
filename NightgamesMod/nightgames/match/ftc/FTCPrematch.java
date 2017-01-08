@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import nightgames.characters.Character;
-import nightgames.characters.Player;
 import nightgames.global.Flag;
 import nightgames.global.Global;
 import nightgames.gui.KeyableButton;

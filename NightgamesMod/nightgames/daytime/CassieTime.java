@@ -20,8 +20,8 @@ import nightgames.requirements.BodyPartRequirement;
 import nightgames.requirements.NotRequirement;
 import nightgames.requirements.RequirementShortcuts;
 import nightgames.status.addiction.Addiction;
-import nightgames.status.addiction.AddictionType;
 import nightgames.status.addiction.Addiction.Severity;
+import nightgames.status.addiction.AddictionType;
 
 public class CassieTime extends BaseNPCTime {
     public CassieTime(Character player) {

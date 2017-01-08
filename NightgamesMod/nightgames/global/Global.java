@@ -101,7 +101,6 @@ import nightgames.items.clothing.Clothing;
 import nightgames.json.JsonUtils;
 import nightgames.match.Match;
 import nightgames.match.MatchType;
-import nightgames.match.ftc.FTCMatch;
 import nightgames.modifier.CustomModifierLoader;
 import nightgames.modifier.Modifier;
 import nightgames.modifier.standard.FTCModifier;

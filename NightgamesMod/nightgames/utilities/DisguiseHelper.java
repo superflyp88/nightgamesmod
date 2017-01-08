@@ -1,9 +1,9 @@
 package nightgames.utilities;
 
+import nightgames.characters.Character;
 import nightgames.characters.NPC;
 import nightgames.combat.Combat;
 import nightgames.status.Disguised;
-import nightgames.characters.Character;
 
 public class DisguiseHelper {
     public static void disguiseCharacter(Character self, NPC target) {

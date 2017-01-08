@@ -533,12 +533,6 @@ public class CreatorGui extends Application {
 		growthList.removeAll(growthTraits.getSelectionModel().getSelectedItems());
 	}
 
-	private void showText(String txt) {
-		Alert alert = new Alert(AlertType.NONE);
-		alert.setContentText(txt);
-		alert.showAndWait();
-	}
-
 	private String buildJson() {
 		JsonElement req = buildRequirements();
 		JsonObject obj = new JsonObject();
@@ -588,8 +582,6 @@ public class CreatorGui extends Application {
 	private JsonObject buildRequirements() {
 		JsonObject obj = new JsonObject();
 		for (TreeItem<CreatorRequirement> item : reqTree.getRoot().getChildren()) {
-			JsonObject sub = new JsonObject();
-			// obj.add(item.getValue().getName(), sub);
 			buildRequirements(item, obj);
 		}
 		return obj;

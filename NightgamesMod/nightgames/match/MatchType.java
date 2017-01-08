@@ -3,7 +3,6 @@ package nightgames.match;
 import java.util.Collection;
 
 import nightgames.characters.Character;
-import nightgames.characters.Player;
 import nightgames.match.defaults.DefaultPrematch;
 import nightgames.match.ftc.FTCMatch;
 import nightgames.match.ftc.FTCPrematch;

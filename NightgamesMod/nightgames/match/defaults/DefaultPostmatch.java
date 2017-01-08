@@ -6,7 +6,6 @@ import java.util.List;
 import nightgames.characters.Character;
 import nightgames.global.Flag;
 import nightgames.global.Global;
-import nightgames.global.Scene;
 import nightgames.gui.KeyableButton;
 import nightgames.gui.SceneButton;
 import nightgames.match.Postmatch;

@@ -12,10 +12,10 @@ import nightgames.areas.Area;
 import nightgames.characters.Character;
 import nightgames.global.Flag;
 import nightgames.global.Global;
+import nightgames.items.Item;
 import nightgames.match.Encounter;
 import nightgames.match.Match;
 import nightgames.match.MatchType;
-import nightgames.items.Item;
 import nightgames.modifier.standard.FTCModifier;
 
 public class FTCMatch extends Match {

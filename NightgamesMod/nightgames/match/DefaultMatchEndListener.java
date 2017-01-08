@@ -2,9 +2,9 @@ package nightgames.match;
 
 import java.util.Optional;
 
+import nightgames.characters.Character;
 import nightgames.combat.Combat;
 import nightgames.combat.CombatListener;
-import nightgames.characters.Character;
 
 public class DefaultMatchEndListener extends CombatListener {
 
