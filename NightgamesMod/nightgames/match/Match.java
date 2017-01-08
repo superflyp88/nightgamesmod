@@ -62,7 +62,7 @@ public class Match {
     }
     
     public List<CombatListener> getListeners(Combat c) {
-        return Collections.emptyList();
+        return Collections.singletonList(new DefaultMatchEndListener(c, this));
     }
     
     public final void start() {
@@ -183,6 +183,10 @@ public class Match {
     
     public boolean canFight(Character initiator, Character opponent) {
         return !mercy.get(initiator).contains(opponent);
+    }
+    
+    public boolean canEngage(Character initiator, Character opponent) {
+        return true;
     }
 
     public final void round() {

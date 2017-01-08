@@ -156,7 +156,7 @@ public class DefaultEncounter implements Serializable, Encounter {
                       .message("You find " + p2.getName()
                                       + " still naked from your last encounter, but she's not fair game again until she replaces her clothes.");
             }
-            location.endEncounter();
+            //location.endEncounter();
             return false;
         }
     }

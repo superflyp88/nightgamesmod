@@ -174,7 +174,7 @@ public class Decider {
                 }
             }
             String workshop = Global.checkFlag(Flag.FTC) ? "Cabin" : "Workshop";
-            Move path = character.findPath(Global.getMatch().gps(workshop).get());
+            Move path = character.findPath(Global.getMatch().gps(workshop).orElse(character.location));
             if (path != null) {
                 return path;
             }

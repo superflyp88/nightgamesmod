@@ -14,28 +14,37 @@ import nightgames.actions.Movement;
 import nightgames.areas.Area;
 import nightgames.areas.MapDrawHint;
 import nightgames.characters.Character;
+import nightgames.combat.Combat;
+import nightgames.combat.CombatListener;
 import nightgames.global.DebugFlags;
 import nightgames.global.Global;
+import nightgames.match.Encounter;
 import nightgames.match.Match;
 import nightgames.modifier.Modifier;
 
 public class TeamMatch extends Match {
 
-    private static final boolean DO_3_VS_3 = false;
-
     private Map<String, Team> teams;
+    Map<Character, Team> teamOf;
 
     public TeamMatch(Collection<Character> combatants, Modifier condition) {
         super(combatants, condition);
         teams = new HashMap<>();
+        teamOf = new HashMap<>();
     }
 
     @Override
+    public List<CombatListener> getListeners(Combat c) {
+        return Collections.singletonList(new TeamCombatListener(c, this));
+    }
+    
+    @Override
     protected void preStart() {
+        Global.flag("NoPetBattles");
         int size = combatants.size();
         List<Character> byLevel = new ArrayList<>(combatants);
         byLevel.sort(Comparator.comparing(Character::getLevel));
-        if (size % 3 == 0 && (size % 2 != 0 || DO_3_VS_3)) {
+        if (size % 3 == 0) {
             makeThreesomes(byLevel);
         } else if (size % 2 == 0) {
             makePairs(byLevel);
@@ -76,7 +85,17 @@ public class TeamMatch extends Match {
         Global.gui()
               .message(sb.toString());
     }
+    
+    @Override
+    protected void afterEnd() {
+        Global.unflag("NoPetBattles");
+    }
 
+    @Override
+    public Encounter buildEncounter(Character first, Character second, Area location) {
+        return new TeamEncounter(first, second, location);
+    }
+    
     @Override
     protected Map<String, Area> buildMap() {
         Area quad = new Area("Quad",
@@ -120,9 +139,9 @@ public class TeamMatch extends Match {
         quad.link(dining);
         quad.link(dorm);
         dining.link(quad);
-        dining.link(kitchen);
+        //dining.link(kitchen);
         dining.link(storage);
-        kitchen.link(dining);
+        //kitchen.link(dining);
         storage.link(dining);
         storage.link(tunnel);
         tunnel.link(storage);
@@ -136,36 +155,51 @@ public class TeamMatch extends Match {
         Map<String, Area> map = new HashMap<>();
         map.put("Quad", quad);
         map.put("Dining", dining);
-        map.put("Kitchen", kitchen);
+        //map.put("Kitchen", kitchen);
         map.put("Storage", storage);
         map.put("Tunnel", tunnel);
         map.put("Laundry", laundry);
         map.put("Dorm", dorm);
         map.put("Shower", shower);
-        
+
         return map;
-    }
-    
-    @Override
-    protected void placeCharacters() {
-        teams.values().forEach(team -> {
-            Area start;
-            Area[] all = map.values().toArray(new Area[0]);
-            do {
-                start = Global.pickRandom(all).get();
-            } while (start.present.size() > 0);
-            for (Character c : team.members) c.place(start);
-        });
-    }
-    
-    @Override
-    public boolean canFight(Character initiator, Character opponent) {
-        return isCaptain(initiator) && isCaptain(opponent) && !teamOf(initiator).hasMercy(teamOf(opponent));
     }
 
     @Override
+    protected void placeCharacters() {
+        teams.values()
+             .forEach(team -> {
+                 Area start;
+                 Area[] all = map.values()
+                                 .toArray(new Area[0]);
+                 do {
+                     start = Global.pickRandom(all)
+                                   .get();
+                 } while (start.present.size() > 0);
+                 for (Character c : team.members)
+                     c.place(start);
+             });
+    }
+
+    @Override
+    public boolean canFight(Character initiator, Character opponent) {
+        return isCaptain(initiator) && isCaptain(opponent) && !teamOf.get(initiator)
+                                                                              .hasMercy(teamOf.get(opponent));
+    }
+    
+    @Override
+    public boolean canEngage(Character initiator, Character opponent) {
+        return isCaptain(initiator) && isCaptain(opponent);
+    }
+
+    @Override
+    protected void beforeAllTurns() {
+        
+    }
+    
+    @Override
     protected void beforeTurn(Character combatant) {
-        Team t = teamOf(combatant);
+        Team t = teamOf.get(combatant);
         if (t.captain == combatant) {
             summonMinions(combatant);
         }
@@ -173,29 +207,21 @@ public class TeamMatch extends Match {
 
     @Override
     protected void afterTurn(Character combatant) {
-        Team t = teamOf(combatant);
+        Team t = teamOf.get(combatant);
         if (t.captain == combatant) {
             summonMinions(combatant);
         }
     }
-    
+
     private void summonMinions(Character captain) {
-        teamOf(captain).members.stream().filter(c -> c != captain).forEach(c -> c.travel(captain.location()));
+        teamOf.get(captain).members.stream()
+                                   .filter(c -> c != captain)
+                                   .forEach(c -> c.travel(captain.location()));
     }
 
     boolean isCaptain(Character candidate) {
         return matchData.getDataFor(candidate)
                         .getFlag("isCaptain") != null;
-    }
-
-    private Map<Character, Team> teamCache = new HashMap<>();
-
-    Team teamOf(Character member) {
-        return teamCache.putIfAbsent(member, teams.values()
-                                                  .stream()
-                                                  .filter(t -> t.members.contains(member))
-                                                  .findAny()
-                                                  .get());
     }
 
     private void makeThreesomes(List<Character> byLevel) {
@@ -216,7 +242,9 @@ public class TeamMatch extends Match {
             }
 
             String name = teamNameFor(members.get(0));
-            teams.put(name, new Team(name, members));
+            Team team = new Team(name, members);
+            teams.put(name, team);
+            members.forEach(c -> teamOf.put(c, team));
             byLevel.removeAll(members);
         }
     }
@@ -233,7 +261,9 @@ public class TeamMatch extends Match {
                 members = Arrays.asList(weakest, strongest);
             }
             String name = teamNameFor(members.get(0));
-            teams.put(name, new Team(name, members));
+            Team team = new Team(name, members);
+            teams.put(name, team);
+            members.forEach(c -> teamOf.put(c, team));
             byLevel.remove(strongest);
             byLevel.remove(weakest);
         }
@@ -286,6 +316,10 @@ public class TeamMatch extends Match {
 
         void haveMercy(Team other, int duration) {
             mercyCounters.put(other, mercyCounters.getOrDefault(other, 0) + duration);
+        }
+        
+        void tickMercy() {
+            mercyCounters.keySet().forEach(t -> haveMercy(t, -1));
         }
 
         @Override

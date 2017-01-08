@@ -124,7 +124,8 @@ public class Area implements Serializable {
         } else if (present.size() > 1 && canFight(p)) {
             for (Character opponent : Global.getMatch().getCombatants()) {
                 if (present.contains(opponent) && opponent != p
-                                && canFight(opponent)) {
+                               && canFight(opponent)
+                               && Global.getMatch().canEngage(p, opponent)) {
                     fight = Global.getMatch().buildEncounter(p, opponent, this);
                     return fight.spotCheck();
                 }

@@ -115,5 +115,13 @@ public abstract class CombatListener {
     public void postEnd(Optional<Character> winner) {
         
     }
+
+    public void onPetAdded(PetCharacter self) {
+
+    }
+
+    public void onPetRemoved(PetCharacter self) {
+
+    }
     
 }

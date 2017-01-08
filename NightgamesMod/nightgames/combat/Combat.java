@@ -928,28 +928,29 @@ public class Combat extends Observable implements Cloneable {
         listen(CombatListener::prePetActions);
         Set<PetCharacter> alreadyBattled = new HashSet<>();
         if (otherCombatants.size() > 0) {
-            ArrayList<PetCharacter> pets = new ArrayList<>(otherCombatants);
-            for (PetCharacter pet : pets) {
-                if (!otherCombatants.contains(pet) || alreadyBattled.contains(pet)) { continue; }
-                for (PetCharacter otherPet : pets) {
-                    if (!otherCombatants.contains(pet) || alreadyBattled.contains(otherPet)) { continue; }
-                    if (!pet.getSelf().owner().equals(otherPet.getSelf().owner()) && Global.random(2) == 0) {
-                        listen(l -> l.prePetBattle(pet, otherPet));
-                        petbattle(pet.getSelf(), otherPet.getSelf());
-                        listen(l -> l.postPetBattle(pet, otherPet));
-                        alreadyBattled.add(pet);
-                        alreadyBattled.add(otherPet);
+            if (!Global.checkFlag("NoPetBattles")) {
+                ArrayList<PetCharacter> pets = new ArrayList<>(otherCombatants);
+                for (PetCharacter pet : pets) {
+                    if (!otherCombatants.contains(pet) || alreadyBattled.contains(pet)) { continue; }
+                    for (PetCharacter otherPet : pets) {
+                        if (!otherCombatants.contains(pet) || alreadyBattled.contains(otherPet)) { continue; }
+                        if (!pet.getSelf().owner().equals(otherPet.getSelf().owner()) && Global.random(2) == 0) {
+                            listen(l -> l.prePetBattle(pet, otherPet));
+                            petbattle(pet.getSelf(), otherPet.getSelf());
+                            listen(l -> l.postPetBattle(pet, otherPet));
+                            alreadyBattled.add(pet);
+                            alreadyBattled.add(otherPet);
+                        }
                     }
                 }
             }
-
             List<PetCharacter> actingPets = new ArrayList<>(otherCombatants);
             actingPets.stream().filter(pet -> !alreadyBattled.contains(pet)).forEach(pet -> {
                 listen(l -> l.prePetAction(pet));
-                pet.act(this);
+                pet.act(this, pickTarget(pet));
                 if (pet.getSelf().owner().has(Trait.devoteeFervor) && Global.random(2) == 0) {
                     write(pet, Global.format("{self:SUBJECT} seems to have gained a second wind from {self:possessive} religious fervor!", pet, pet.getSelf().owner()));
-                    pet.act(this);
+                    pet.act(this, pickTarget(pet));
                 }
                 listen(l -> l.postPetAction(pet));
             });
@@ -959,6 +960,17 @@ public class Combat extends Observable implements Cloneable {
         }
         listen(l -> l.postPetActions(false));
         return CombatPhase.DETERMINE_SKILL_ORDER_AUTONEXT;
+    }
+
+    private Character pickTarget(PetCharacter pet) {
+        if (otherCombatants.size() == 1 || Global.random(2) == 0) {
+            return getOpponent(pet);
+        }
+        Character tgt;
+        do {
+            tgt = Global.pickRandom(otherCombatants).get();
+        } while (tgt == pet);
+        return tgt;
     }
 
     private void doStanceTick(Character self) {
@@ -1683,6 +1695,7 @@ public class Combat extends Observable implements Cloneable {
         }
         getCombatantData(self).setBooleanFlag("resurrected", false);
         otherCombatants.remove(self);
+        listen(l -> l.onPetRemoved(self));
     }
 
     public void addPet(Character master, PetCharacter self) {
@@ -1709,6 +1722,7 @@ public class Combat extends Observable implements Cloneable {
                                         master, self, self.getLevel()));
         otherCombatants.add(self);
         this.write(self, self.challenge(getOpponent(self)));
+        listen(l -> l.onPetAdded(self));
     }
 
     public List<PetCharacter> getOtherCombatants() {
