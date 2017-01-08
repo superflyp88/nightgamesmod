@@ -23,11 +23,11 @@ import nightgames.characters.State;
 import nightgames.characters.Trait;
 import nightgames.combat.Combat;
 import nightgames.combat.CombatListener;
-import nightgames.combat.DefaultEncounter;
-import nightgames.combat.Encounter;
 import nightgames.global.Challenge;
 import nightgames.global.Flag;
 import nightgames.global.Global;
+import nightgames.match.defaults.DefaultEncounter;
+import nightgames.match.defaults.DefaultPostmatch;
 import nightgames.modifier.Modifier;
 import nightgames.status.addiction.Addiction;
 
@@ -42,6 +42,7 @@ public class Match {
     private boolean pause;
     protected Modifier condition;
     protected MatchData matchData;
+    Map<Character, List<Character>> mercy;
     
     public Match(Collection<Character> combatants, Modifier condition) {
         this.combatants = new ArrayList<Character>(combatants);
@@ -52,6 +53,8 @@ public class Match {
         dropOffTime = 0;
         pause = false;
         map = buildMap();
+        mercy = new HashMap<>();
+        combatants.forEach(c -> mercy.put(c, new ArrayList<>()));
     }
     
     protected void preStart() {
@@ -159,7 +162,9 @@ public class Match {
     }
 
     protected void afterTurn(Character combatant) {
-
+        if (combatant.state == State.resupplying) {
+            mercy.get(combatant).clear();
+        }
     }
 
     public void score(Character combatant, int amt) {
@@ -171,8 +176,13 @@ public class Match {
         if (message.isPresent() && (combatant.human() || combatant.location()
                                                                   .humanPresent())) {
             Global.gui()
-                  .message(Global.format(message.get(), combatant, Global.noneCharacter()));
+                  .message(Global.format("<u>{self:SUBJECT} scored %d %s%s.</u>", combatant, Global.noneCharacter(),
+                                  amt, amt == 1 ? "point" : "points", message.orElse("")));
         }
+    }
+    
+    public boolean canFight(Character initiator, Character opponent) {
+        return !mercy.get(initiator).contains(opponent);
     }
 
     public final void round() {

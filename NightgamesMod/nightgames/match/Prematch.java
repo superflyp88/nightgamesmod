@@ -9,21 +9,21 @@ import nightgames.global.Global;
 import nightgames.global.Scene;
 import nightgames.modifier.Modifier;
 
-abstract class Prematch implements Scene {
-    List<PrematchEvent> specialEvents;
+public abstract class Prematch implements Scene {
+    private final List<PrematchEvent> specialEvents;
     
-    Modifier type;
-    PrematchEvent chosenEvent;
+    protected Modifier type;
+    protected PrematchEvent chosenEvent;
     
-    Prematch(PrematchEvent...events) {
+    protected Prematch(PrematchEvent...events) {
         this(Arrays.asList(events));
     }
 
-    Prematch(List<PrematchEvent> events) {
+    protected Prematch(List<PrematchEvent> events) {
         specialEvents = Collections.unmodifiableList(events);
     }
     
-    final void run() {
+    protected final void run() {
         Global.current = this;
         Global.unflag(Flag.victory);
         

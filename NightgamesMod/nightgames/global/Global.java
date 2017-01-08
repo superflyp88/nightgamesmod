@@ -94,7 +94,6 @@ import nightgames.characters.custom.JsonSourceNPCDataLoader;
 import nightgames.characters.custom.NPCData;
 import nightgames.combat.Combat;
 import nightgames.daytime.Daytime;
-import nightgames.ftc.FTCMatch;
 import nightgames.gui.GUI;
 import nightgames.gui.HeadlessGui;
 import nightgames.items.Item;
@@ -102,6 +101,7 @@ import nightgames.items.clothing.Clothing;
 import nightgames.json.JsonUtils;
 import nightgames.match.Match;
 import nightgames.match.MatchType;
+import nightgames.match.ftc.FTCMatch;
 import nightgames.modifier.CustomModifierLoader;
 import nightgames.modifier.Modifier;
 import nightgames.modifier.standard.FTCModifier;
@@ -753,7 +753,7 @@ public class Global {
 
     public static void startNight() {
         currentMatchType = decideMatchType();
-        currentMatchType.runPrematch(human);
+        currentMatchType.runPrematch();
     }
 
     public static void setUpMatch(Modifier matchmod) {
@@ -1632,7 +1632,7 @@ public class Global {
     }
 
     public static MatchType decideMatchType() {
-        return MatchType.NORMAL;
+        return MatchType.TEAM;
         /*
          * TODO Lots of FTC bugs right now, will disable it for the time being.
          * Enable again once some of the bugs are sorted out.

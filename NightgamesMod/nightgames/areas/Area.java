@@ -7,9 +7,9 @@ import java.util.List;
 
 import nightgames.actions.Movement;
 import nightgames.characters.Character;
-import nightgames.combat.Encounter;
 import nightgames.global.DebugFlags;
 import nightgames.global.Global;
+import nightgames.match.Encounter;
 import nightgames.status.Stsflag;
 import nightgames.trap.Trap;
 

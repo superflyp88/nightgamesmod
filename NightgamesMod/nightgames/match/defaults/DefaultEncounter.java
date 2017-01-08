@@ -1,4 +1,4 @@
-package nightgames.combat;
+package nightgames.match.defaults;
 
 import java.io.Serializable;
 import java.util.Optional;
@@ -9,10 +9,12 @@ import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.State;
 import nightgames.characters.Trait;
+import nightgames.combat.Combat;
 import nightgames.global.DebugFlags;
 import nightgames.global.Encs;
 import nightgames.global.Global;
 import nightgames.items.Item;
+import nightgames.match.Encounter;
 import nightgames.status.Enthralled;
 import nightgames.status.Flatfooted;
 import nightgames.status.Hypersensitive;

@@ -42,14 +42,14 @@ import nightgames.characters.custom.AiModifiers;
 import nightgames.characters.custom.CharacterLine;
 import nightgames.combat.Combat;
 import nightgames.combat.CombatantData;
-import nightgames.combat.Encounter;
 import nightgames.combat.Result;
-import nightgames.ftc.FTCMatch;
 import nightgames.global.Challenge;
 import nightgames.global.DebugFlags;
 import nightgames.global.Flag;
 import nightgames.global.Global;
+import nightgames.match.Encounter;
 import nightgames.match.Match;
+import nightgames.match.ftc.FTCMatch;
 import nightgames.items.Item;
 import nightgames.items.clothing.Clothing;
 import nightgames.items.clothing.ClothingSlot;
@@ -121,7 +121,6 @@ public abstract class Character extends Observable implements Cloneable {
     public Set<Status> removelist;
     public Set<Status> addlist;
     public Map<String, Integer> cooldowns;
-    private CopyOnWriteArrayList<String> mercy;
     protected Map<Item, Integer> inventory;
     private Map<String, Integer> flags;
     protected Item trophy;
@@ -178,7 +177,6 @@ public abstract class Character extends Observable implements Cloneable {
         temporaryRemovedTraits = new HashMap<>();
         removelist = new HashSet<>();
         addlist = new HashSet<>();
-        mercy = new CopyOnWriteArrayList<>();
         inventory = new HashMap<>();
         attractions = new HashMap<>(2);
         affections = new HashMap<>(2);
@@ -213,7 +211,6 @@ public abstract class Character extends Observable implements Cloneable {
 
         c.removelist = new HashSet<>(removelist);
         c.addlist = new HashSet<>(addlist);
-        c.mercy = new CopyOnWriteArrayList<>(mercy);
         c.inventory = new HashMap<>(inventory);
         c.attractions = new HashMap<>(attractions);
         c.affections = new HashMap<>(affections);
@@ -2396,15 +2393,10 @@ public abstract class Character extends Observable implements Cloneable {
     }
 
     public void defeated(Character victor) {
-        mercy.addIfAbsent(victor.getType());
+
     }
 
     public void resupply() {
-        for (String victorType : mercy) {
-            Character victor = Global.getCharacterByType(victorType);
-            victor.bounty(has(Trait.event) ? 5 : 1, victor);
-        }
-        mercy.clear();
         change();
         state = State.ready;
         getWillpower().fill();
@@ -2443,12 +2435,7 @@ public abstract class Character extends Observable implements Cloneable {
     }
 
     public void finishMatch() {
-        for (String victorType : mercy) {
-            Character victor = Global.getCharacterByType(victorType);
-            victor.bounty(has(Trait.event) ? 5 : 1, victor);
-        }
         Global.gui().clearImage();
-        mercy.clear();
         change();
         clearStatus();
         temporaryAddedTraits.clear();
@@ -2483,12 +2470,7 @@ public abstract class Character extends Observable implements Cloneable {
     }
 
     public boolean eligible(Character p2) {
-        boolean ftc = true;
-        if (Global.checkFlag(Flag.FTC)) {
-            FTCMatch match = (FTCMatch) Global.getMatch();
-            ftc = !match.inGracePeriod() || (!match.isPrey(this) && !match.isPrey(p2));
-        }
-        return ftc && !mercy.contains(p2.getType()) && state != State.resupplying;
+        return Global.getMatch().canFight(this, p2) && state != State.resupplying;
     }
 
     public void setTrophy(Item trophy) {

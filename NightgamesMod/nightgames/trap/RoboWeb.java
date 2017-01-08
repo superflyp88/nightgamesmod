@@ -3,9 +3,9 @@ package nightgames.trap;
 import nightgames.characters.Character;
 import nightgames.characters.Trait;
 import nightgames.combat.Combat;
-import nightgames.combat.Encounter;
 import nightgames.global.Global;
 import nightgames.items.Item;
+import nightgames.match.Encounter;
 import nightgames.status.RoboWebbed;
 
 public class RoboWeb extends Trap {

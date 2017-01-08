@@ -4,14 +4,19 @@ import java.util.Collection;
 
 import nightgames.characters.Character;
 import nightgames.characters.Player;
-import nightgames.ftc.FTCMatch;
+import nightgames.match.defaults.DefaultPrematch;
+import nightgames.match.ftc.FTCMatch;
+import nightgames.match.ftc.FTCPrematch;
+import nightgames.match.team.TeamMatch;
+import nightgames.match.team.TeamPrematch;
 import nightgames.modifier.Modifier;
 import nightgames.modifier.standard.FTCModifier;
 import nightgames.modifier.standard.NoModifier;
 
 public enum MatchType {
     NORMAL,
-    FTC;
+    FTC,
+    TEAM;
 
     public Match buildMatch(Collection<Character> combatants, Modifier condition) {
         switch (this) {
@@ -23,24 +28,28 @@ public enum MatchType {
                 return new FTCMatch(combatants, ((FTCModifier) condition).getPrey());
             case NORMAL:
                 return new Match(combatants, condition);
+            case TEAM:
+                return new TeamMatch(combatants, condition);
             default:
                 throw new Error();
         }
     }
     
-    public Prematch buildPrematch(Player player) {
+    public Prematch buildPrematch() {
         switch (this) {
             case FTC:
                 return new FTCPrematch();
             case NORMAL:
                 return new DefaultPrematch();
+            case TEAM:
+                return new TeamPrematch();
             default:
                 throw new Error();
         }
     }
     
-    public void runPrematch(Player player) {
-        buildPrematch(player).run();
+    public void runPrematch() {
+        buildPrematch().run();
     }
 
 }

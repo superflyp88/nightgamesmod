@@ -1,4 +1,4 @@
-package nightgames.match;
+package nightgames.match.ftc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +10,8 @@ import nightgames.global.Flag;
 import nightgames.global.Global;
 import nightgames.gui.KeyableButton;
 import nightgames.gui.SceneButton;
+import nightgames.match.Prematch;
+import nightgames.match.PrematchEvent;
 import nightgames.modifier.standard.FTCModifier;
 
 public class FTCPrematch extends Prematch {
@@ -107,12 +109,12 @@ public class FTCPrematch extends Prematch {
         }
         
         @Override
-        void extraEffects() {
+        protected void extraEffects() {
             
         }
 
         @Override
-        boolean valid() {
+        protected boolean valid() {
             return !Global.checkFlag(Flag.didFTC);
         }
         
@@ -128,12 +130,12 @@ public class FTCPrematch extends Prematch {
         }
         
         @Override
-        void extraEffects() {
+        protected void extraEffects() {
             
         }
 
         @Override
-        boolean valid() {
+        protected boolean valid() {
             return true;
         }
         

@@ -1,4 +1,4 @@
-package nightgames.match;
+package nightgames.match.defaults;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,8 +9,9 @@ import nightgames.global.Global;
 import nightgames.global.Scene;
 import nightgames.gui.KeyableButton;
 import nightgames.gui.SceneButton;
+import nightgames.match.Postmatch;
 
-class DefaultPostmatch extends Postmatch {
+public class DefaultPostmatch extends Postmatch {
 
     private boolean normal;
 
@@ -59,7 +60,7 @@ class DefaultPostmatch extends Postmatch {
     }
 
     @Override
-    void runInternal() {
+    protected void runInternal() {
         for (Character self : combatants) {
             for (Character other : combatants) {
                 if (self != other && self.getAffection(other) >= 1 && self.getAttraction(other) >= 20) {

@@ -4,10 +4,10 @@ import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.State;
 import nightgames.characters.Trait;
-import nightgames.combat.Encounter;
 import nightgames.global.Global;
 import nightgames.items.Item;
 import nightgames.items.clothing.ClothingSlot;
+import nightgames.match.Encounter;
 
 public class Spiderweb extends Trap {
 

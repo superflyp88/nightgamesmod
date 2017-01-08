@@ -1,4 +1,4 @@
-package nightgames.match;
+package nightgames.match.defaults;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,13 +9,15 @@ import nightgames.global.Flag;
 import nightgames.global.Global;
 import nightgames.gui.KeyableButton;
 import nightgames.gui.SceneButton;
+import nightgames.match.Prematch;
+import nightgames.match.PrematchEvent;
 import nightgames.modifier.standard.MayaModifier;
 import nightgames.modifier.standard.NoModifier;
 import nightgames.modifier.standard.UnderwearOnlyModifier;
 
-class DefaultPrematch extends Prematch {
+public class DefaultPrematch extends Prematch {
 
-    DefaultPrematch() {
+    public DefaultPrematch() {
         super(new EarlyGameEvent(), new FirstLillyEvent(), new MayaEvent(), new AiriEvent());
     }
     
@@ -45,12 +47,12 @@ class DefaultPrematch extends Prematch {
         }
 
         @Override
-        void extraEffects() {
+        protected void extraEffects() {
 
         }
 
         @Override
-        boolean valid() {
+        protected boolean valid() {
             return Global.getPlayer()
                          .getLevel() < 5;
         }
@@ -84,12 +86,12 @@ class DefaultPrematch extends Prematch {
         }
 
         @Override
-        void extraEffects() {
+        protected void extraEffects() {
             Global.flag(Flag.metLilly);
         }
 
         @Override
-        boolean valid() {
+        protected boolean valid() {
             return !Global.checkFlag(Flag.metLilly);
         }
 
@@ -124,12 +126,12 @@ class DefaultPrematch extends Prematch {
         }
 
         @Override
-        void extraEffects() {
+        protected void extraEffects() {
 
         }
 
         @Override
-        boolean valid() {
+        protected boolean valid() {
             return Global.getPlayer()
                          .getRank() > 0 && Global.getDate() % 30 == 0;
         }
@@ -158,13 +160,13 @@ class DefaultPrematch extends Prematch {
         }
 
         @Override
-        void extraEffects() {
+        protected void extraEffects() {
             Global.newChallenger(Global.getNPCByType("Airi").ai);
             Global.flag(Flag.Airi);
         }
 
         @Override
-        boolean valid() {
+        protected boolean valid() {
             return Global.getPlayer().getRank() > 0 
                             && !Global.checkFlag(Flag.AiriDisabled) 
                             && !Global.characterTypeInGame("Airi");

@@ -1,4 +1,4 @@
-package nightgames.ftc;
+package nightgames.match.ftc;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -10,9 +10,9 @@ import java.util.Map;
 import nightgames.actions.Movement;
 import nightgames.areas.Area;
 import nightgames.characters.Character;
-import nightgames.combat.Encounter;
 import nightgames.global.Flag;
 import nightgames.global.Global;
+import nightgames.match.Encounter;
 import nightgames.match.Match;
 import nightgames.match.MatchType;
 import nightgames.items.Item;

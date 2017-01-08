@@ -2,9 +2,9 @@ package nightgames.trap;
 
 import nightgames.characters.Character;
 import nightgames.combat.Combat;
-import nightgames.combat.Encounter;
 import nightgames.global.Global;
 import nightgames.items.Item;
+import nightgames.match.Encounter;
 import nightgames.status.Flatfooted;
 import nightgames.status.Hypersensitive;
 import nightgames.status.Oiled;

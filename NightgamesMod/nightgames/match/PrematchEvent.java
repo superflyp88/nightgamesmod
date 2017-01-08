@@ -12,34 +12,34 @@ import nightgames.gui.SceneButton;
 import nightgames.modifier.Modifier;
 import nightgames.modifier.standard.NoModifier;
 
-abstract class PrematchEvent {
+public abstract class PrematchEvent {
 
-    String message;
-    List<KeyableButton> buttons;
-    Modifier type;
+    protected String message;
+    protected List<KeyableButton> buttons;
+    protected Modifier type;
 
-    PrematchEvent() {
+    protected PrematchEvent() {
         this("", offer(), new ArrayList<>());
     }
 
-    PrematchEvent(String message, Modifier type, List<KeyableButton> buttons) {
+    protected PrematchEvent(String message, Modifier type, List<KeyableButton> buttons) {
         this.message = message;
         this.type = type;
         this.buttons = new ArrayList<>(buttons);
         this.buttons.add(new SaveButton());
     }
 
-    final void run() {
+    protected final void run() {
         extraEffects();
         Global.gui()
               .prompt(message, buttons);
     }
 
-    abstract void extraEffects();
+    protected abstract void extraEffects();
 
-    abstract boolean valid();
+    protected abstract boolean valid();
 
-    static Modifier offer() {
+    protected static Modifier offer() {
         if (Global.random(10) > 4) {
             return new NoModifier();
         }
@@ -50,7 +50,7 @@ abstract class PrematchEvent {
                      .get();
     }
 
-    static final class DefaultEvent extends PrematchEvent {
+    protected static final class DefaultEvent extends PrematchEvent {
 
         DefaultEvent() {
             message = "You arrive at the student union with about 10 minutes to spare before the start of the match. "
@@ -67,12 +67,12 @@ abstract class PrematchEvent {
         }
 
         @Override
-        void extraEffects() {
+        protected void extraEffects() {
 
         }
 
         @Override
-        boolean valid() {
+        protected boolean valid() {
             return true;
         }
 

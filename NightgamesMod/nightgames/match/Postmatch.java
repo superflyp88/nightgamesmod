@@ -8,19 +8,19 @@ import nightgames.characters.Player;
 import nightgames.global.Global;
 import nightgames.global.Scene;
 
-abstract class Postmatch implements Scene {
+public abstract class Postmatch implements Scene {
 
     protected final Player player;
     protected final List<Character> combatants;
     
-    Postmatch(List<Character> combatants) {
+    protected Postmatch(List<Character> combatants) {
         this.combatants = Collections.unmodifiableList(combatants);
         player = Global.getPlayer();
     }
     
-    abstract void runInternal();
+    protected abstract void runInternal();
     
-    final void run() {
+    protected final void run() {
         runInternal();
         Global.endNight();
     }

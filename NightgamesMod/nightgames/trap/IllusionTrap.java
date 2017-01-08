@@ -4,8 +4,8 @@ import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.Trait;
 import nightgames.combat.Combat;
-import nightgames.combat.Encounter;
 import nightgames.global.Global;
+import nightgames.match.Encounter;
 import nightgames.status.Flatfooted;
 
 public class IllusionTrap extends Trap {

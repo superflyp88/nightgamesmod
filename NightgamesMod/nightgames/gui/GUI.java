@@ -78,7 +78,6 @@ import nightgames.characters.Trait;
 import nightgames.characters.TraitTree;
 import nightgames.combat.Combat;
 import nightgames.combat.CombatSceneChoice;
-import nightgames.combat.Encounter;
 import nightgames.daytime.Activity;
 import nightgames.daytime.Store;
 import nightgames.debug.DebugGUIPanel;
@@ -86,6 +85,7 @@ import nightgames.global.*;
 import nightgames.items.Item;
 import nightgames.items.Loot;
 import nightgames.items.clothing.Clothing;
+import nightgames.match.Encounter;
 import nightgames.match.MatchType;
 import nightgames.modifier.standard.NoModifier;
 import nightgames.skills.Skill;
@@ -1232,7 +1232,7 @@ public class GUI extends JFrame implements Observer {
                 } else if (Global.day != null) {
                     Global.getDay().plan();
                 } else {
-                    MatchType.NORMAL.runPrematch(player);
+                    MatchType.NORMAL.runPrematch();
                 }
             }
         }

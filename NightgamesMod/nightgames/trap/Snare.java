@@ -3,9 +3,9 @@ package nightgames.trap;
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.combat.Combat;
-import nightgames.combat.Encounter;
 import nightgames.global.Global;
 import nightgames.items.Item;
+import nightgames.match.Encounter;
 import nightgames.status.Bound;
 
 public class Snare extends Trap {

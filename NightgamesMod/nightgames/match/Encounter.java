@@ -1,6 +1,7 @@
-package nightgames.combat;
+package nightgames.match;
 
 import nightgames.characters.Character;
+import nightgames.combat.Combat;
 import nightgames.global.Encs;
 import nightgames.trap.Trap;
 

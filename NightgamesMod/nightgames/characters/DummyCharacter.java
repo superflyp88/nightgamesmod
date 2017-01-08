@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import nightgames.characters.body.BodyPart;
 import nightgames.combat.Combat;
-import nightgames.combat.Encounter;
 import nightgames.combat.Result;
+import nightgames.match.Encounter;
 import nightgames.skills.Tactics;
 import nightgames.trap.Trap;
 
