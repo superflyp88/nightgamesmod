@@ -46,7 +46,7 @@ public class Match {
     
     public Match(Collection<Character> combatants, Modifier condition) {
         this.combatants = new ArrayList<Character>(combatants);
-        matchData = new MatchData(combatants);
+        matchData = new MatchData();
         score = new HashMap<Character, Integer>();
         this.condition = condition;
         time = 0;

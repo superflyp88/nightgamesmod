@@ -56,7 +56,8 @@ import nightgames.match.ftc.FTCMatch;
 import nightgames.pet.CharacterPet;
 import nightgames.pet.PetCharacter;
 import nightgames.pet.arms.ArmType;
-import nightgames.pet.arms.RoboArmManager;
+import nightgames.pet.arms.ArmManager;
+import nightgames.skills.Command;
 import nightgames.skills.AssFuck;
 import nightgames.skills.Nothing;
 import nightgames.skills.OrgasmicThrust;
@@ -1135,9 +1136,13 @@ public abstract class Character extends Observable implements Cloneable {
         levelPlan.putIfAbsent(level, new LevelUpData());
         return levelPlan.get(level);
     }
-    
+
     public void modAttributeDontSaveData(Attribute a, int i) {
-        if (human() && i != 0) {
+        modAttributeDontSaveData(a, i, false);
+    }
+
+    public void modAttributeDontSaveData(Attribute a, int i, boolean silent) {
+        if (human() && i != 0 && !silent) {
             Global.gui().message("You have " + (i > 0 ? "gained" : "lost") + " " + i + " " + a.name());
         }
         if (a.equals(Attribute.Willpower)) {
@@ -1148,7 +1153,11 @@ public abstract class Character extends Observable implements Cloneable {
     }
 
     public void mod(Attribute a, int i) {
-        modAttributeDontSaveData(a, i);
+        mod(a, i, false);
+    }
+
+    public void mod(Attribute a, int i, boolean silent) {
+        modAttributeDontSaveData(a, i, silent);
         getLevelUpFor(getLevel()).modAttribute(a, i);
     }
 
@@ -3617,14 +3626,12 @@ public abstract class Character extends Observable implements Cloneable {
             Global.gainSkills(this);
             placeNinjaStash(m);
         }
-        if (has(Trait.octo)) {
-            RoboArmManager manager = RoboArmManager.getManagerFor(this);
-            manager.selectArms();
-            if (manager.getActiveArms().stream().anyMatch(a -> a.getType() == ArmType.STABILIZER)) {
-                add(Trait.stabilized);
-            } else {
-                remove(Trait.stabilized);
-            }
+        ArmManager manager = m.getMatchData().getDataFor(this).getArmManager();
+        manager.selectArms(this);
+        if (manager.getActiveArms().stream().anyMatch(a -> a.getType() == ArmType.STABILIZER)) {
+            add(Trait.stabilized);
+        } else {
+            remove(Trait.stabilized);
         }
         if (has(Trait.RemoteControl)) {
             int currentCount = inventory.getOrDefault(Item.RemoteControl, 0);

@@ -1,6 +1,5 @@
 package nightgames.match.defaults;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 import nightgames.actions.Movement;
@@ -23,9 +22,8 @@ import nightgames.status.Stsflag;
 import nightgames.trap.Spiderweb;
 import nightgames.trap.Trap;
 
-public class DefaultEncounter implements Serializable, Encounter {
+public class DefaultEncounter implements Encounter {
 
-    private static final long serialVersionUID = 3122246133619156539L;
     protected Character p1;
     protected Character p2;
     protected boolean p1ff;
