@@ -657,7 +657,7 @@ public class CreatorGui extends Application {
 			mod = null;
 		} else {
 			size = ((ModdedCockPart) cock).getBase();
-			mod = (CockMod) ((ModdedCockPart) cock).getMod(ch);
+			mod = (CockMod) ((ModdedCockPart) cock).getMods(ch).toArray()[0];
 		}
 		cockSize.getSelectionModel().select(ch.hasDick() ? size : null);
 		cockType.getSelectionModel().select(ch.hasDick() ? mod : null);
