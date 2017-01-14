@@ -443,7 +443,15 @@ public class Combat extends Observable implements Cloneable {
         listen(l -> l.postActions(p1act, p2act));
         p1.eot(this, p2);
         p2.eot(this, p1);
-        otherCombatants.forEach(other -> other.eot(this, getOpponent(other)));
+        
+        // eot may add/remove pets, so this is to prevent concurrent modifications
+        List<PetCharacter> copy = new ArrayList<>(otherCombatants);
+        for (PetCharacter pet : copy) {
+            if (otherCombatants.contains(pet)) {
+                pet.eot(this, getOpponent(pet));
+            }
+        }
+        
         checkStamina(p1);
         checkStamina(p2);
         otherCombatants.forEach(this::checkStamina);
@@ -1546,6 +1554,9 @@ public class Combat extends Observable implements Cloneable {
     }
 
     public void setStance(Position newStance, Character initiator, boolean voluntary) {
+        if (newStance.top.isPet() && newStance.bottom.isPet()) {
+            return; // Pet's don't get into statuses.
+        }
         if ((newStance.top != getStance().bottom && newStance.top != getStance().top) || (newStance.bottom != getStance().bottom && newStance.bottom != getStance().top)) {
             if (initiator != null && initiator.isPet() && newStance.top == initiator) {
                 PetInitiatedThreesome threesomeSkill = new PetInitiatedThreesome(initiator);

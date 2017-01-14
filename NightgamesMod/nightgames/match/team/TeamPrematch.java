@@ -10,7 +10,7 @@ import nightgames.modifier.standard.NoModifier;
 
 public class TeamPrematch extends Prematch {
 
-    private static final String DID_FIRST_TEAM_MATCH_FLAG = "DidFirstTeamMatch";
+    public static final String DID_FIRST_TEAM_MATCH_FLAG = "DidFirstTeamMatch";
     private static final String START_MATCH_CHOICE = "Let's Go!";
     public TeamPrematch() {
         super(new FirstTeamMatchEvent(), new TeamMatchEvent());

@@ -42,7 +42,8 @@ public class NPCPetCharacter extends PetCharacter {
     }
 
     public String getRandomLineFor(String lineType, Combat c, Character other) {
-        return Global.pickRandom(lines.get(lineType)).orElse((cb, sf, ot) -> "").getLine(c, this, other);
+        return Global.format(Global.pickRandom(lines.get(lineType))
+                           .orElse((cb, sf, ot) -> "").getLine(c, this, other), this, other);
     }
 
     public String getRandomLineFor(String lineType, Combat c) {

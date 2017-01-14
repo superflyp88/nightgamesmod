@@ -37,7 +37,7 @@ public class TeamMatch extends Match {
     public List<CombatListener> getListeners(Combat c) {
         return Collections.singletonList(new TeamCombatListener(c, this));
     }
-    
+
     @Override
     protected void preStart() {
         Global.flag("NoPetBattles");
@@ -85,7 +85,7 @@ public class TeamMatch extends Match {
         Global.gui()
               .message(sb.toString());
     }
-    
+
     @Override
     protected void afterEnd() {
         Global.unflag("NoPetBattles");
@@ -95,7 +95,7 @@ public class TeamMatch extends Match {
     public Encounter buildEncounter(Character first, Character second, Area location) {
         return new TeamEncounter(first, second, location);
     }
-    
+
     @Override
     protected Map<String, Area> buildMap() {
         Area quad = new Area("Quad",
@@ -139,9 +139,9 @@ public class TeamMatch extends Match {
         quad.link(dining);
         quad.link(dorm);
         dining.link(quad);
-        //dining.link(kitchen);
+        // dining.link(kitchen);
         dining.link(storage);
-        //kitchen.link(dining);
+        // kitchen.link(dining);
         storage.link(dining);
         storage.link(tunnel);
         tunnel.link(storage);
@@ -155,7 +155,7 @@ public class TeamMatch extends Match {
         Map<String, Area> map = new HashMap<>();
         map.put("Quad", quad);
         map.put("Dining", dining);
-        //map.put("Kitchen", kitchen);
+        // map.put("Kitchen", kitchen);
         map.put("Storage", storage);
         map.put("Tunnel", tunnel);
         map.put("Laundry", laundry);
@@ -184,9 +184,9 @@ public class TeamMatch extends Match {
     @Override
     public boolean canFight(Character initiator, Character opponent) {
         return isCaptain(initiator) && isCaptain(opponent) && !teamOf.get(initiator)
-                                                                              .hasMercy(teamOf.get(opponent));
+                                                                     .hasMercy(teamOf.get(opponent));
     }
-    
+
     @Override
     public boolean canEngage(Character initiator, Character opponent) {
         return isCaptain(initiator) && isCaptain(opponent);
@@ -194,29 +194,28 @@ public class TeamMatch extends Match {
 
     @Override
     protected void beforeAllTurns() {
-        
+
     }
-    
+
     @Override
     protected void beforeTurn(Character combatant) {
-        Team t = teamOf.get(combatant);
-        if (t.captain == combatant) {
-            summonMinions(combatant);
-        }
+        groupTeam(combatant);
     }
 
     @Override
     protected void afterTurn(Character combatant) {
-        Team t = teamOf.get(combatant);
-        if (t.captain == combatant) {
-            summonMinions(combatant);
-        }
+        groupTeam(combatant);
     }
 
-    private void summonMinions(Character captain) {
-        teamOf.get(captain).members.stream()
-                                   .filter(c -> c != captain)
-                                   .forEach(c -> c.travel(captain.location()));
+    private void groupTeam(Character combatant) {
+        Team t = teamOf.get(combatant);
+        if (t.captain == combatant) {
+            t.members.stream()
+                     .filter(c -> c != combatant)
+                     .forEach(c -> c.travel(combatant.location()));
+        } else {
+            combatant.travel(t.captain.location());
+        }
     }
 
     boolean isCaptain(Character candidate) {
@@ -317,9 +316,10 @@ public class TeamMatch extends Match {
         void haveMercy(Team other, int duration) {
             mercyCounters.put(other, mercyCounters.getOrDefault(other, 0) + duration);
         }
-        
+
         void tickMercy() {
-            mercyCounters.keySet().forEach(t -> haveMercy(t, -1));
+            mercyCounters.keySet()
+                         .forEach(t -> haveMercy(t, -1));
         }
 
         @Override

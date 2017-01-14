@@ -163,7 +163,7 @@ public class Global {
     public static double xpRate = 1.0;
     public static ContextFactory factory;
     public static Context cx;
-    private static MatchType currentMatchType;
+    private static MatchType currentMatchType = MatchType.NORMAL;
 
     public static final Path COMBAT_LOG_DIR = new File("combatlogs").toPath();
 
