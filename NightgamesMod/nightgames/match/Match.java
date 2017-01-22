@@ -12,7 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 
+import nightgames.actions.Action;
 import nightgames.actions.Movement;
 import nightgames.areas.Area;
 import nightgames.areas.Cache;
@@ -94,6 +96,14 @@ public class Match {
     
     public MatchType getType() {
         return MatchType.NORMAL;
+    }
+    
+    public Set<Action> getAvailableActions(Character ch) {
+        return Global.getActions();
+    }
+    
+    public boolean canMoveOutOfCombat(Character ch) {
+        return true;
     }
 
     protected void manageConditions(Character player) {

@@ -365,21 +365,23 @@ public class Player extends Character {
                     allowedActions().forEach(a -> gui.addAction(a, this));
                 } else {
                     List<Action> possibleActions = new ArrayList<>();
-                    for (Area path : location.adjacent) {
-                        possibleActions.add(new Move(path));
-                    }
-                    if (getPure(Attribute.Cunning) >= 28) {
-                        for (Area path : location.shortcut) {
-                            possibleActions.add(new Shortcut(path));
+                    if (Global.getMatch().canMoveOutOfCombat(this)) {
+                        for (Area path : location.adjacent) {
+                            possibleActions.add(new Move(path));
                         }
-                    }
+                        if (getPure(Attribute.Cunning) >= 28) {
+                            for (Area path : location.shortcut) {
+                                possibleActions.add(new Shortcut(path));
+                            }
+                        }
 
-                    if(getPure(Attribute.Ninjutsu)>=5){
-                        for(Area path:location.jump){
-                            possibleActions.add(new Leap(path));
+                        if(getPure(Attribute.Ninjutsu)>=5){
+                            for(Area path:location.jump){
+                                possibleActions.add(new Leap(path));
+                            }
                         }
                     }
-                    possibleActions.addAll(Global.getActions());
+                    possibleActions.addAll(Global.getMatch().getAvailableActions(this));
                     for (Action act : possibleActions) {
                         if (act.usable(this) 
                                         && Global.getMatch().getCondition().allowAction(act, this, Global.getMatch())) {

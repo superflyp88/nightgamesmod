@@ -26,7 +26,7 @@ public class Resupply extends Action {
     }
 
     @Override
-    public Movement execute(Character user) {
+    public IMovement execute(Character user) {
         if (Global.checkFlag(Flag.FTC)) {
             FTCMatch match = (FTCMatch) Global.getMatch();
             if (user.human()) {
@@ -52,7 +52,7 @@ public class Resupply extends Action {
     }
 
     @Override
-    public Movement consider() {
+    public IMovement consider() {
         return Movement.resupply;
     }
 

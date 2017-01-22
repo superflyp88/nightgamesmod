@@ -7,9 +7,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import nightgames.actions.Action;
 import nightgames.actions.Movement;
 import nightgames.areas.Area;
 import nightgames.areas.MapDrawHint;
@@ -121,11 +124,6 @@ public class TeamMatch extends Match {
                         "You are in the <b>Dining Hall</b>. Most students get their meals here, though some feel it's worth the extra money to eat out. The "
                                         + "dining hall is quite large and your steps echo on the linoleum, but you could probably find someplace to hide if you need to.",
                         Movement.dining, new MapDrawHint(new Rectangle(17, 6, 4, 6), "Dining", false));
-        Area kitchen = new Area("Kitchen",
-                        "You are in the <b>Kitchen</b> where student meals are prepared each day. The industrial fridge and surrounding cabinets are full of the "
-                                        + "ingredients for any sort of bland cafeteria food you can imagine. Fortunately, you aren't very hungry. There's a chance you might be able to cook up some "
-                                        + "of the more obscure items into something useful.",
-                        Movement.kitchen, new MapDrawHint(new Rectangle(18, 12, 4, 2), "Kitchen", false));
         Area storage = new Area("Storage Room",
                         "You are in a <b>Storage Room</b> under the Dining Hall. It's always unlocked and receives a fair bit of foot traffic from students "
                                         + "using the tunnel to and from the Dorm, so no one keeps anything important in here. There's enough junk down here to provide some hiding places and there's a chance "
@@ -218,11 +216,15 @@ public class TeamMatch extends Match {
         }
     }
 
-    boolean isCaptain(Character candidate) {
+    public boolean isCaptain(Character candidate) {
         return matchData.getDataFor(candidate)
                         .getFlag("isCaptain") != null;
     }
 
+    public Team getTeamOf(Character combatant) {
+        return teamOf.get(combatant);
+    }
+    
     private void makeThreesomes(List<Character> byLevel) {
         while (!byLevel.isEmpty()) {
             Character strongest = byLevel.get(byLevel.size() - 1);
@@ -295,12 +297,25 @@ public class TeamMatch extends Match {
                 return captain.getTrueName() + "'s Team";
         }
     }
+    
+    @Override
+    public Set<Action> getAvailableActions(Character ch) {
+        if (isCaptain(ch)) {
+            return Global.getActions();
+        }
+        return new HashSet<>(Arrays.asList());
+    }
 
-    static class Team {
-        final String name;
-        final Character captain;
-        final List<Character> members;
-        final Map<Team, Integer> mercyCounters;
+    @Override
+    public boolean canMoveOutOfCombat(Character ch) {
+        return isCaptain(ch);
+    }
+    
+    public static class Team {
+        public final String name;
+        public final Character captain;
+        public final List<Character> members;
+        public final Map<Team, Integer> mercyCounters;
 
         private Team(String name, List<Character> members) {
             this.name = name;
@@ -309,7 +324,7 @@ public class TeamMatch extends Match {
             mercyCounters = new HashMap<>();
         }
 
-        boolean hasMercy(Team other) {
+        public boolean hasMercy(Team other) {
             return mercyCounters.getOrDefault(other, 0) > 0;
         }
 

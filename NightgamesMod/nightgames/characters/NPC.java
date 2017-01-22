@@ -13,11 +13,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import nightgames.actions.Action;
+import nightgames.actions.IMovement;
 import nightgames.actions.Leap;
 import nightgames.actions.Move;
 import nightgames.actions.Movement;
 import nightgames.actions.Resupply;
 import nightgames.actions.Shortcut;
+import nightgames.actions.Wait;
 import nightgames.areas.Area;
 import nightgames.characters.body.BodyPart;
 import nightgames.characters.custom.CharacterLine;
@@ -501,7 +503,7 @@ public class NPC extends Character {
             if (!location.encounter(this)) {
                 
                 HashSet<Action> moves = new HashSet<>();
-                HashSet<Movement> radar = new HashSet<>();
+                HashSet<IMovement> radar = new HashSet<>();
                 FTCMatch match;
                 if (Global.checkFlag(Flag.FTC) && allowedActions().isEmpty()) {
                     match = (FTCMatch) Global.getMatch();
@@ -544,12 +546,17 @@ public class NPC extends Character {
         }
     }
     
-    private void pickAndDoAction(Collection<Action> available, Collection<Action> moves, Collection<Movement> radar) {
+    private void pickAndDoAction(Collection<Action> available, Collection<Action> moves, Collection<IMovement> radar) {
         if (available.isEmpty()) {
-            available.addAll(Global.getActions());
-            available.addAll(moves);
+            available.addAll(Global.getMatch().getAvailableActions(this));
+            if (Global.getMatch().canMoveOutOfCombat(this)) {
+                available.addAll(moves);
+            }
         }
         available.removeIf(a -> a == null || !a.usable(this));
+        if (available.isEmpty()) {
+            available.add(new Wait());
+        }
         if (location.humanPresent()) {
             Global.gui().message("You notice " + getName() + ai.move(available, radar).execute(this).describe());
         } else {

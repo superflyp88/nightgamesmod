@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import nightgames.actions.IMovement;
 import nightgames.actions.Movement;
 import nightgames.characters.Character;
 import nightgames.global.DebugFlags;
@@ -28,14 +29,14 @@ public class Area implements Serializable {
     public boolean alarm;
     public ArrayList<Deployable> env;
     public transient MapDrawHint drawHint;
-    private Movement enumerator;
+    private IMovement enumerator;
     private boolean pinged;
 
-    public Area(String name, String description, Movement enumerator) {
+    public Area(String name, String description, IMovement enumerator) {
         this(name, description, enumerator, new MapDrawHint());
     }
 
-    public Area(String name, String description, Movement enumerator, MapDrawHint drawHint) {
+    public Area(String name, String description, IMovement enumerator, MapDrawHint drawHint) {
         this.name = name;
         this.description = description;
         this.enumerator = enumerator;
@@ -175,7 +176,7 @@ public class Area implements Serializable {
         fight = null;
     }
 
-    public Movement id() {
+    public IMovement id() {
         return enumerator;
     }
 

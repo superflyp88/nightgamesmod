@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import nightgames.actions.Action;
+import nightgames.actions.IMovement;
 import nightgames.actions.Move;
 import nightgames.actions.Movement;
 import nightgames.characters.custom.effect.CustomEffect;
@@ -130,7 +131,7 @@ public class Decider {
          */ return priority;
     }
 
-    public static Action parseMoves(Collection<Action> available, Collection<Movement> radar, NPC character) {
+    public static Action parseMoves(Collection<Action> available, Collection<IMovement> radar, NPC character) {
         HashSet<Action> enemy = new HashSet<Action>();
         HashSet<Action> onlyWhenSafe = new HashSet<Action>();
         HashSet<Action> utility = new HashSet<Action>();

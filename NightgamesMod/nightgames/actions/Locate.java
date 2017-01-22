@@ -33,7 +33,7 @@ public class Locate extends Action {
     }
 
     @Override
-    public Movement execute(Character self) {
+    public IMovement execute(Character self) {
         GUI gui = Global.gui();
         gui.clearCommand();
         gui.clearText();
@@ -94,7 +94,7 @@ public class Locate extends Action {
     }
 
     @Override
-    public Movement consider() {
+    public IMovement consider() {
         return Movement.locating;
     }
 
