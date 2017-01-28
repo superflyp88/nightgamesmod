@@ -123,7 +123,9 @@ public class Corruption extends Addiction {
     }
     
     private Attribute getDrainAttr() {
-        return Global.pickRandom(Arrays.stream(Attribute.values()).filter(a -> a != Attribute.Dark && affected.get(a) >= 10).toArray(Attribute[]::new)).get();
+        return Global.pickRandom(Arrays.stream(Attribute.values())
+                        .filter(a -> a != Attribute.Dark && affected.get(a) >= 10)
+                        .toArray(Attribute[]::new)).orElse(null);
     }
 
     @Override
