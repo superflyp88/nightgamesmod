@@ -72,5 +72,13 @@ public enum Stsflag {
     hypnovisor,
     slimed,
     disguised,
+    wrapped,
     tentacleBound,
+    atrophy,
+    pressurepoint,
+    orgasmPurged,
+    plasticized, 
+    compelled, 
+    tailsucked, 
+    tailfucked,
 }

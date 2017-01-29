@@ -1127,7 +1127,6 @@ public class CreatorGui extends Application {
 		new Global(true);
 		Global.newGame("", Optional.empty(), Collections.emptyList(), CharacterSex.male, Collections.emptyMap());
 		Global.rebuildCharacterPool(Optional.empty());
-		System.out.println("asdf");
 		launch(args);
 	}
 }

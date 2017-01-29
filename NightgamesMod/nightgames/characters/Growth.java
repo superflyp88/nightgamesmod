@@ -8,11 +8,29 @@ import java.util.List;
 import java.util.Map;
 
 import nightgames.characters.body.BodyPart;
+import nightgames.characters.body.GenericBodyPart;
+import nightgames.characters.body.mods.PartMod;
 import nightgames.global.Flag;
 import nightgames.global.Global;
 import nightgames.items.clothing.Clothing;
+import nightgames.utilities.DebugHelper;
 
 public class Growth implements Cloneable {
+    public class PartModApplication {
+        private final PartMod mod;
+        private final String bodyPartType;
+        public PartModApplication(String bodyPartType, PartMod mod) {
+            this.bodyPartType = bodyPartType;
+            this.mod = mod;
+        }
+        
+        public PartMod getMod() {
+            return mod;
+        }
+        public String getBodyPartType() {
+            return bodyPartType;
+        }
+    }
     public float arousal;
     public float stamina;
     public float bonusArousal;
@@ -25,6 +43,7 @@ public class Growth implements Cloneable {
     private Map<Integer, List<Trait>> traits;
     private Map<Integer, Integer> traitPoints;
     public Map<Integer, List<BodyPart>> bodyParts;
+    public Map<Integer, List<PartModApplication>> bodyPartMods;
     private Map<Integer, Clothing> clothing;
 
     public Growth() {
@@ -41,11 +60,17 @@ public class Growth implements Cloneable {
         attributes[0] = 3;
         traits = new HashMap<>();
         bodyParts = new HashMap<>();
+        bodyPartMods = new HashMap<>();
         traitPoints = new HashMap<>();
         clothing = new HashMap<>();
     }
 
     public void addTrait(int level, Trait trait) {
+        if (trait == null) {
+            System.err.println("Tried to add a null trait to a growth.");
+            DebugHelper.printStackFrame(5, 1);
+            return;
+        }
         if (!traits.containsKey(level)) {
             traits.put(level, new ArrayList<Trait>());
         }
@@ -67,9 +92,16 @@ public class Growth implements Cloneable {
 
     public void addBodyPart(int level, BodyPart part) {
         if (!bodyParts.containsKey(level)) {
-            bodyParts.put(level, new ArrayList<BodyPart>());
+            bodyParts.put(level, new ArrayList<>());
         }
         bodyParts.get(level).add(part);
+    }
+
+    public void addBodyPartMod(int level, String type, PartMod mod) {
+        if (!bodyPartMods.containsKey(level)) {
+            bodyPartMods.put(level, new ArrayList<>());
+        }
+        bodyPartMods.get(level).add(new PartModApplication(type, mod));
     }
 
     public void addClothing(int level, Clothing c) {
@@ -92,6 +124,22 @@ public class Growth implements Cloneable {
                 if (level <= character.getLevel()) {
                     if (existingPart == null || !existingPartDesc.equals(loadedPartDesc)) {
                         character.body.addReplace(part, 1);
+                    }
+                }
+            });
+        });
+        bodyPartMods.forEach((level, mods) ->  {
+            mods.forEach(mod -> {
+                // only add parts if the level matches
+                if (level <= character.getLevel()) {
+                    BodyPart existingPart = character.body.getRandom(mod.getBodyPartType());
+                    String existingPartDesc = existingPart == null ? "NO_EXISTING_PART" : existingPart.canonicalDescription();
+                    if (existingPart != null && existingPart instanceof GenericBodyPart) {
+                        GenericBodyPart part = (GenericBodyPart) existingPart;
+                        GenericBodyPart newPart = (GenericBodyPart) part.applyMod(mod.getMod());
+                        if (newPart.canonicalDescription().equals(existingPartDesc)) {
+                            character.body.addReplace(newPart, 1);
+                        }
                     }
                 }
             });
@@ -143,6 +191,7 @@ public class Growth implements Cloneable {
         Growth clone = (Growth) super.clone();
         clone.traits = Collections.unmodifiableMap(clone.traits);
         clone.bodyParts = Collections.unmodifiableMap(clone.bodyParts);
+        clone.bodyPartMods = Collections.unmodifiableMap(clone.bodyPartMods);
         clone.clothing = Collections.unmodifiableMap(clone.clothing);
         return clone;
     }

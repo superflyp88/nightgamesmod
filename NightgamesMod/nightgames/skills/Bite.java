@@ -54,6 +54,10 @@ public class Bite extends Skill {
         
         return true;
     }
+    
+    public float priorityMod(Combat c) {
+        return 10.f;
+    }
 
     @Override
     public Skill copy(Character user) {

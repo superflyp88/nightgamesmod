@@ -20,12 +20,6 @@ public class SpiralThrust extends Thrust {
     public boolean requirements(Combat c, Character user, Character target) {
         return user.has(Trait.spiral);
     }
-
-    @Override
-    public boolean usable(Combat c, Character target) {
-        return getSelf().canAct() && c.getStance().canthrust(c, getSelf()) && c.getStance().inserted()
-                        && c.getStance().havingSexOtherNoStrapped(c, getSelf());
-    }
     
     @Override
     public float priorityMod(Combat c) {
@@ -126,7 +120,7 @@ public class SpiralThrust extends Thrust {
 
     @Override
     public String getLabel(Combat c) {
-        if (c.getStance().inserted(getSelf())) {
+        if (c.getStance().penetratedBy(c, c.getStance().getPartner(c, getSelf()), getSelf())) {
             return "Spiral Thrust";
         } else {
             return "Spiral";

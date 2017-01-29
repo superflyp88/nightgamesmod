@@ -9,7 +9,6 @@ import nightgames.pet.arms.skills.ArmSkill;
 import nightgames.pet.arms.skills.DefabRay;
 
 public class TentacleBirther extends TentacleArm {
-
     public TentacleBirther(ArmManager manager) {
         super(manager, ArmType.TENTACLE_BIRTHER);
     }
@@ -18,5 +17,4 @@ public class TentacleBirther extends TentacleArm {
     List<ArmSkill> getSkills(Combat c, Character owner, Character target) {
         return Collections.singletonList(new DefabRay());
     }
-
 }

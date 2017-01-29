@@ -4,19 +4,15 @@ import static nightgames.requirements.RequirementShortcuts.bodypart;
 import static nightgames.requirements.RequirementShortcuts.not;
 
 import java.util.ArrayList;
-import java.util.Optional;
-
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.Trait;
-import nightgames.characters.body.BasicCockPart;
-import nightgames.characters.body.BodyPart;
 import nightgames.characters.body.CockMod;
-import nightgames.characters.body.CockPart;
 import nightgames.characters.body.EarPart;
-import nightgames.characters.body.ModdedCockPart;
-import nightgames.characters.body.PussyPart;
+import nightgames.characters.body.CockPart;
 import nightgames.characters.body.TailPart;
+import nightgames.characters.body.mods.FeralMod;
+import nightgames.characters.body.mods.SizeMod;
 import nightgames.global.Flag;
 import nightgames.global.Global;
 import nightgames.items.Item;
@@ -45,8 +41,7 @@ public class KatTime extends BaseNPCTime {
         {
             TransformationOption growCock = new TransformationOption();
             growCock.ingredients.put(Item.PriapusDraft, 3);
-            growCock.requirements.add(RequirementShortcuts.rev(new NotRequirement(new BodyPartRequirement("cock"))));
-            growCock.additionalRequirements = "";
+            growCock.addRequirement(RequirementShortcuts.rev(new NotRequirement(new BodyPartRequirement("cock"))), "Has no penis");
             growCock.option = "Kat: Grow a cock";
             growCock.scene = "<br/><i>\"Mrrr... Y-you want me to w-what!?\"</i> Kat doesn't seem to be too amused at your suggestion for a little switch-up. "
                            + "She glows red like a tomato, and starts stammering like she just learned how to talk. "
@@ -86,7 +81,7 @@ public class KatTime extends BaseNPCTime {
                            + "Fortunately for you, the poor kitty seems exhausted by her new transformation and falls into a soft slumber after the exertion. "
                            + "You pick her up, depositing her onto her bed and covering her with a blanket before turning to leave. Hopefully the next time you meet in the games, she'll be a bit gentler than that.";
             growCock.effect = (c, self, other) -> {
-                other.body.add(new ModdedCockPart(BasicCockPart.big, CockMod.primal));
+                other.body.add(new CockPart().applyMod(new SizeMod(SizeMod.COCK_SIZE_BIG)).applyMod(CockMod.primal));
                 return true;
             };
             options.add(growCock);
@@ -94,8 +89,7 @@ public class KatTime extends BaseNPCTime {
         {
             TransformationOption removeCock = new TransformationOption();
             removeCock.ingredients.put(Item.FemDraft, 3);
-            removeCock.requirements.add(RequirementShortcuts.rev(new BodyPartRequirement("cock")));
-            removeCock.additionalRequirements = "";
+            removeCock.addRequirement(RequirementShortcuts.rev(new BodyPartRequirement("cock")), "Has a penis");
             removeCock.option = "Kat: Remove her cock";
             removeCock.scene = "<br/>Kat gladly drinks the three femdrafts one after another and her penis shrinks back into her normal clitoris. "
                             + "Kat shyly whispers, <i>\"Mrrowwww, t-that was embarassing... but it did feel pretty good when I had it...\"</i>";
@@ -105,50 +99,28 @@ public class KatTime extends BaseNPCTime {
             };
             options.add(removeCock);
         }
-        TransformationOption primalCock = new TransformationOption();
-        primalCock.ingredients.put(Item.PriapusDraft, 10);
-        primalCock.ingredients.put(Item.Rope, 10);
-        primalCock.ingredients.put(Item.Aphrodisiac, 25);
-        primalCock.requirements.add(new BodyPartRequirement("cock"));
-        primalCock.requirements.add((c, self, other) -> {
-            return self.body.get("cock").stream().anyMatch(cock -> ((CockPart) cock).isGeneric(self));
-        });
-        primalCock.additionalRequirements = "A normal cock";
-        primalCock.option = "Primal Cock";
-        primalCock.scene = "[Placeholder]<br/>Kat uses her totemic magic to convert your penis into a primal cock.";
-        primalCock.effect = (c, self, other) -> {
-            Optional<BodyPart> optPart =
-                            self.body.get("cock").stream().filter(cock -> ((CockPart) cock).isGeneric(self)).findAny();
-            BasicCockPart target = (BasicCockPart) optPart.get();
-            self.body.remove(target);
-            self.body.add(new ModdedCockPart(target, CockMod.primal));
-            return true;
-        };
-
-        options.add(primalCock);
-        TransformationOption feralPussy = new TransformationOption();
-        feralPussy.ingredients.put(Item.Rope, 10);
-        feralPussy.ingredients.put(Item.Aphrodisiac, 25);
-        feralPussy.ingredients.put(Item.FemDraft, 10);
-        feralPussy.requirements.add(new BodyPartRequirement("pussy"));
-        feralPussy.requirements.add((c, self, other) -> {
-            return self.body.get("pussy").stream().anyMatch(pussy -> pussy == PussyPart.normal);
-        });
-        feralPussy.option = "Feral Pussy";
-        feralPussy.scene = "[Placeholder]<br/>Kat uses her totemic magic to convert your pussy into a feral one.";
-        feralPussy.effect = (c, self, other) -> {
-            self.body.addReplace(PussyPart.feral, 1);
-            return true;
-        };
-        feralPussy.additionalRequirements = "A normal pussy";
-        options.add(feralPussy);
+        {
+            TransformationOption primalCock = new ApplyPartModOption("cock", CockMod.primal);
+            primalCock.ingredients.put(Item.PriapusDraft, 10);
+            primalCock.ingredients.put(Item.Rope, 10);
+            primalCock.ingredients.put(Item.Aphrodisiac, 25);
+            primalCock.option = "Primal Cock";
+            primalCock.scene = "[Placeholder]<br/>Kat uses her totemic magic to convert your penis into a primal cock.";
+            options.add(primalCock);
+        }
+        {
+            TransformationOption feralPussy = new ApplyPartModOption("pussy", FeralMod.INSTANCE);
+            feralPussy.ingredients.put(Item.Rope, 10);
+            feralPussy.ingredients.put(Item.Aphrodisiac, 25);
+            feralPussy.ingredients.put(Item.FemDraft, 10);
+            feralPussy.option = "Feral Pussy";
+            feralPussy.scene = "[Placeholder]<br/>Kat uses her totemic magic to convert your pussy into a feral one.";
+            options.add(feralPussy);
+        }
         TransformationOption catTail = new TransformationOption();
         catTail.ingredients.put(Item.Rope, 10);
         catTail.ingredients.put(Item.Aphrodisiac, 25);
-        catTail.requirements.add(not(bodypart("tail")));
-        catTail.requirements.add((c, self, other) -> {
-            return self.body.get("tail").stream().anyMatch(part -> part != TailPart.cat) || !self.body.has("tail");
-        });
+        catTail.addRequirement(not(bodypart("tail")), "Has no tail");
         catTail.option = "Cat Tail";
         catTail.scene = "[Placeholder]<br/>Kat uses her totemic magic to grow you a cat tail.";
         catTail.effect = (c, self, other) -> {
@@ -159,10 +131,9 @@ public class KatTime extends BaseNPCTime {
         TransformationOption catEars = new TransformationOption();
         catEars.ingredients.put(Item.Rope, 10);
         catEars.ingredients.put(Item.Aphrodisiac, 25);
-        catEars.requirements.add(new BodyPartRequirement("ears"));
-        catEars.requirements.add((c, self, other) -> {
+        catEars.addRequirement((c, self, other) -> {
             return self.body.get("ears").stream().anyMatch(part -> part != EarPart.cat) || !self.body.has("ears");
-        });
+        }, "No cat ears");
         catEars.option = "Cat Ears";
         catEars.scene = "[Placeholder]<br/>Kat uses her totemic magic to grow you cat ears.";
         catEars.effect = (c, self, other) -> {

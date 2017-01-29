@@ -56,7 +56,8 @@ public class FFXTribThreesome extends Position {
         }
     }
 
-    public List<BodyPart> partsFor(Combat combat, Character self, Character other) {
+    @Override
+    public List<BodyPart> partsForStanceOnly(Combat combat, Character self, Character other) {
         if (self == domSexCharacter(combat) && other == bottom) {
             return topParts(combat);
         }
@@ -189,5 +190,35 @@ public class FFXTribThreesome extends Position {
     @Override
     public int distance() {
         return 1;
+    }
+
+    private void strugglePleasure(Combat c, Character self, Character opponent) {
+        int selfM = Global.random(6, 11);
+        int targM = Global.random(6, 11);
+        self.body.pleasure(opponent, opponent.body.getRandomPussy(), self.body.getRandomPussy(), selfM, c);
+        opponent.body.pleasure(self, self.body.getRandomPussy(), opponent.body.getRandomPussy(), targM, c);
+    }
+
+    @Override
+    public void struggle(Combat c, Character struggler) {
+        Character opponent = getPartner(c, struggler);
+        c.write(struggler, Global.format("{self:SUBJECT-ACTION:struggle} in {other:name-possessive} grip, "
+                        + "but the slippery sensation of %s sexes sliding against each other distracts "
+                        + "{self:direct-object} long enough for {other:pronoun} to regain"
+                        + " {other:possessive} grip on {self:possessive} leg.",
+                        struggler, opponent, c.bothPossessive(opponent)));
+        strugglePleasure(c, struggler, opponent);
+        super.struggle(c, struggler);
+    }
+
+    @Override
+    public void escape(Combat c, Character escapee) {
+        Character opponent = getPartner(c, escapee);
+        c.write(escapee, Global.format("{self:SUBJECT-ACTION:attempt} to rock {self:possessive} hips wildly, "
+                        + "hoping it will distract {other:name-do} long enough for {self:direct-object} to escape. "
+                        + "Sadly, it doesn't accomplish much other than arousing the hell out of both of %s."
+                        , escapee, opponent, c.bothDirectObject(opponent)));
+        strugglePleasure(c, escapee, opponent);
+        super.escape(c, escapee);
     }
 }

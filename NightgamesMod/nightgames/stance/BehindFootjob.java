@@ -94,7 +94,12 @@ public class BehindFootjob extends AbstractBehindStance {
     public Position reverse(Combat c, boolean writeMessage) {
         if (writeMessage) {
             c.write(bottom, Global.format(
-                            "{self:SUBJECT-ACTION:summon what little willpower you have left and grab|grabs} {other:name-possessive} feet and pull them off {self:name-possessive} crotch. Taking advantage of the momentum, {self:subject} push {other:direct-object} back with {self:name-possessive} body and hold {other:direct-object} down while sitting on top of {other:direct-object}.",
+                            "{self:SUBJECT-ACTION:summon} what little willpower {self:pronoun-action:have}"
+                            + " left and {self:pronoun-action:grab} {other:name-possessive} feet and pull"
+                            + " them off {self:name-possessive} crotch. Taking advantage"
+                            + " of the momentum, {self:subject-action:push} {other:direct-object}"
+                            + " back with {self:name-possessive} body and {self:action:hold} {other:direct-object}"
+                            + " down while sitting on top of {other:direct-object}.",
                             bottom, top));
         }
         return new ReverseMount(bottom, top);
@@ -113,5 +118,29 @@ public class BehindFootjob extends AbstractBehindStance {
     @Override
     public int distance() {
         return 1;
+    }
+
+    @Override
+    public void struggle(Combat c, Character struggler) {
+        if (struggler.hasDick()) {
+            c.write(struggler, Global.format("{self:SUBJECT-ACTION:attempt} to twist out of {other:name-possessive} grip, but "
+                            + " {other:pronoun-action:wraps} {other:possessive} legs around {self:possessive} waist and steps "
+                            + "on {self:possessive} cock hard, making {self:direct-object} yelp.", struggler, top));
+            struggler.body.pleasure(top, top.body.getRandom("feet"), struggler.body.getRandomCock(), Global.random(6, 11), c);
+        } else {
+            c.write(struggler, Global.format("{self:SUBJECT-ACTION:attempt} to twist out of {other:name-possessive} grip, but "
+                            + " {other:pronoun-action:wrap} {other:possessive} legs around {self:possessive} waist and digs {other:possessive} "
+                            + "heels into {self:possessive} pussy, making {self:direct-object} yelp.", struggler, top));
+            struggler.body.pleasure(top, top.body.getRandom("feet"), struggler.body.getRandomPussy(), Global.random(6, 11), c);
+        }
+        super.struggle(c, struggler);
+    }
+
+    @Override
+    public void escape(Combat c, Character escapee) {
+        c.write(escapee, Global.format("{self:SUBJECT-ACTION:try} to escape {other:name-possessive} hold, but with"
+                        + " {other:direct-object} behind {self:direct-object} with {other:possessive} long legs wrapped around {self:possessive} waist securely, there is nothing {self:pronoun} can do.",
+                        escapee, top));
+        super.escape(c, escapee);
     }
 }

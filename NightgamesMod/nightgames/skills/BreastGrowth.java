@@ -51,7 +51,7 @@ public class BreastGrowth extends Skill {
     public boolean resolve(Combat c, Character target) {
         Result res;
         if (target.roll(getSelf(), c, accuracy(c, target))) {
-            if (target.body.getRandomBreasts() == BreastsPart.flat) {
+            if (target.body.getRandomBreasts().equals(BreastsPart.flat)) {
                 res = Result.special;
             } else {
                 res = Result.normal;
@@ -64,7 +64,7 @@ public class BreastGrowth extends Skill {
         writeOutput(c, permanent ? 1 : 0, res, target);
         if (res != Result.miss) {
             target.add(c, new Hypersensitive(target, 10));
-            BreastsPart part = target.body.getBreastsBelow(BreastsPart.f.size);
+            BreastsPart part = target.body.getBreastsBelow(BreastsPart.f.getSize());
             if (permanent) {
                 if (part != null) {
                     target.body.addReplace(part.upgrade(), 1);
@@ -127,7 +127,7 @@ public class BreastGrowth extends Skill {
             message = String.format(
                             "%s moving and begins chanting. %s %s breasts grow hot, and they start expanding!"
                                             + " %s to hold them back with %s hands, but the growth continues untill they are a full cup size"
-                                            + " bigger than begore. The new sensations from %s substantially larger breasts make %s tremble.",
+                                            + " bigger than before. The new sensations from %s substantially larger breasts make %s tremble.",
                             getSelf().getName(), Global.capitalizeFirstLetter(target.subjectAction("feel")),
                             target.possessiveAdjective(), Global.capitalizeFirstLetter(target.pronoun()),
                             target.action("try", "tries"), target.possessiveAdjective(), target.directObject());

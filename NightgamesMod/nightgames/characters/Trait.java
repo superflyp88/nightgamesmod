@@ -1,5 +1,8 @@
 package nightgames.characters;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,13 +18,6 @@ import nightgames.status.addiction.Addiction;
 import nightgames.status.addiction.AddictionType;
 
 public enum Trait {
-    // Physical
-    vaginaltongue("Vaginal Tongue", "Have a second tongue", (b, c, t) -> {
-        if (c.crotchAvailable()) {
-            b.append("Occasionally, a pink tongue slides out of her pussy and licks her lower lips.");
-        }
-    }),
-
     sadist("Sadist", "Skilled at providing pleasure alongside pain",
                     (b, c, t) -> b.append(Global.capitalizeFirstLetter(
                                     String.format("%s sneers in an unsettling way.", c.subject())))),
@@ -155,6 +151,8 @@ public enum Trait {
         }
     }),
     sedativecream("Sedative Cream", "Lactate that weakens the drinker"), // the first time in a fight that you see bare breasts you are entranced
+    PheromonedMilk("Pheromoned Milk", "Milk can cause drinker to go into heat"),
+    Illusionist("Illusionist", "Arcane doubles as Hypnotism"),
 
     defthands("Deft hands", "They know where to go"), // hands damage upgrade
     nimbletoes("Nimble toes", "Good both in the street and in the bed."), // feet damage upgrade
@@ -170,7 +168,6 @@ public enum Trait {
     druglacedprecum("Drug-laced Precum", "Drugs in your precum are perfect for increasing an enemies sensitivity"), // Anybody part that comes into contact with your precum becomes increasingly sensitive for x turns.
     magicmilk("Magicked Milk", "Magically augmented milk. It's a a strong addictive aphrodisiac, as well as a subtle hypnotic."), // .
     zealinspiring("Zeal Inspiring", "Instills true belief in people, inspiring them to follow her"),
-    corrupting("Corrupting Influence", "Corrupts to the very core."),
     breeder("Breeder", "Particularly inviting"),
     mindcontroller("Mind Controller", "Can take control of others' minds. Inventive, yes?"),
     darkpromises("Dark Promises", "Can enthrall with the right words"), // whisper upgrade, can enthrall
@@ -220,6 +217,7 @@ public enum Trait {
 
     // resistances
     freeSpirit("Free Spirit", "Better at escaping pins and resisting mind control"),
+    Slippery("Slippery", "Hard to hold onto"),
     calm("Calm", "Chance at resisting arousal over time"),
     skeptical("Skeptical", "Chance at resisting mental statuses"),
     graceful("Graceful", "Chance at resisting knockdowns"),
@@ -231,7 +229,7 @@ public enum Trait {
     autonomousPussy("Autonomous Pussy", "Her pussy instinctively forces anything inside of it to cum."),
     // AI traits
     submissive("Submissive", "Enjoys being the sub."),
-    flexibleRole("Flexible Roles", "Okay at being the dom."), // Cassie gets this when she takes both specializations to remove the submissive negatives
+    flexibleRole("Flexible Roles", "Also good on top."), // Cassie gets this when she takes both specializations to remove the submissive negatives
     naturalTop("Natural Top", "Being the dom comes easy."),
     obsequiousAppeal("Obsequious Appeal", "So tempting when on the bottom."),
     catstongue("Cat's Tongue", "Rough but sensual."),
@@ -298,6 +296,7 @@ public enum Trait {
     // Class subtrait
     divinity("Divinity", "Has aspects of divinity."),
     leveldrainer("Level Drainer", "Natrually adept at draining levels."),
+    ExpertLevelDrainer("Expert Level Drainer", "Can drain more than one level at a time."),
 
     // Strength
     dexterous("Dexterous", "Dexterous limbs and fingers. Underwear is not an obstacle."),
@@ -386,7 +385,8 @@ public enum Trait {
         b.append(Global.format("A complex aroma lingers in the air.", c, c))),
 
     // Frenzy Focus
-    Rut("Rut", "Half arousal damage during frenzy, chance to go into a frenzy when over half arousal."),
+    Rut("Rut", "Chance to go into a frenzy when over half arousal."),
+    NaturalHeat("Natural Heat", "Half arousal damage during frenzy."),
     PrimalHeat("Primal Heat", "Bonus to seduction while frenzied based on Animism"),
     Jackhammer("Jackhammer", "Chance to thrust/ride twice"),
     Piledriver("Piledriver", "Chance to stun when fucking"),
@@ -402,12 +402,12 @@ public enum Trait {
 
     // Transformation/Mimicry - self buffs
     Imposter("Imposter", "Can appear like a different combatant"),
-    UnstableGenome("UnstableGenome", "Upon transformation, gain Attributes at random"),
+    ImitatedStrength("Imitated Strength", "Gains traits when mimicking targets."),
     ThePrestige("The Prestige", "Will engulf upon unveiling the disguise"),
     Masquerade("Masquerade", "Improves quality of mimicry"),
 
-    // Queen Slime - Clones build
-    SlimeRoyalty("Slime Royalty", "Can now divide the body"),
+    // Replication - Clones build
+    BinaryFission("Binary Fission", "Can now divide the body"),
     RapidMeiosis("Rapid Meiosis", "Upon cumming, create additional clones"),
     // + slime
     StickyFinale("Sticky Finale", "Clones explode when defeated"),
@@ -419,15 +419,8 @@ public enum Trait {
     // debuff trait for clones so they aren't too overwhelming
     MindlessClone("Mindless Clone", "Half sentience makes them less tempting"),
 
-    // Slime Carrier - Immortal pet build
-    SlimeCarrier("Slime Carrier", "Rides on her slime half instead of transforming"),
-    Symbiosis("Symbiosis", "Slime carrier can heal and build mojo for the host"),
-    // + parasite
-    RoperAspect("Roper Aspect", "Slime Carrier has additional capabilities"),
-    // + transformation
-    SuccubusAspect("Succubus Aspect", "Main body has additional capabilities"),
-    // autonomous pussy
-    SplitSentience("Split Sentience", "Slime carrier powers up when main body is disabled."),
+    // Tentacle builds
+    Pseudopod("Pseudopod", "Comes with extra tentacles"),
 
     // Jewel's unique traits
     powerfulcheeks("Powerful Cheeks", "As in asscheeks. Makes pulling out more difficult."),
@@ -462,6 +455,33 @@ public enum Trait {
     ControlledRelease("Controlled Release", "Can use mind control to tempt opponents"),
     RemoteControl("Remote Control", "Can deploy a fancy hypnosis trap"),
     EyeOpener("Eye Opener", "The harpoon toy enhances mind control"),
+    
+    //Reyka Disabling Focus
+    SuccubusWarmth("Succubus's Warmth", "Why would you even want to escape?"),
+    Pacification("Pacification", "Milk may cause Charmed"),
+    DemonsEmbrace("Demon's Embrace", "Can wrap up opponent in wings"),
+    VampireWings("Vampire Wings", "Contact with wings drains Power"),
+    
+    // Reyka Seduction Focus
+    MelodiousInflection("Melodious Inflection", "Speaks in a 'Charming' manner"),
+    ComeHither("Come Hither", "Can draw Charmed opponents to herself"),
+    TenderKisses("Tender Kisses", "Kisses may extend existing Charmed status"),
+    PinkHaze("Pink Haze", "Charmed opponents think she is even more beautiful"),
+    
+    // Reyka Corruption Focus
+    Corrupting("Corrupting Influence", "Corrupts to the very core."),
+    InfernalAllegiance("Infernal Allegiance", "'Encourages' corrupted opponents to play along"),
+    LastingCorruption("Lasting Corruption", "Partially Corrupted fades more slowly"),
+    TotalSubjugation("Total Subjugation", "An orgasm in a Succubus Embrace significantly corrupts"),
+    Subversion("Subversion", "Corruption is stronger while Charmed"),
+
+    // Reyka Draining Focus
+    Greedy("Greedy", "Attribute draining lasts 50% longer"),
+    RaptorMentis("Raptor Mentis", "Attribute draining effects also drain Willpower"),
+    BottomlessPit("Bottomless Pit", "Enhances draining by demonic genitalia"),
+    SpecificSapping("Specific Sapping", "Draining effects make escape more difficult for 1 turn"),
+    WillingSacrifice("Willing Sacrifice", "Draining is stronger while Charmed"),
+    
     stronghold("Strong Hold", "Harder to escape Arm/Leg Locks"),
 
     // Item
@@ -476,6 +496,10 @@ public enum Trait {
     event("event", "special character"),
     mindcontrolresistance("", "temporary resistance to mind games - hidden"),
     none("", "");
+    
+    private static void override(Map<Trait, Collection<Trait>> o, Trait key, Trait... overrides) {
+        o.put(key, Arrays.asList(overrides));
+    }
     
     private String desc;
     private TraitDescription longDesc;
@@ -526,10 +550,15 @@ public enum Trait {
             b.append(' ');
         }
     }
+    
+    public boolean isOverridden(Character ch) {
+        return OVERRIDES.containsKey(this) && OVERRIDES.get(this).stream().anyMatch(t -> ch.has(t));
+    }
 
     public static Map<Trait, Resistance> resistances;
     public static Resistance nullResistance;
-
+    public static final Map<Trait, Collection<Trait>> OVERRIDES;
+    
     static {
         nullResistance = (combat, c, s) -> "";
         resistances = new HashMap<>();
@@ -615,6 +644,16 @@ public enum Trait {
            }
            return "";
         });
+        Map<Trait, Collection<Trait>> o = new HashMap<>();
+        override(o, tongueTraining1, tongueTraining2, tongueTraining3);
+        override(o, tongueTraining2, tongueTraining3);
+        override(o, sexTraining1, sexTraining2, sexTraining3);
+        override(o, sexTraining2, sexTraining3);
+        override(o, limbTraining1, limbTraining2, limbTraining3);
+        override(o, limbTraining2, limbTraining3);
+        override(o, analTraining1, analTraining2, analTraining3);
+        override(o, analTraining2, analTraining3);
+        OVERRIDES = Collections.unmodifiableMap(o);
     }
 
     public static Resistance getResistance(Trait t) {

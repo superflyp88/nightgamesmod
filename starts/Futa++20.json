@@ -17,7 +17,6 @@
 		"level":20,
 		"money": 35000,
 		"gender":"herm",
-		"name":"Alexis",
 		"traits": [
 			"pussyhandler",
 			"dickhandler",
@@ -56,7 +55,7 @@
 				"genitals": {
 					"cock": {
 						"type":"basic",
-						"length":"average"
+						"length":6
 					},
 					"pussy": "normal"
 
@@ -98,10 +97,11 @@
 				"genitals": {
 					"cock": {
 						"type":"blessed",
-						"length":"average"
+						"length":6
 					},
-					"pussy": "divine"
-
+					"pussy":{
+						"_type": "nightgames.characters.body.mods.DivineMod"
+					}
 				}
 			},
 			"traits": [
@@ -143,10 +143,9 @@
 				"genitals": {
 					"cock": {
 						"type":"runic",
-						"length":"average"
+						"length":6
 					},
 					"pussy": "normal"
-
 				}
 			},
 			"traits": [
@@ -185,11 +184,11 @@
 				"genitals": {
 					"cock": {
 						"type":"primal",
-						"length":"big"
+						"length":8
 					},
 					"pussy":"normal"
 				},
-				"breasts":"d"
+				"breasts":4
 			},
 			"growth": {
 				"arousal": 4,
@@ -238,9 +237,11 @@
 
 					"cock": {
 						"type":"enlightened",
-						"length":"average"
+						"length":6
 					},
-					"pussy":"fiery"
+					"pussy":{
+						"_type": "nightgames.characters.body.mods.FieryMod"
+					}
 				}
 			},
 			"traits": [
@@ -272,10 +273,11 @@
 				"genitals": {
 					"cock": {
 						"type":"primal",
-						"length":"average"
+						"length":6
 					},
-					"pussy": "feral"
-
+					"pussy":{
+						"_type": "nightgames.characters.body.mods.FeralMod"
+					}
 				}
 			},
 			"growth": {
@@ -323,10 +325,11 @@
 				"genitals": {
 					"cock": {
 						"type":"bionic",
-						"length":"average"
+						"length":6
 					},
-					"pussy": "cybernetic"
-
+					"pussy":{
+						"_type": "nightgames.characters.body.mods.CyberneticMod"
+					}
 				}
 			},
 			"traits": [
@@ -363,9 +366,11 @@
 				"genitals": {
 					"cock": {
 						"type":"incubus",
-						"length":"average"
+						"length":6
 					},
-					"pussy": "succubus"
+					"pussy":{
+						"_type": "nightgames.characters.body.mods.DemonicMod"
+					}
 				}
 			},
 			"growth": {

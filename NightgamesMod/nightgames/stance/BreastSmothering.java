@@ -8,6 +8,7 @@ import nightgames.characters.Character;
 import nightgames.characters.Emotion;
 import nightgames.combat.Combat;
 import nightgames.global.Global;
+import nightgames.skills.BreastSmother;
 import nightgames.skills.Escape;
 import nightgames.skills.Finger;
 import nightgames.skills.FondleBreasts;
@@ -31,7 +32,7 @@ public class BreastSmothering extends AbstractFacingStance {
 
     @Override
     public String describe(Combat c) {
-        return Global.format("{self:name} keeps {other:name-possessive} face between their tits, with {self:possessive} large breasts fully encompassing {other:possessive} view. {other:SUBJECT} cannot even breathe except for the short pauses when {self:subject-action:allow|allows} {other:direct-object} to by loosens {self:possessive} grip.", top, bottom);
+        return Global.format("{self:subject-action:keep} {other:name-possessive} face between {self:possessive} tits, with {self:possessive} large breasts fully encompassing {other:possessive} view. {other:SUBJECT} cannot even breathe except for the short pauses when {self:subject-action:allow|allows} {other:direct-object} to by loosening {self:possessive} grip.", top, bottom);
     } 
 
     @Override
@@ -128,5 +129,21 @@ public class BreastSmothering extends AbstractFacingStance {
     @Override
     public double pheromoneMod(Character self) {
         return 3;
+    }
+
+    @Override
+    public void struggle(Combat c, Character struggler) {
+        c.write(struggler, Global.format("{self:SUBJECT-ACTION:attempt} to struggle out of {other:name-possessive} {other:body-part:breasts}, "
+                        + "but {other:pronoun-action:have} other ideas.", struggler, top));
+        (new BreastSmother(top)).resolve(c, bottom);
+        super.struggle(c, struggler);
+    }
+
+    @Override
+    public void escape(Combat c, Character escapee) {
+        c.write(escapee, Global.format("{self:SUBJECT-ACTION:attempt} to extract {self:reflective} out of {other:name-possessive} {other:body-part:breasts}, "
+                        + "but {other:pronoun-action:have} other ideas.", escapee, top));
+        (new BreastSmother(top)).resolve(c, bottom);
+        super.escape(c, escapee);
     }
 }

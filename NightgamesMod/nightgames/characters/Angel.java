@@ -6,8 +6,8 @@ import java.util.Optional;
 import nightgames.characters.body.BreastsPart;
 import nightgames.characters.body.CockMod;
 import nightgames.characters.body.FacePart;
-import nightgames.characters.body.PussyPart;
 import nightgames.characters.body.WingsPart;
+import nightgames.characters.body.mods.DivineMod;
 import nightgames.characters.custom.CharacterLine;
 import nightgames.combat.Combat;
 import nightgames.combat.CombatScene;
@@ -59,14 +59,14 @@ public class Angel extends BasePersonality {
 
     @Override public void applyStrategy(NPC self) {
         NPC npcSelf = (NPC) self;
-        npcSelf.plan = Plan.retreating;
+        npcSelf.plan = Plan.hunting;
         npcSelf.mood = Emotion.confident;
     }
 
     @Override
     public void setGrowth() {
-        character.getGrowth().stamina = 1;
-        character.getGrowth().arousal = 5;
+        character.getGrowth().stamina = 2;
+        character.getGrowth().arousal = 9;
         character.getGrowth().bonusStamina = 1;
         character.getGrowth().bonusArousal = 4;
 
@@ -86,8 +86,8 @@ public class Angel extends BasePersonality {
                                             + "<br/><br/>"
                                             + "As if to prove a point, she sits down again on your rehardened cock. "
                                             + "You groan as she slides rocks herself back and forth yet again, fucking you with a soft smile. "
-                                            + "<i>\"Quality over quantity as they say. I'll train you so you'll only be able to cum inside me. Wouldn't that be amusing " + other.getName() + "?\"</i>"
-                                            + "It's too much for your poor oversensitive cock, as you pump what remains into Angel a final time."
+                                            + "<i>\"Quality over quantity as they say. I'll train you so you'll only be able to cum inside me. Wouldn't that be amusing " + other.getName() + "?\" </i>"
+                                            + "It's too much for your poor oversensitive cock, as you pump what remains in you into Angel a final time."
                                             + "<br/>"
                                             + "Angel gives you a quick kiss on the lips before leaving. <i>\"Thanks for listening to me "+ other.getName() + ", but you better be ready for me next time.\"</i>");
                             useSex();
@@ -223,7 +223,7 @@ public class Angel extends BasePersonality {
 
     private void useNymphomania() {
         Global.flag(ANGEL_NYMPHOMANIA_FOCUS);
-        character.mod(Attribute.Nymphomania, 1);
+        character.modAttributeDontSaveData(Attribute.Nymphomania, 1);
         character.getGrowth().addTrait(12, Trait.lastStand);
         character.getGrowth().addTrait(20, Trait.nymphomania);
         character.getGrowth().addTrait(25, Trait.RawSexuality);
@@ -391,7 +391,7 @@ public class Angel extends BasePersonality {
                                 + "\"<i>Mmmm... Honestly I don't need any more of your power. I'm already quite a bit stronger than you now, you know? "
                                 + "But that look on your face as you realize your hard work and training amounts to nothing... I can't get enough of that.</i>\"";
             } else if (other.getLevel() >= self.getLevel()) {
-                return "{self:SUBJECT} leans over your shoulder and purrs into your ear as your strength leaves your body, \"<i>Thank you for the donation. But you wont stop now will you?</i>\"";
+                return "{self:SUBJECT} leans over your shoulder and purrs into your ear as the strength leaves your body, \"<i>Thank you for the donation. But you wont stop now right?</i>\"";
             } else {
                 return "Angel finally seems to have caught up to you in strength. That's... not good. The divine seductress rocks her hips once more experimentally, "
                                 + "and shows you a satisfied smile as you uncontrollably let out a final splurt of cum.";
@@ -437,9 +437,9 @@ public class Angel extends BasePersonality {
                             + "tongue and all. You try to get away from her, but she holds you down and merciless pounds away at your overused pussy. You can tell she is turned on as well, but "
                             + "it'll do you no good, as you're already feeling yourself slip over the edge. "
                             + "<br/><br/>Finally it becomes too much, and you cum hard. You wrap your arms and legs unconsciously cling to Angel's body and you seek out "
-                            + "a needy kiss from her. Angel takes note of your convulsing body, and smirks, <i>\"I think you need some more training. I could make "
+                            + "a kiss from her. Angel takes note of your convulsing body, and smirks, <i>\"I think you need some more training. I could make "
                             + "anyone cum instantly while they're in me.\"</i> After a small pause, Angel grins devilishly and resumes pumping in and out of your pussy "
-                            + "in long leisurely strokes. <i>\"Hmm in fact, why don't I practice with you a bit? You know what they say, practice makes perfect!\" "
+                            + "in long leisurely strokes. <i>\"Hmm in fact, why don't I train you a bit? You know what they say, practice makes perfect!\" "
                             + "You groan in frustration as your oversensitive cunt receives her cock again. "
                             + "<br/><br/>This could be a long night.";
         } else if (c.getStance().inserted(opponent)) {
@@ -624,7 +624,9 @@ public class Angel extends BasePersonality {
         character.getGrowth().addTrait(10, Trait.demigoddess);
         character.getGrowth().addTrait(10, Trait.divinity);
         character.getGrowth().addTrait(10, Trait.proheels);
-        character.body.addReplace(PussyPart.divine, 1);
+        if (character.hasPussy()) {
+            character.body.addReplace(character.body.getRandomPussy().applyMod(new DivineMod()), 1);
+        }
         if (character.hasDick()) {
             character.body.addReplace(character.body.getRandomCock().applyMod(CockMod.blessed), 1);
         }
@@ -634,7 +636,7 @@ public class Angel extends BasePersonality {
         character.outfitPlan.add(Clothing.getByID("bikinitop"));
         character.outfitPlan.add(Clothing.getByID("bikinibottoms"));
         character.outfitPlan.add(Clothing.getByID("highheels"));
-        character.mod(Attribute.Divinity, 1);
+        character.modAttributeDontSaveData(Attribute.Divinity, 1);
         character.getGrowth().addOrRemoveTraits(character);
     }
 

@@ -46,7 +46,7 @@ public class Tribadism extends Skill {
             }
         }
         stancePossible &= !c.getStance().havingSex(c);
-        return possible && stancePossible && getSelf().clothingFuckable(selfO) && target.crotchAvailable();
+        return possible && stancePossible && getSelf().crotchAvailable() && target.crotchAvailable();
     }
 
     @Override
@@ -105,7 +105,7 @@ public class Tribadism extends Skill {
         if (modifier == Result.normal) {
             String message = String.format("%s grabs %s leg and slides her crotch against %s."
                             + " She then grinds her %s against %s wet %s.", getSelf().subject(),
-                            target.nameOrPossessivePronoun(), target.possessiveAdjective(),
+                            target.nameOrPossessivePronoun(), target.possessivePronoun(),
                             selfO.describe(getSelf()), target.possessiveAdjective(),
                             targetO.describe(getSelf()));
             return message;

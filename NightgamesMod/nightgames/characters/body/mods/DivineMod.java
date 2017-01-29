@@ -11,9 +11,21 @@ import nightgames.status.Stsflag;
 import nightgames.status.addiction.Addiction;
 import nightgames.status.addiction.AddictionType;
 
-public class DivineHoleMod extends PartMod {
-    public DivineHoleMod() {
+public class DivineMod extends PartMod {
+    public static final DivineMod INSTANCE = new DivineMod();
+
+    public DivineMod() {
         super("divine", 0, 1.0, 0.0, -10);
+    }
+
+    public String adjective(BodyPart part) {
+        if (part.getType().equals("pussy")) {
+            return "divine";
+        }
+        if (part.getType().equals("ass")) {
+            return "sacred";
+        }
+        return "holy";
     }
 
     public double applyBonuses(Combat c, Character self, Character opponent, BodyPart part, BodyPart target, double damage) { 
@@ -32,8 +44,9 @@ public class DivineHoleMod extends PartMod {
             c.write(self, Global.format(
                             "{self:NAME-POSSESSIVE} " + part.fullDescribe(self)
                                             + " radiates a golden glow when {self:pronoun-action:moan|moans}. "
-                                            + "{other:SUBJECT-ACTION:realize|realizes} {self:subject-action:are|is} feeding on {self:possessive} own pleasure to charge up {self:possessive} divine energy.",
-                            self, opponent));
+                                            + "%s feeding on {self:possessive} own pleasure to charge up {self:possessive} divine energy.",
+                            self, opponent, self == opponent ? "{self:SUBJECT-ACTION:are|is}" 
+                                            : "{other:SUBJECT-ACTION:realize|realizes} {self:subject-action:are|is}"));
             self.add(c, new DivineCharge(self, .25));
         } else {
             c.write(self, Global.format(
@@ -44,15 +57,17 @@ public class DivineHoleMod extends PartMod {
         return 0;
     }
 
-    public void onOrgasm(Combat c, Character self, Character opponent, BodyPart part) {
-        if (self.has(Trait.zealinspiring) && opponent.human() && opponent instanceof Player
-                        && Global.random(4) > 0) {
-            c.write(self, Global.format(
-                            "As {other:possessive} cum floods {self:name-possessive} "
-                                            + "%s, a holy aura surrounds {self:direct-object}. The soothing"
-                                            + " light washes over {other:pronoun}, filling {other:direct-object} with a zealous need to worship {self:possessive} divine body.",
-                            self, opponent, part.describe(self)));
-            ((Player)opponent).addict(AddictionType.ZEAL, self, Addiction.MED_INCREASE);
+    public void onOrgasmWith(Combat c, Character self, Character opponent, BodyPart part, BodyPart target, boolean selfCame) {
+        if (self.has(Trait.zealinspiring) && opponent.human() && opponent instanceof Player && !selfCame && Global.random(4) > 0) {
+            if (c.getStance().partsForStanceOnly(c, self, opponent).contains(part) && c.getStance().partsForStanceOnly(c, opponent, self).stream().anyMatch(otherPart -> otherPart.isType("cock"))) {
+                c.write(self, Global.format(
+                                "As {other:possessive} cum floods {self:name-possessive} "
+                                                + "%s, a holy aura surrounds {self:direct-object}. The soothing"
+                                                + " light washes over {other:pronoun}, filling {other:direct-object} with a zealous need to worship {self:possessive} divine body.",
+                                self, opponent, part.describe(self)));
+ 
+                ((Player)opponent).addict(AddictionType.ZEAL, self, Addiction.MED_INCREASE);
+            }
         }
     }
 
@@ -75,5 +90,10 @@ public class DivineHoleMod extends PartMod {
             pleasureMod += charge.magnitude;
         }
         return pleasureMod;
+    }
+
+    @Override
+    public String describeAdjective(String partType) {
+        return "divine aura";
     }
 }

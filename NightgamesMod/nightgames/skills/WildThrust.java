@@ -24,10 +24,7 @@ public class WildThrust extends Thrust {
 
     @Override
     public boolean usable(Combat c, Character target) {
-        return getSelf().canAct() && c.getStance()
-                                      .havingSex(c)
-                        && c.getStance()
-                            .inserted();
+        return havingSex(c, target);
     }
 
     @Override
@@ -42,6 +39,13 @@ public class WildThrust extends Thrust {
             c.write(getSelf(), Global.format("{self:SUBJECT-ACTION:fuck|fucks} {other:name-do} with such abandon that it leaves {other:direct-object} "
                             + "momentarily dazed. {self:SUBJECT-ACTION:do|does} not let this chance slip and {self:action:rotate|rotates} {self:possessive} body so that {self:pronoun-action:are|is} on top!", getSelf(), target));
             c.setStance(c.getStance().reverse(c, false));
+        }
+        if (effective && getSelf().has(Trait.breeder) && c.getStance().vaginallyPenetratedBy(c, getSelf(), target)
+                         && target.human()) {
+            c.write(getSelf(), Global.format("The sheer ferocity of {self:name-possessive} movements"
+                            + " fill you with an unnatural desire to sate {self:possessive} thirst with"
+                            + " your cum.", getSelf(), target));
+            ((Player) target).addict(AddictionType.BREEDER, getSelf(), Addiction.LOW_INCREASE);
         }
         return effective;
     }
@@ -147,8 +151,7 @@ public class WildThrust extends Thrust {
 
     @Override
     public String getName(Combat c) {
-        if (c.getStance()
-             .inserted(getSelf())) {
+        if (c.getStance().penetratedBy(c, c.getStance().getPartner(c, getSelf()), getSelf())) {
             return "Wild Thrust";
         } else {
             return "Wild Ride";

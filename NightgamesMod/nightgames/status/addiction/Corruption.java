@@ -10,19 +10,22 @@ import com.google.gson.JsonObject;
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.Player;
-import nightgames.characters.body.BasicCockPart;
+import nightgames.characters.Trait;
 import nightgames.characters.body.BodyPart;
 import nightgames.characters.body.CockMod;
 import nightgames.characters.body.CockPart;
-import nightgames.characters.body.ModdedCockPart;
 import nightgames.characters.body.PussyPart;
 import nightgames.characters.body.TailPart;
 import nightgames.characters.body.WingsPart;
+import nightgames.characters.body.mods.DemonicMod;
+import nightgames.characters.body.mods.SizeMod;
 import nightgames.combat.Combat;
 import nightgames.global.Global;
 import nightgames.status.Abuff;
+import nightgames.status.Compulsion;
 import nightgames.status.DarkChaos;
 import nightgames.status.Status;
+import nightgames.status.Stsflag;
 
 public class Corruption extends Addiction {
 
@@ -39,6 +42,9 @@ public class Corruption extends Addiction {
         super.tick(c);
         Severity sev = getCombatSeverity();
         int amt = sev.ordinal() * 2;
+        if (cause.has(Trait.Subversion) && affected.is(Stsflag.charmed)) {
+            amt *= 1.5;
+        }
         List<Abuff> buffs = new ArrayList<>();
         if (noMoreAttrs()) {
             if (sev != Severity.HIGH) {
@@ -52,30 +58,22 @@ public class Corruption extends Addiction {
                 c.write(affected,
                                 "<b>The dark taint changes you even further, and a set of black bat wings grows from your back!</b>");
                 affected.body.temporaryAddOrReplacePartWithType(WingsPart.demonic, 20);
-            } else if (affected.hasPussy() && affected.body.getRandomPussy() != PussyPart.succubus) {
+            } else if (affected.hasPussy() && !affected.body.getRandomPussy().moddedPartCountsAs(affected, DemonicMod.INSTANCE)) {
                 c.write(affected,
                                 "<b>The dark taint changes you even further, and your pussy turns into that of a succubus!</b>");
-                affected.body.temporaryAddOrReplacePartWithType(PussyPart.succubus, 20);
+                affected.body.temporaryAddOrReplacePartWithType(affected.body.getRandomPussy().applyMod(DemonicMod.INSTANCE), 20);
             } else if (affected.hasDick() && !affected.body.getRandomCock().moddedPartCountsAs(affected, CockMod.incubus)) {
                 c.write(affected,
                                 "<b>The dark taint changes you even further, and your cock turns into that of an incubus!</b>");
-                CockPart cock = affected.body.getRandomCock();
-                BasicCockPart base;
-                if (cock instanceof BasicCockPart) {
-                    base = (BasicCockPart) cock;
-                } else {
-                    base = ((ModdedCockPart) cock).getBase();
-                }
-                affected.body.temporaryAddOrReplacePartWithType(new ModdedCockPart(base, CockMod.incubus), 20);
+                affected.body.temporaryAddOrReplacePartWithType(affected.body.getRandomCock().applyMod(CockMod.incubus), 20);
             } else if (!affected.hasPussy() && cause.hasDick()) {
                 c.write(affected,
                                 "<b>The dark taint changes you even further, and a succubus's pussy forms between your legs!</b>");
-                affected.body.temporaryAddOrReplacePartWithType(PussyPart.succubus, 20);
+                affected.body.temporaryAddOrReplacePartWithType(PussyPart.generic.applyMod(DemonicMod.INSTANCE), 20);
             } else if (!affected.hasDick()) {
                 c.write(affected,
                                 "<b>The dark taint changes you even further, and an incubus's cock forms between your legs!</b>");
-                affected.body.temporaryAddOrReplacePartWithType(new ModdedCockPart(BasicCockPart.huge, CockMod.incubus),
-                                20);
+                affected.body.temporaryAddOrReplacePartWithType(new CockPart().applyMod(new SizeMod(SizeMod.COCK_SIZE_BIG)).applyMod(CockMod.incubus), 20);
             } else {
                 c.write(affected,
                                 "The corruption is churning within you, but it seems that it's done all it can for now.");
@@ -108,14 +106,26 @@ public class Corruption extends Addiction {
             }
             buffs.forEach(b -> affected.addlist.add(b));
         }
+        if (c != null && cause.has(Trait.InfernalAllegiance) && !affected.is(Stsflag.compelled) && shouldCompel() && c.getOpponent(affected).equals(cause)) {
+            c.write(affected, "A wave of obedience radiates out from the dark essence within you, constraining"
+                            + " your free will. It will make fighting " 
+                            + cause.getTrueName() + " much more difficult...");
+            affected.add(c, new Compulsion(affected, cause));
+        }
     }
 
+    private boolean shouldCompel() {
+        return getSeverity().ordinal() * 20 < Global.random(100);
+    }
+    
     private boolean noMoreAttrs() {
         return getDrainAttr() == null;
     }
     
     private Attribute getDrainAttr() {
-        return Global.pickRandom(Arrays.stream(Attribute.values()).filter(a -> a != Attribute.Dark && affected.get(a) >= 10).toArray(Attribute[]::new)).get();
+        return Global.pickRandom(Arrays.stream(Attribute.values())
+                        .filter(a -> a != Attribute.Dark && affected.get(a) >= 10)
+                        .toArray(Attribute[]::new)).orElse(null);
     }
 
     @Override

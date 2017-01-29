@@ -11,7 +11,9 @@ import nightgames.nskills.tags.SkillTag;
 import nightgames.skills.damage.DamageType;
 import nightgames.skills.damage.Staleness;
 import nightgames.stance.Stance;
+import nightgames.status.DurationStatus;
 import nightgames.status.Lovestruck;
+import nightgames.status.Stsflag;
 
 public class Kiss extends Skill {
     private static final String divineString = "Kiss of Baptism";
@@ -103,6 +105,12 @@ public class Kiss extends Skill {
             target.add(c, new Lovestruck(target, getSelf(), 2));
             getSelf().usedAttribute(Attribute.Divinity, c, .5);
         }
+        if (getSelf().has(Trait.TenderKisses) && target.is(Stsflag.charmed) && Global.random(3) == 0) {
+            DurationStatus charmed = (DurationStatus) target.getStatus(Stsflag.charmed);
+            charmed.setDuration(charmed.getDuration() + Global.random(1, 2));
+            c.write(getSelf(), Global.format("<b>The exquisite tenderness of {self:name-possessive} kisses"
+                            + " reinforces the haze clouding {other:name-possessive} mind.</b>", getSelf(), target));
+        }
         BodyPart selfMouth = getSelf().body.getRandom("mouth");
         target.body.pleasure(getSelf(), selfMouth, target.body.getRandom("mouth"), m, c, this);
         int selfDamage = Math.max(1, m / 4);
@@ -142,7 +150,7 @@ public class Kiss extends Skill {
         if (modifier == Result.divine) {
             return "You pull " + target.getName()
                             + " to you and kiss her passionately, sending your divine aura into her body though her mouth. "
-                            + "You tangle your tongue around hers and probe the sensitive insides her mouth while mirroring the action in the space of her soul, sending quakes of pleasure through her physical and astral body. "
+                            + "You tangle your tongue around hers and probe the sensitive insides of her mouth while mirroring the action in the space of her soul, sending quakes of pleasure through her physical and astral body. "
                             + "As you finally break the kiss, she looks energized but desperate for more.";
         }
         if (modifier == Result.special) {

@@ -9,6 +9,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Panel;
@@ -86,6 +87,7 @@ import nightgames.modifier.standard.NoModifier;
 import nightgames.skills.Skill;
 import nightgames.skills.TacticGroup;
 import nightgames.trap.Trap;
+import nightgames.utilities.DebugHelper;
 
 @SuppressWarnings("unused")
 public class GUI extends JFrame implements Observer {
@@ -157,7 +159,14 @@ public class GUI extends JFrame implements Observer {
     private static final String USE_CLOSET_UI = "CLOSET";
 
     public GUI() {
-
+        try {
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+                        | UnsupportedLookAndFeelException e1) {
+            System.err.println("Unable to set look-and-feel");
+            e1.printStackTrace();
+        }
+        
         // frame title
         setTitle("NightGames Mod");
         setBackground(GUIColors.bgDark);
@@ -334,7 +343,7 @@ public class GUI extends JFrame implements Observer {
         optionsPanel.add(rdfntnorm);
         optionsPanel.add(rdnfntlrg);
         
-        JLabel pronounLabel = new JLabel("Pronoun Usage");
+        JLabel pronounLabel = new JLabel("Human Pronoun Usage");
         ButtonGroup pronoun = new ButtonGroup();
         JRadioButton rdPronounBody = new JRadioButton("Based on Anatomy");
         JRadioButton rdPronounFemale = new JRadioButton("Always Female");
@@ -343,6 +352,16 @@ public class GUI extends JFrame implements Observer {
         optionsPanel.add(pronounLabel);
         optionsPanel.add(rdPronounBody);
         optionsPanel.add(rdPronounFemale);
+
+        JLabel npcPronounLabel = new JLabel("NPC Pronoun Usage");
+        ButtonGroup npcPronoun = new ButtonGroup();
+        JRadioButton rdNPCPronounBody = new JRadioButton("Based on Anatomy");
+        JRadioButton rdNPCPronounFemale = new JRadioButton("Always Female");
+        npcPronoun.add(rdNPCPronounBody);
+        npcPronoun.add(rdNPCPronounFemale);
+        optionsPanel.add(npcPronounLabel);
+        optionsPanel.add(rdNPCPronounBody);
+        optionsPanel.add(rdNPCPronounFemale);
 
         // m/f preference (no (other) males in the games yet... good for
         // modders?)
@@ -417,7 +436,12 @@ public class GUI extends JFrame implements Observer {
             } else {
                 rdfntnorm.setSelected(true);
             }
-            if (Global.checkFlag(Flag.FemalePronounsOnly)) {
+            if (Global.checkFlag(Flag.NPCFemalePronounsOnly)) {
+                rdNPCPronounFemale.setSelected(true);
+            } else {
+                rdNPCPronounBody.setSelected(true);
+            }
+            if (Global.checkFlag(Flag.PCFemalePronounsOnly)) {
                 rdPronounFemale.setSelected(true);
             } else {
                 rdPronounBody.setSelected(true);
@@ -432,7 +456,8 @@ public class GUI extends JFrame implements Observer {
                 Global.setFlag(Flag.hardmode, rdhard.isSelected());
                 Global.setFlag(Flag.autosave, rdautosaveon.isSelected());
                 Global.setFlag(Flag.noportraits, rdporoff.isSelected());
-                Global.setFlag(Flag.FemalePronounsOnly, rdPronounFemale.isSelected());
+                Global.setFlag(Flag.NPCFemalePronounsOnly, rdNPCPronounFemale.isSelected());
+                Global.setFlag(Flag.PCFemalePronounsOnly, rdPronounFemale.isSelected());
                 if (!rdporon.isSelected()) {
                     showNone();
                 }
@@ -723,7 +748,7 @@ public class GUI extends JFrame implements Observer {
 
     // portrait loader
     public void loadPortrait(Combat c, Character player, Character enemy) {
-        if (!Global.checkFlag(Flag.noportraits)) {
+        if (!Global.checkFlag(Flag.noportraits) && c != null && c.isBeingObserved()) {
             if (Global.isDebugOn(DebugFlags.DEBUG_GUI)) {
                 System.out.println("Load portraits");
             }
@@ -974,6 +999,10 @@ public class GUI extends JFrame implements Observer {
     }
 
     public void clearText() {
+        if (Global.isDebugOn(DebugFlags.DEBUG_GUI)) {
+            System.out.println("Clearing messages");
+            DebugHelper.printStackFrame(5, 1);
+        }
         textPane.setText("");
     }
 
@@ -1139,6 +1168,7 @@ public class GUI extends JFrame implements Observer {
         clearCommand();
         commandPanel.add(encounterButton("Attack " + target.getName(), enc, target, Encs.ambush));
         commandPanel.add(encounterButton("Wait", enc, target, Encs.wait));
+        commandPanel.add(encounterButton("Flee", enc, target, Encs.fleehidden));
         Global.getMatch().pause();
         commandPanel.refresh();
     }
@@ -1185,9 +1215,12 @@ public class GUI extends JFrame implements Observer {
     }
 
     public void ding() {
+        if (combat != null) {
+            combat.pause();
+        }
         Player player = Global.human;
         if (player.availableAttributePoints > 0) {
-            message(player.availableAttributePoints + " Attribute Points remain.\n");
+            Global.writeIfCombatUpdateImmediately(combat, player, player.availableAttributePoints + " Attribute Points remain.\n");
             clearCommand();
             for (Attribute att : player.att.keySet()) {
                 if (Attribute.isTrainable(player, att) && player.getPure(att) > 0) {
@@ -1201,7 +1234,7 @@ public class GUI extends JFrame implements Observer {
             commandPanel.refresh();
         } else if (player.traitPoints > 0 && !skippedFeat) {
             clearCommand();
-            message("You've earned a new perk. Select one below.");
+            Global.writeIfCombatUpdateImmediately(combat, player, "You've earned a new perk. Select one below.");
             for (Trait feat : Global.getFeats(player)) {
                 if (!player.has(feat)) {
                     commandPanel.add(featButton(feat));
@@ -1213,14 +1246,14 @@ public class GUI extends JFrame implements Observer {
         } else {
             skippedFeat = false;
             clearCommand();
-            Global.gui().message(Global.gainSkills(player));
+            Global.writeIfCombatUpdateImmediately(combat, player, Global.gainSkills(player));
             player.finishDing();
             if (player.getLevelsToGain() > 0) {
                 player.actuallyDing();
                 ding();
             } else {
                 if (combat != null) {
-                    endCombat();
+                    combat.resume();
                 } else if (Global.getMatch() != null) {
                     Global.getMatch().resume();
                 } else if (Global.day != null) {
@@ -1297,7 +1330,7 @@ public class GUI extends JFrame implements Observer {
             timeLabel.setForeground(new Color(51, 101, 202));
         } else if (Global.getTime() == Time.DAY) { // not updating correctly during daytime
             if (Global.getDay() != null) {
-                timeLabel.setText(Global.getDay().getTime() + " pm");
+                timeLabel.setText(Global.getDay().getTime());
             } else {
                 timeLabel.setText("10:00 am");
             }
@@ -1367,15 +1400,30 @@ public class GUI extends JFrame implements Observer {
         ArrayList<JLabel> attlbls = new ArrayList<>();
         for (Attribute a : Attribute.values()) {
             int amt = player.get(a);
+            int pure = player.getPure(a);
             if (amt > 0) {
-                JLabel dirtyTrick = new JLabel(a.name() + ": " + amt);
+                if (amt == pure) {
+                    JLabel dirtyTrick = new JLabel(a.name() + ": " + amt);
+                    dirtyTrick.setForeground(GUIColors.textColorLight);
+                    attlbls.add(count, dirtyTrick);
+                    statsPanel.add(attlbls.get(count++));
+                } else {
+                    JLabel base = new JLabel(String.format("%n%n%s: %d ", a.name(), pure));
+                    base.setSize(base.getPreferredSize());
+                    base.setForeground(GUIColors.textColorLight);
+                    JLabel mod = new JLabel(String.format("(%s%d)", amt > pure ? "+" : "-", Math.abs(amt - pure)));
+                    mod.setForeground(amt > pure ? GUIColors.Green : GUIColors.Red);
+                    mod.setFont(getFont().deriveFont(10.f));
+                    JPanel p = new JPanel();
+                    p.setLayout(new BoxLayout(p, BoxLayout.X_AXIS));
+                    p.setBackground(GUIColors.bgLight);
+                    p.add(base);
+                    p.add(mod);
+                    p.add(Box.createHorizontalGlue());
+                    statsPanel.add(p);
+                }
 
-                dirtyTrick.setForeground(GUIColors.textColorLight);
 
-                attlbls.add(count, dirtyTrick);
-
-                statsPanel.add(attlbls.get(count));
-                count++;
             }
         }
 
@@ -1437,7 +1485,7 @@ public class GUI extends JFrame implements Observer {
     private KeyableButton nextButton(Combat combat) {
         return new RunnableButton("Next", () -> {
             clearCommand();
-            combat.turn();
+            combat.resume();
         });
     }
 

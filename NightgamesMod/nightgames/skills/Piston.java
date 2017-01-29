@@ -18,12 +18,6 @@ public class Piston extends Thrust {
     }
 
     @Override
-    public boolean usable(Combat c, Character target) {
-        return getSelf().canAct() && c.getStance().canthrust(c, getSelf())
-                        && c.getStance().havingSexOtherNoStrapped(c, getSelf());
-    }
-
-    @Override
     public int getMojoBuilt(Combat c) {
         return 0;
     }
@@ -96,7 +90,7 @@ public class Piston extends Thrust {
 
     @Override
     public String getName(Combat c) {
-        if (c.getStance().inserted(getSelf())) {
+        if (c.getStance().penetratedBy(c, c.getStance().getPartner(c, getSelf()), getSelf())) {
             return "Piston";
         } else {
             return "Bounce";

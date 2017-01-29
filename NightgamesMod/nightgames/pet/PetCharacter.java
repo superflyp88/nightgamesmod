@@ -184,8 +184,9 @@ public class PetCharacter extends Character {
     }
 
     @Override
-    public void act(Combat c) {
+    public boolean act(Combat c) {
         act(c, c.getOpponent(this));
+        return false;
     }
 
     public void act(Combat c, Character target) {

@@ -6,12 +6,10 @@ import java.util.Optional;
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.Trait;
-import nightgames.characters.body.BasicCockPart;
-import nightgames.characters.body.BodyPart;
 import nightgames.characters.body.CockMod;
 import nightgames.characters.body.CockPart;
-import nightgames.characters.body.ModdedCockPart;
-import nightgames.characters.body.PussyPart;
+import nightgames.characters.body.mods.CyberneticMod;
+import nightgames.characters.body.mods.SizeMod;
 import nightgames.global.Global;
 import nightgames.items.Item;
 import nightgames.requirements.BodyPartRequirement;
@@ -51,12 +49,11 @@ public class MaraTime extends BaseNPCTime {
         {
             TransformationOption growCock = new TransformationOption();
             growCock.ingredients.put(Item.Dildo, 1);
-            growCock.requirements.add(RequirementShortcuts.rev(new NotRequirement(new BodyPartRequirement("cock"))));
-            growCock.additionalRequirements = "";
+            growCock.addRequirement(RequirementShortcuts.rev(new NotRequirement(new BodyPartRequirement("cock"))), "Has no penis");
             growCock.option = "Mara: Install a cock";
             growCock.scene = "[Placeholder]<br/>Mara makes some modifications to the dildo and manages to attach it to her own body through methods unknown to you.";
             growCock.effect = (c, self, other) -> {
-                other.body.add(new ModdedCockPart(BasicCockPart.big, CockMod.bionic));
+                other.body.add(new CockPart().applyMod(new SizeMod(SizeMod.COCK_SIZE_BIG)).applyMod(CockMod.bionic));
                 return true;
             };
             options.add(growCock);
@@ -64,8 +61,7 @@ public class MaraTime extends BaseNPCTime {
         {
             TransformationOption removeCock = new TransformationOption();
             removeCock.ingredients.put(Item.DisSol, 3);
-            removeCock.requirements.add(RequirementShortcuts.rev(new BodyPartRequirement("cock")));
-            removeCock.additionalRequirements = "";
+            removeCock.addRequirement(RequirementShortcuts.rev(new BodyPartRequirement("cock")), "Has a penis");
             removeCock.option = "Mara: Remove her cock";
             removeCock.scene = "[Placeholder]<br/>Mara uses the solvent to dissolve the bond from her modified cock, making her wholly female again.";
             removeCock.effect = (c, self, other) -> {
@@ -74,51 +70,53 @@ public class MaraTime extends BaseNPCTime {
             };
             options.add(removeCock);
         }
-        TransformationOption bionicCock = new TransformationOption();
-        bionicCock.ingredients.put(Item.PriapusDraft, 10);
-        bionicCock.ingredients.put(Item.TinkersMix, 20);
-        bionicCock.ingredients.put(Item.Lubricant, 5);
-        bionicCock.ingredients.put(Item.Spring, 5);
-        bionicCock.ingredients.put(Item.Dildo, 1);
-        bionicCock.requirements.add(new BodyPartRequirement("cock"));
-        bionicCock.requirements.add((c, self, other) -> {
-            return self.body.get("cock")
-                            .stream()
-                            .anyMatch(cock -> ((CockPart) cock).isGeneric(self));
-        });
-        bionicCock.additionalRequirements = "A normal cock";
-        bionicCock.option = "Bionic Cock";
-        bionicCock.scene = "[Placeholder]<br/>Mara installs a bionic cock on you";
-        bionicCock.effect = (c, self, other) -> {
-            Optional<BodyPart> optPart = self.body.get("cock")
-                                                  .stream()
-                                                  .filter(cock -> ((CockPart) cock).isGeneric(self))
-                                                  .findAny();
-            BasicCockPart target = (BasicCockPart) optPart.get();
-            self.body.remove(target);
-            self.body.add(new ModdedCockPart(target, CockMod.bionic));
-            return true;
-        };
-        options.add(bionicCock);
-        TransformationOption cyberneticPussy = new TransformationOption();
-        cyberneticPussy.ingredients.put(Item.TinkersMix, 20);
-        cyberneticPussy.ingredients.put(Item.Lubricant, 5);
-        cyberneticPussy.ingredients.put(Item.Spring, 5);
-        cyberneticPussy.ingredients.put(Item.Onahole, 1);
-        cyberneticPussy.requirements.add(new BodyPartRequirement("pussy"));
-        cyberneticPussy.requirements.add((c, self, other) -> {
-            return self.body.get("pussy")
-                            .stream()
-                            .anyMatch(part -> part == PussyPart.normal);
-        });
-        cyberneticPussy.additionalRequirements = "A normal pussy";
-        cyberneticPussy.option = "Cybernetic Pussy";
-        cyberneticPussy.scene = "[Placeholder]<br/>Mara installs a cybernetic pussy on you";
-        cyberneticPussy.effect = (c, self, other) -> {
-            self.body.addReplace(PussyPart.cybernetic, 1);
-            return true;
-        };
-        options.add(cyberneticPussy);
+        {
+            TransformationOption bionicCock = new ApplyPartModOption("cock", CockMod.bionic);
+            bionicCock.ingredients.put(Item.PriapusDraft, 10);
+            bionicCock.ingredients.put(Item.TinkersMix, 20);
+            bionicCock.ingredients.put(Item.Lubricant, 5);
+            bionicCock.ingredients.put(Item.Spring, 5);
+            bionicCock.ingredients.put(Item.Dildo, 1);
+            bionicCock.option = "Bionic Cock";
+            bionicCock.scene = "[Placeholder]<br/>Mara installs a bionic cock on you.";
+            options.add(bionicCock);
+        }
+        {
+            TransformationOption cyberneticPussy = new ApplyPartModOption("pussy", CyberneticMod.INSTANCE);
+            cyberneticPussy.ingredients.put(Item.TinkersMix, 20);
+            cyberneticPussy.ingredients.put(Item.Lubricant, 5);
+            cyberneticPussy.ingredients.put(Item.Spring, 5);
+            cyberneticPussy.ingredients.put(Item.Onahole, 1);
+            cyberneticPussy.option = "Cybernetic Pussy";
+            cyberneticPussy.scene = "[Placeholder]<br/>Mara installs a cybernetic pussy on you.";
+            options.add(cyberneticPussy);
+        }
+        {
+            TransformationOption biomechAss = new ApplyPartModOption("ass", CyberneticMod.INSTANCE);
+            biomechAss.ingredients.put(Item.TinkersMix, 20);
+            biomechAss.ingredients.put(Item.Lubricant, 5);
+            biomechAss.ingredients.put(Item.Spring, 5);
+            biomechAss.ingredients.put(Item.Onahole, 1);
+            biomechAss.option = "Biomech Ass";
+            biomechAss.addRequirement((c, self, other) -> {
+                return self.getLevel() >= 30;
+            }, "At least level 30");
+            biomechAss.scene = "[Placeholder]<br/>Mara installs a biomech rectum on you.";
+            options.add(biomechAss);
+        }
+        {
+            TransformationOption prostheticMouth = new ApplyPartModOption("mouth", CyberneticMod.INSTANCE);
+            prostheticMouth.ingredients.put(Item.TinkersMix, 20);
+            prostheticMouth.ingredients.put(Item.Lubricant, 5);
+            prostheticMouth.ingredients.put(Item.Spring, 5);
+            prostheticMouth.ingredients.put(Item.Onahole, 1);
+            prostheticMouth.option = "Prosthetic Mouth";
+            prostheticMouth.addRequirement((c, self, other) -> {
+                return self.getLevel() >= 30;
+            }, "At least level 30");
+            prostheticMouth.scene = "[Placeholder]<br/>Mara replaces your mouth with advanced computer augmented prosthetics.";
+            options.add(prostheticMouth);
+        }
     }
 
     @Override

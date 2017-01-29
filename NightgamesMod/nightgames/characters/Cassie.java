@@ -4,13 +4,17 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
+import javax.print.attribute.standard.MediaSize.Other;
+
 import nightgames.actions.Action;
 import nightgames.actions.IMovement;
 import nightgames.actions.Movement;
+import nightgames.characters.body.AssPart;
 import nightgames.characters.body.BreastsPart;
 import nightgames.characters.body.CockMod;
 import nightgames.characters.body.FacePart;
-import nightgames.characters.body.PussyPart;
+import nightgames.characters.body.mods.ArcaneMod;
+import nightgames.characters.body.mods.ExtendedTonguedMod;
 import nightgames.characters.custom.CharacterLine;
 import nightgames.combat.Combat;
 import nightgames.combat.CombatScene;
@@ -27,6 +31,7 @@ import nightgames.start.NpcConfiguration;
 import nightgames.status.Energized;
 import nightgames.status.Stsflag;
 
+@SuppressWarnings("unused")
 public class Cassie extends BasePersonality {
     /**
      *
@@ -147,7 +152,7 @@ public class Cassie extends BasePersonality {
                 return "{self:SUBJECT} gasps as a new-found strength enters {self:possessive} body through {self:possessive} " + part + ". {self:PRONOUN} turns to you shyly and asks, "
                                 + "<i>\"{other:NAME}, that felt REALLY good... can I have some more? Pretty please?\"</i>";
             } else {
-                return "{self:SUBJECT} clings to your convulsing body as {self:PRONOUN} once again steals your experiences and training from your body as you helplessly cum. "
+                return "{self:SUBJECT} clings to your convulsing body as {self:pronoun} once again steals your experiences and training from your body as you helplessly cum. "
                                 + "<i>\"{other:NAME}, {other:name}, you've made me feel so good, you know that? "
                                 + "And you've been generously donating so much of yourself to me. "
                                 + "Don't worry, I'll be sure to pay you back now that I've become stronger than you. I'll make you feel <b>incredible</b>!\"</i>";
@@ -157,7 +162,7 @@ public class Cassie extends BasePersonality {
 
     @Override
     public void applyStrategy(NPC self) {
-        self.plan = Plan.hunting;
+        self.plan = Plan.retreating;
         self.mood = Emotion.confident;
         
         self.addPersonalStrategy(new OralStrategy());
@@ -185,6 +190,7 @@ public class Cassie extends BasePersonality {
         Global.gainSkills(self);
         self.setTrophy(Item.CassieTrophy);
         self.body.add(BreastsPart.c);
+        self.body.add(AssPart.generateGeneric().upgrade().upgrade().upgrade());
         self.initialGender = CharacterSex.female;
     }
 
@@ -199,12 +205,13 @@ public class Cassie extends BasePersonality {
     private void useMouthFocus() {
         Global.flag(CASSIE_MOUTH_FOCUS);
         character.getGrowth().addTrait(11, Trait.experttongue);
-        character.getGrowth().addTrait(25, Trait.tongueTraining2);
+        character.getGrowth().addBodyPartMod(25, "mouth", ExtendedTonguedMod.INSTANCE);
         character.getGrowth().addTrait(38, Trait.tongueTraining3);
-        character.getGrowth().addTrait(57, Trait.addictivefluids);
+        character.getGrowth().addBodyPartMod(57, "mouth", new ArcaneMod());
     }
     private void useEnchantressBonus() {
         Global.flag(CASSIE_ENCHANTRESS_FOCUS);
+        character.getGrowth().addTrait(21, Trait.Illusionist);
         character.getGrowth().addTrait(21, Trait.magicEyeArousal);
         character.getGrowth().addTrait(28, Trait.magicEyeFrenzy);
         character.getGrowth().addTrait(30, Trait.hypnoticsemen);
@@ -223,7 +230,7 @@ public class Cassie extends BasePersonality {
         Global.flag(CASSIE_SUBMISSIVE_FOCUS);
         character.getGrowth().addTrait(21, Trait.submissive);
         if (Global.checkFlag(CASSIE_BREAST_FOCUS)) {
-            character.getGrowth().addTrait(28, Trait.augmentedPheromones);
+            character.getGrowth().addTrait(28, Trait.PheromonedMilk);
         }
         if (Global.checkFlag(CASSIE_MOUTH_FOCUS)) {
             character.getGrowth().addTrait(28, Trait.sweetlips);
@@ -238,7 +245,7 @@ public class Cassie extends BasePersonality {
     @Override
     public void setGrowth() {
         character.getGrowth().stamina = 2;
-        character.getGrowth().arousal = 4;
+        character.getGrowth().arousal = 7;
         character.getGrowth().willpower = .8f;
         character.getGrowth().bonusStamina = 1;
         character.getGrowth().bonusArousal = 3;
@@ -456,7 +463,7 @@ public class Cassie extends BasePersonality {
                             + " to you. <i>\"Can you touch my nipples more? I really like that.\"</i> You reach up and play with "
                             + "her breasts as she continues to grind against you. She stops your pillow talk by kissing you desperately just before you feel her body tense up in orgasm. She collapses on top of you and kisses "
                             + "your cheek contently. <i>\"I'll keep practicing and make you feel even better next time, \"</i> she tells you happily. <i>\"I promise.\"</i> ";
-        } else if (c.getStance().vaginallyPenetrated(c, character)) {
+        } else if (c.getStance().vaginallyPenetrated(c, c.getOpponent(character))) {
             return "You feel yourself rapidly nearing the point of no return as Cassie thrusts her hardon into your wet snatch. You fondle and tease her sensitive nipples to increase her pleasure, but it's a losing battle. You're "
                             + "going to cum first. She smiles gently and kisses you as your pussy spasms wrapped around her cock when you cum. She shivers slightly, but you know she hasn't climaxed yet. When she breaks the kiss, her flushed "
                             + "face lights up in a broad smile. <i>\"It feels like you came pretty hard. Did you feel good?\"</i> You groan and slump flat on the ground in defeat. She gives you a light kiss on the tip of your nose "
@@ -682,7 +689,9 @@ public class Cassie extends BasePersonality {
 
     public void advance() {
         character.getGrowth().addTrait(10, Trait.witch);
-        character.body.addReplace(PussyPart.arcane, 1);
+        if (character.hasPussy()) {
+            character.body.addReplace(character.body.getRandomPussy().applyMod(ArcaneMod.INSTANCE), 1);
+        }
         if (character.hasDick()) {
             character.body.addReplace(character.body.getRandomCock().applyMod(CockMod.runic), 1);
         }
@@ -694,7 +703,7 @@ public class Cassie extends BasePersonality {
         character.outfitPlan.add(Clothing.getByID("skirt"));
         character.outfitPlan.add(Clothing.getByID("shoes"));
 
-        character.mod(Attribute.Arcane, 1);
+        character.modAttributeDontSaveData(Attribute.Arcane, 1);
         character.getGrowth().addOrRemoveTraits(character);
     }
 

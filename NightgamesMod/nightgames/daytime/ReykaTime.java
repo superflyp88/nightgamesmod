@@ -9,15 +9,13 @@ import java.util.Optional;
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.Trait;
-import nightgames.characters.body.BasicCockPart;
-import nightgames.characters.body.BodyPart;
 import nightgames.characters.body.CockMod;
-import nightgames.characters.body.CockPart;
 import nightgames.characters.body.EarPart;
-import nightgames.characters.body.ModdedCockPart;
-import nightgames.characters.body.PussyPart;
+import nightgames.characters.body.CockPart;
 import nightgames.characters.body.TailPart;
 import nightgames.characters.body.WingsPart;
+import nightgames.characters.body.mods.DemonicMod;
+import nightgames.characters.body.mods.SizeMod;
 import nightgames.global.Global;
 import nightgames.items.Item;
 import nightgames.requirements.BodyPartRequirement;
@@ -50,13 +48,12 @@ public class ReykaTime extends BaseNPCTime {
             TransformationOption growCock = new TransformationOption();
             growCock.ingredients.put(Item.PriapusDraft, 1);
             growCock.ingredients.put(Item.Talisman, 1);
-            growCock.requirements.add(RequirementShortcuts.rev(new NotRequirement(new BodyPartRequirement("cock"))));
-            growCock.additionalRequirements = "";
+            growCock.addRequirement(RequirementShortcuts.rev(new NotRequirement(new BodyPartRequirement("cock"))), "Has no penis");
             growCock.option = "Reyka: Grow a cock";
             growCock.scene = "[Placeholder]<br/>Reyka downs the bottle of the priapus draft after channeling her dark magic into the talisman and attaching it to her clitoris. "
                             + "The two of you wait, and soon enough, a large demonic cock sprouts out under the talisman, ripping it off from her body.";
             growCock.effect = (c, self, other) -> {
-                other.body.add(new ModdedCockPart(BasicCockPart.big, CockMod.incubus));
+                other.body.add(new CockPart().applyMod(new SizeMod(SizeMod.COCK_SIZE_BIG)).applyMod(CockMod.incubus));
                 return true;
             };
             options.add(growCock);
@@ -64,8 +61,7 @@ public class ReykaTime extends BaseNPCTime {
         {
             TransformationOption removeCock = new TransformationOption();
             removeCock.ingredients.put(Item.FemDraft, 3);
-            removeCock.requirements.add(RequirementShortcuts.rev(new BodyPartRequirement("cock")));
-            removeCock.additionalRequirements = "";
+            removeCock.addRequirement(RequirementShortcuts.rev(new BodyPartRequirement("cock")), "Has a penis");
             removeCock.option = "Reyka: Remove her cock";
             removeCock.scene = "<br/>Reyka doesn't seem extremely pleased with your request to remove her new found maleness, but complies anyways with your wishes. "
                             + "Taking the FemDrafts you offer her, she drinks them one after another and waits with her cock still proudly erect. "
@@ -77,62 +73,47 @@ public class ReykaTime extends BaseNPCTime {
             };
             options.add(removeCock);
         }
-        TransformationOption incubusCock = new TransformationOption();
-        incubusCock.ingredients.put(Item.PriapusDraft, 10);
-        incubusCock.ingredients.put(Item.SuccubusDraft, 20);
-        incubusCock.ingredients.put(Item.semen, 5);
-        incubusCock.requirements.add(new BodyPartRequirement("cock"));
-        incubusCock.requirements.add((c, self, other) -> {
-            return self.body.get("cock")
-                            .stream()
-                            .anyMatch(cock -> ((CockPart) cock).isGeneric(self));
-        });
-        incubusCock.additionalRequirements = "A normal cock";
-        incubusCock.option = "Incubus Cock";
-        incubusCock.scene = "{self:subject} smiles when she sees that you have brought her the ingredients. "
-                        + "<i>\"{other:name}, honey, just lie down on the couch over there and I'll fix you right up.\"</i> "
-                        + "To be completely honest, you're kind of worried that this may go completely and horribly wrong "
-                        + "now that you've decided to do this. However it's a bit too late in the game to back out now. "
-                        + "Nervously, you lie down on the couch in the demoness' chapel. A few minutes later, Reyka returns, "
-                        + "completely naked. Reyka glances at you, and coos <i>\"Aww, don't be nervous! I promise this wont "
-                        + "hurt... too much.\"</i> The succubus saunters over to you and fetches the bottles you prepared with "
-                        + "her tail. She pours the thick liquids on her hands and mixes them together. She applies half of the "
-                        + "mixture on your cock (which almost makes you cum due to her ministrations), and massages the rest "
-                        + "into her cunt. Finally, she draws a familiar rune on your lower belly that you recognize as the orgasm "
-                        + "seal she uses in the night games.<br/><br/>"
-                        + "As Reyka finishes with her preparations, you finally realize what she's about to do. Remembering the last "
-                        + "time she fucked you within an inch of your life, you start to scramble off of her couch, in an mad attempt "
-                        + "to escape. As if she read your mind, Reyka unfurls her wings and jumps on you as you almost reach the stairs "
-                        + "back up to the main chapel area. The temptress flaps her wings once and uses the upwards force to swiftly "
-                        + "mount you. Grinning devilishly, she purrs <i>\"Oh no {other:name}, we'll be having none "
-                        + "of that. You paid for this yourself, and it would be SUCH a waste for us to stop now. Don't you agree "
-                        + "{other:name}?\"</i> Resigned to your fate, you can only nod obediently as she rubs her goopy slit against "
-                        + "your rock hard erection<br/><br/>"
-                        + "After 6 hours of messy sex in which Reyka fucked you unconscious 17 times, you wake up cuddled in Reyka's "
-                        + "bountiful bosoms. You quickly notice that Reyka has been awake and smiling at your groggy expression while you wake up. "
-                        + "As you somehow start to get hard again when you smell Reyka's intoxicating scent, you realize that your penis feels very different. "
-                        + "Reyka sees you glancing at your own crotch and tells you, <i>\"So if you haven't noticed yet, your cock has been transformed into "
-                        + "that of an incubus. You'll find that you have a bit more staying power than usual, and you will be able to drain some "
-                        + "of your partner's strengths whil you're fucking. Finally, you'll find that your cum has some... special properties. "
-                        + "If you cum inside a girl, she'll be temporarily enthralled to your will. These effects are stronger the more instinctive "
-                        + "your opponent is. However, it wont work much against that high tech gizmo that you humans have now. Anyway, now that "
-                        + "we're done, I have to get some rest. Even if it doesn't look like it, that ritual took a lot out of me.\" "
-                        + "Recognizing that you are being shooed away, you profusely thank Reyka and leave her chapel with your new incubus cock.</i>";
-        incubusCock.effect = (c, self, other) -> {
-            Optional<BodyPart> optPart = self.body.get("cock")
-                                                  .stream()
-                                                  .filter(cock -> ((CockPart) cock).isGeneric(self))
-                                                  .findAny();
-            BasicCockPart target = (BasicCockPart) optPart.get();
-            self.body.remove(target);
-            self.body.add(new ModdedCockPart(target, CockMod.incubus));
-            return true;
-        };
-        options.add(incubusCock);
+        {
+            TransformationOption incubusCock = new ApplyPartModOption("cock", CockMod.incubus);
+            incubusCock.ingredients.put(Item.PriapusDraft, 10);
+            incubusCock.ingredients.put(Item.SuccubusDraft, 5);
+            incubusCock.ingredients.put(Item.semen, 5);
+            incubusCock.option = "Incubus Cock";
+            incubusCock.scene = "{self:subject} smiles when she sees that you have brought her the ingredients. "
+                            + "<i>\"{other:name}, honey, just lie down on the couch over there and I'll fix you right up.\"</i> "
+                            + "To be completely honest, you're kind of worried that this may go completely and horribly wrong "
+                            + "now that you've decided to do this. However it's a bit too late in the game to back out now. "
+                            + "Nervously, you lie down on the couch in the demoness' chapel. A few minutes later, Reyka returns, "
+                            + "completely naked. Reyka glances at you, and coos <i>\"Aww, don't be nervous! I promise this wont "
+                            + "hurt... too much.\"</i> The succubus saunters over to you and fetches the bottles you prepared with "
+                            + "her tail. She pours the thick liquids on her hands and mixes them together. She applies half of the "
+                            + "mixture on your cock (which almost makes you cum due to her ministrations), and massages the rest "
+                            + "into her cunt. Finally, she draws a familiar rune on your lower belly that you recognize as the orgasm "
+                            + "seal she uses in the night games.<br/><br/>"
+                            + "As Reyka finishes with her preparations, you finally realize what she's about to do. Remembering the last "
+                            + "time she fucked you within an inch of your life, you start to scramble off of her couch, in an mad attempt "
+                            + "to escape. As if she read your mind, Reyka unfurls her wings and jumps on you as you almost reach the stairs "
+                            + "back up to the main chapel area. The temptress flaps her wings once and uses the upwards force to swiftly "
+                            + "mount you. Grinning devilishly, she purrs <i>\"Oh no {other:name}, we'll be having none "
+                            + "of that. You paid for this yourself, and it would be SUCH a waste for us to stop now. Don't you agree "
+                            + "{other:name}?\"</i> Resigned to your fate, you can only nod obediently as she rubs her goopy slit against "
+                            + "your rock hard erection<br/><br/>"
+                            + "After 6 hours of messy sex in which Reyka fucked you unconscious 17 times, you wake up cuddled in Reyka's "
+                            + "bountiful bosoms. You quickly notice that Reyka has been awake and smiling at your groggy expression while you wake up. "
+                            + "As you somehow start to get hard again when you smell Reyka's intoxicating scent, you realize that your penis feels very different. "
+                            + "Reyka sees you glancing at your own crotch and tells you, <i>\"So if you haven't noticed yet, your cock has been transformed into "
+                            + "that of an incubus. You'll find that you have a bit more staying power than usual, and you will be able to drain some "
+                            + "of your partner's strengths whil you're fucking. Finally, you'll find that your cum has some... special properties. "
+                            + "If you cum inside a girl, she'll be temporarily enthralled to your will. These effects are stronger the more instinctive "
+                            + "your opponent is. However, it wont work much against that high tech gizmo that you humans have now. Anyway, now that "
+                            + "we're done, I have to get some rest. Even if it doesn't look like it, that ritual took a lot out of me.\" "
+                            + "Recognizing that you are being shooed away, you profusely thank Reyka and leave her chapel with your new incubus cock.</i>";
+            options.add(incubusCock);
+        }
         TransformationOption demonWings = new TransformationOption();
-        demonWings.ingredients.put(Item.SuccubusDraft, 20);
+        demonWings.ingredients.put(Item.SuccubusDraft, 10);
         demonWings.ingredients.put(Item.semen, 5);
-        demonWings.requirements.add(not(bodypart("wings")));
+        demonWings.addRequirement(not(bodypart("wings")), "No wings");
         demonWings.option = "Demonic Wings";
         demonWings.scene =
                         "Reyka smiles and crushes the ingredients together and draws a magic formation on your back and shoulders. "
@@ -146,14 +127,9 @@ public class ReykaTime extends BaseNPCTime {
         };
         options.add(demonWings);
         TransformationOption demonTail = new TransformationOption();
-        demonTail.ingredients.put(Item.SuccubusDraft, 20);
+        demonTail.ingredients.put(Item.SuccubusDraft, 10);
         demonTail.ingredients.put(Item.semen, 5);
-        demonTail.requirements.add(not(bodypart("tail")));
-        demonTail.requirements.add((c, self, other) -> {
-            return self.body.get("tail")
-                            .stream()
-                            .anyMatch(part -> part != TailPart.demonic) || !self.body.has("tail");
-        });
+        demonTail.addRequirement(not(bodypart("tail")), "No tail");
         demonTail.option = "Spade Tail";
         demonTail.scene =
                         "[Placeholder]<br/>Reyka marks the top of you ass with a magic symbol and fingers your ass until you grow a demonic tail.";
@@ -163,14 +139,13 @@ public class ReykaTime extends BaseNPCTime {
         };
         options.add(demonTail);
         TransformationOption pointedEars = new TransformationOption();
-        pointedEars.ingredients.put(Item.SuccubusDraft, 20);
+        pointedEars.ingredients.put(Item.SuccubusDraft, 10);
         pointedEars.ingredients.put(Item.semen, 5);
-        pointedEars.requirements.add(new BodyPartRequirement("ears"));
-        pointedEars.requirements.add((c, self, other) -> {
+        pointedEars.addRequirement((c, self, other) -> {
             return self.body.get("ears")
                             .stream()
-                            .anyMatch(part -> part != EarPart.cat) || !self.body.has("ears");
-        });
+                            .anyMatch(part -> part != EarPart.pointed) || !self.body.has("ears");
+        }, "No pointed ears");
         pointedEars.option = "Pointed Ears";
         pointedEars.scene =
                         "Reyka fetches the ingredients from your pockets with her tail and mixes them together with her palm. She mutters something unintelligible under her breath and suddenly a "
@@ -184,26 +159,40 @@ public class ReykaTime extends BaseNPCTime {
             return true;
         };
         options.add(pointedEars);
-        TransformationOption succubusPussy = new TransformationOption();
-        succubusPussy.ingredients.put(Item.SuccubusDraft, 20);
-        succubusPussy.ingredients.put(Item.BewitchingDraught, 20);
-        succubusPussy.ingredients.put(Item.FemDraft, 20);
-        succubusPussy.ingredients.put(Item.semen, 5);
-        succubusPussy.requirements.add(new BodyPartRequirement("pussy"));
-        succubusPussy.requirements.add((c, self, other) -> {
-            return self.body.get("pussy")
-                            .stream()
-                            .anyMatch(pussy -> pussy == PussyPart.normal);
-        });
-        succubusPussy.additionalRequirements = "A normal pussy";
-        succubusPussy.option = "Succubus Pussy";
-        succubusPussy.scene =
-                        "[Placeholder]<br/>Reyka mixes the potions together with her tail and fucks you thoroughly with it, turning your once-human slit into a pulsating cock-hungry succubus pussy.";
-        succubusPussy.effect = (c, self, other) -> {
-            self.body.addReplace(PussyPart.succubus, 1);
-            return true;
-        };
-        options.add(succubusPussy);
+        {
+            TransformationOption succubusPussy = new ApplyPartModOption("pussy", DemonicMod.INSTANCE);
+            succubusPussy.ingredients.put(Item.SuccubusDraft, 10);
+            succubusPussy.ingredients.put(Item.BewitchingDraught, 10);
+            succubusPussy.ingredients.put(Item.FemDraft, 20);
+            succubusPussy.ingredients.put(Item.semen, 5);
+            succubusPussy.option = "Succubus Pussy";
+            succubusPussy.scene = "[Placeholder]<br/>Reyka mixes the potions together with her tail and fucks you thoroughly with it, turning your once-human slit into a cock-hungry succubus pussy.";
+            options.add(succubusPussy);
+        }
+        {
+            TransformationOption devilishAss = new ApplyPartModOption("ass", DemonicMod.INSTANCE);
+            devilishAss.ingredients.put(Item.SuccubusDraft, 10);
+            devilishAss.ingredients.put(Item.BewitchingDraught, 10);
+            devilishAss.ingredients.put(Item.semen, 5);
+            devilishAss.option = "Devil's Ass";
+            devilishAss.addRequirement((c, self, other) -> {
+                return self.getLevel() >= 30;
+            }, "At least level 30");
+            devilishAss.scene = "[Placeholder]<br/>Reyka mixes the potions together with her tail and fucks you thoroughly with it, turning your once-human ass into a cock-hungry corrupted hole.";
+            options.add(devilishAss);
+        }
+        {
+            TransformationOption demonicMouth = new ApplyPartModOption("mouth", DemonicMod.INSTANCE);
+            demonicMouth.ingredients.put(Item.SuccubusDraft, 10);
+            demonicMouth.ingredients.put(Item.BewitchingDraught, 10);
+            demonicMouth.ingredients.put(Item.semen, 5);
+            demonicMouth.option = "Demonic Mouth";
+            demonicMouth.addRequirement((c, self, other) -> {
+                return self.getLevel() >= 30;
+            }, "At least level 30");
+            demonicMouth.scene = "[Placeholder]<br/>Reyka drinks the potions and kisses you. Somehow the mixture corrupts the inside of your mouth into that of a demon's.";
+            options.add(demonicMouth);
+        }
     }
 
     @Override

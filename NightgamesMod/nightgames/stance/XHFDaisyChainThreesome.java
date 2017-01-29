@@ -30,7 +30,7 @@ public class XHFDaisyChainThreesome extends MaledomSexStance {
 
     @Override
     public boolean inserted(Character c) {
-        return c == domSexCharacter || c == top;
+        return c == domSexCharacter || c == bottom;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class XHFDaisyChainThreesome extends MaledomSexStance {
     @Override
     public void checkOngoing(Combat c) {
         if (!c.getOtherCombatants().contains(domSexCharacter)) {
-            c.write(bottom, Global.format("With the disappearance of {self:name-do}, {other:subject-action:continue} to ride {self:direct-object} in a reverse cowgirl position.", domSexCharacter, bottom));
+            c.write(bottom, Global.format("With the disappearance of {self:name-do}, {master:subject-action:continue} to ride {self:name-do} in a reverse cowgirl position.", domSexCharacter, bottom));
             c.setStance(new ReverseCowgirl(top, bottom));
         }
     }
@@ -69,7 +69,8 @@ public class XHFDaisyChainThreesome extends MaledomSexStance {
                         .collect(Collectors.toList());
     }
 
-    public List<BodyPart> partsFor(Combat combat, Character self, Character other) {
+    @Override
+    public List<BodyPart> partsForStanceOnly(Combat combat, Character self, Character other) {
         if (self == domSexCharacter(combat) && other == bottom) {
             return Arrays.asList(top.body.getRandomInsertable()).stream().filter(part -> part != null && part.present())
                             .collect(Collectors.toList());

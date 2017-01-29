@@ -34,7 +34,7 @@ public class Anal extends AnalSexStance {
             return "futa_futa_doggy.jpg";
         } else if (!bottom.hasDick() && top.useFemalePronouns()) {
             return "futa_doggy.jpg";
-        } else if (!bottom.hasDick()) {
+        } else if (!top.useFemalePronouns()) {
             return "analf.jpg";
         } else {
             return "pegging.jpg";
@@ -100,7 +100,8 @@ public class Anal extends AnalSexStance {
             if (inserted.human()) {
                 c.write("With " + inserter.getName() + "'s pole gone, your ass gets a respite.");
             } else {
-                c.write(inserted.getName() + " sighs with relief with your phallus gone.");
+                c.write(inserted.getName() + " sighs with relief with "
+                                + inserter.nameOrPossessivePronoun() + " phallus gone.");
             }
             c.setStance(insertRandom(c));
         }
@@ -109,7 +110,9 @@ public class Anal extends AnalSexStance {
                 c.write("With your asshole suddenly disappearing, " + inserter.getName()
                                 + "'s dick pops out of what was once your sphincter.");
             } else {
-                c.write("Your dick pops out of " + inserted.getName() + " as her asshole shrinks and disappears.");
+                c.write(Global.capitalizeFirstLetter(inserter.nameOrPossessivePronoun()) + 
+                                " dick pops out of " + inserted.getName() 
+                                + " as "+inserted.possessiveAdjective()+" asshole shrinks and disappears.");
             }
             c.setStance(insertRandom(c));
         }
