@@ -23,6 +23,9 @@ import nightgames.global.DebugFlags;
 import nightgames.global.Global;
 import nightgames.match.Encounter;
 import nightgames.match.Match;
+import nightgames.match.team.actions.FinishOff;
+import nightgames.match.team.actions.GiveClothing;
+import nightgames.match.team.actions.GiveEnergyDrink;
 import nightgames.modifier.Modifier;
 
 public class TeamMatch extends Match {
@@ -303,7 +306,11 @@ public class TeamMatch extends Match {
         if (isCaptain(ch)) {
             return Global.getActions();
         }
-        return new HashSet<>(Arrays.asList());
+        return new HashSet<>(Arrays.asList(
+            new FinishOff(this, ch),
+            new GiveClothing(this, ch),
+            new GiveEnergyDrink(this, ch)
+        ));
     }
 
     @Override

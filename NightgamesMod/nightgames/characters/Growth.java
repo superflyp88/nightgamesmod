@@ -109,6 +109,7 @@ public class Growth implements Cloneable {
     }
     
     public void addOrRemoveTraits(Character character) {
+        traits.values().forEach(l -> l.removeIf(t -> t == null));
         traits.keySet().stream().filter(i -> i > character.level).forEach(i -> {
             traits.get(i).forEach(character::remove);
         });

@@ -1199,7 +1199,6 @@ public class Global {
         characterPool.put(eve.getCharacter().getType(), eve.getCharacter());
         characterPool.put(maya.getCharacter().getType(), maya.getCharacter());
         characterPool.put(yui.getCharacter().getType(), yui.getCharacter());
-        debugChars.add(reyka.getCharacter());
     }
     
     public static void loadWithDialog() {
