@@ -264,7 +264,7 @@ public class Match {
         if (combatant.human()) {
             output.append("You received $")
                   .append(reward)
-                  .append(" for turning in your collected trophies.\n");
+                  .append(" for turning in your collected trophies.<br/>");
         }
         for (Challenge c : combatant.challenges) {
             if (c.done) {
@@ -292,7 +292,7 @@ public class Match {
         }
         Global.gui()
               .clearText();
-        StringBuilder sb = new StringBuilder("Tonight's match is over.");
+        StringBuilder sb = new StringBuilder("Tonight's match is over.<br/>");
         Optional<Character> winner = decideWinner();
         Player player = Global.getPlayer();
 
@@ -300,7 +300,7 @@ public class Match {
             sb.append(combatant.getTrueName())
               .append(" scored ")
               .append(score.get(combatant))
-              .append(" points.");
+              .append(" points.<br/>");
             combatant.modMoney(score.get(combatant) * combatant.prize());
             combatant.modMoney(calculateReward(combatant, sb));
 
@@ -310,17 +310,17 @@ public class Match {
             combatant.change();
             finalizeCombatant(combatant);
         }
-        sb.append("\nYou earned $")
+        sb.append("<br/>You earned $")
           .append(score.get(player) * player.prize())
           .append(" for scoring ")
           .append(score.get(player))
-          .append(" points.\n");
+          .append(" points.<br/>");
         int bonus = score.get(player) * condition.bonus();
         player.modMoney(bonus);
         if (bonus > 0) {
             sb.append("You earned an additional $")
               .append(bonus)
-              .append(" for accepting the handicap.");
+              .append(" for accepting the handicap.<br/>");
         }
         winner.ifPresent(w -> giveWinnerPrize(w, sb));
         if (winner.filter(Character::human)

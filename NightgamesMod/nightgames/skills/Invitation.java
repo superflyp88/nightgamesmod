@@ -39,7 +39,8 @@ public class Invitation extends Skill {
         boolean insertable = c.getStance().insert(c, getSelf(), getSelf()) != c.getStance()
                         || c.getStance().insert(c, target, getSelf()) != c.getStance();
         return c.getStance().distance() < 2 && insertable && getSelf().canRespond() && getSelf().crotchAvailable() && target.crotchAvailable()
-                        && (getSelf().hasDick() && target.hasPussy() || getSelf().hasPussy() && target.hasDick()) && !target.isPet() && target.canRespond();
+                        && (getSelf().hasDick() && target.hasPussy() || getSelf().hasPussy() && target.hasDick()) && !target.isPet() && target.canRespond()
+                        && c.getStance().sub(getSelf());
     }
 
     @Override

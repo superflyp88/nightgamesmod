@@ -39,7 +39,8 @@ public class BreastSmother extends Skill {
         return getSelf().breastsAvailable() && c.getStance().reachTop(getSelf()) && c.getStance().front(getSelf())
                         && getSelf().body.getLargestBreasts().getSize() >= MIN_REQUIRED_BREAST_SIZE
                         && c.getStance().mobile(getSelf())
-                        && (!c.getStance().mobile(target) || c.getStance().prone(target)) && getSelf().canAct();
+                        && (!c.getStance().mobile(target) || c.getStance().prone(target)) && getSelf().canAct()
+                        && c.getStance().en != Stance.breastsmothering;
     }
 
     @Override

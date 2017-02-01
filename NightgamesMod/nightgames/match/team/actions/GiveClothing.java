@@ -95,11 +95,11 @@ public class GiveClothing extends TeammateAction {
         Clothing picked;
         int layer = Clothing.N_LAYERS;
         do {
-            picked = outfit.getSlotAt(slot, layer--);
+            picked = outfit.getSlotAt(slot, --layer);
             if (picked != null && !isAppropriate(picked, getCaptain())) {
                 picked = null;
             }
-        } while (picked == null && layer >= 0);
+        } while (picked == null && layer > 0);
         
         return picked == null ? outfit.getTopOfSlot(slot) : picked;
     }

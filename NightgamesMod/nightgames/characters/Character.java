@@ -2239,18 +2239,20 @@ public abstract class Character extends Observable implements Cloneable {
 
         pleasured = false;
         Optional<PetCharacter> randomOpponentPetOptional = Global.pickRandom(c.getPetsFor(opponent));
-        if (randomOpponentPetOptional.isPresent()) {
+        if (!isPet() && randomOpponentPetOptional.isPresent()) {
             PetCharacter pet = randomOpponentPetOptional.get();
             boolean weakenBetter = modifyDamage(DamageType.physical, pet, 100) / pet.getStamina().remaining() 
                             > 100 / pet.getStamina().remaining();
             if (canAct() && c.getStance().mobile(this) && pet.roll(this, c, 20)) {
+                c.write(this, Global.format("<b>{self:SUBJECT-ACTION:turn} {self:possessive} attention"
+                                + " on {other:name-do}</b>", this, pet));
                 if (weakenBetter) {
                     c.write(Global.format("{self:SUBJECT-ACTION:focus|focuses} {self:possessive} attentions on {other:name-do}, "
-                                    + "thoroughly exhausting {other:direct-object} in a game of cat and mouse.", this, pet));
+                                    + "thoroughly exhausting {other:direct-object} in a game of cat and mouse.<br/>", this, pet));
                     pet.weaken(c, (int) modifyDamage(DamageType.physical, pet, Global.random(10, 20)));
                 } else {
                     c.write(Global.format("{self:SUBJECT-ACTION:focus|focuses} {self:possessive} attentions on {other:name-do}, "
-                                    + "harassing and toying with {other:possessive} body as much as {self:pronoun} can.", this, pet));
+                                    + "harassing and toying with {other:possessive} body as much as {self:pronoun} can.<br/>", this, pet));
                     pet.body.pleasure(this, body.getRandom("hands"), pet.body.getRandomGenital(), Global.random(10, 20), c);
                 }
             }

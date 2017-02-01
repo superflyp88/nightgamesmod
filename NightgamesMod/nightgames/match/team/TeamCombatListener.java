@@ -58,14 +58,14 @@ public class TeamCombatListener extends CombatListener {
         System.err.println("Error: Tried to do pet battle in team match");
         Thread.dumpStack();
     }
-    
+/*    
     @Override
     public void onPetRemoved(PetCharacter self) {
         if (owners.containsKey(self)) {
             c.addPet(owners.get(self), self);
         }
     }
-    
+*/    
     private PetCharacter buildPet(Character captain, Character member) {
         int power = captain.getLevel();
         CharacterPet pet = new CharacterPet(captain, member, power, power);

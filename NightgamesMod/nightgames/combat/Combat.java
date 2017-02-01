@@ -1034,6 +1034,7 @@ public class Combat extends Observable implements Cloneable {
             actingPets.stream().filter(pet -> !alreadyBattled.contains(pet)).forEach(pet -> {
                 listen(l -> l.prePetAction(pet));
                 pet.act(this, pickTarget(pet));
+                write("<br/>");
                 if (pet.getSelf().owner().has(Trait.devoteeFervor) && Global.random(2) == 0) {
                     write(pet, Global.format("{self:SUBJECT} seems to have gained a second wind from {self:possessive} religious fervor!", pet, pet.getSelf().owner()));
                     pet.act(this, pickTarget(pet));
@@ -1055,10 +1056,20 @@ public class Combat extends Observable implements Cloneable {
         Character tgt;
         do {
             tgt = Global.pickRandom(otherCombatants).get();
-        } while (tgt == pet);
+        } while (!petsCanFight(pet, tgt));
         return tgt;
     }
 
+    private boolean petsCanFight(PetCharacter pet, Character target) {
+        if (target == null || pet == target || pet.getSelf().owner().equals(target)) {
+            return false;
+        }
+        if (!target.isPet()) {
+            return true;
+        }
+        return !((PetCharacter) target).getSelf().owner().equals(pet.getSelf().owner());
+    }
+    
     private void doStanceTick(Character self) {
         int stanceDominance = getStance().getDominanceOfStance(self);
         if (!(stanceDominance > 0)) {
@@ -1599,8 +1610,13 @@ public class Combat extends Observable implements Cloneable {
     }
 
     public void setStance(Position newStance, Character initiator, boolean voluntary) {
-        if (newStance.top.isPet() && newStance.bottom.isPet()) {
-            return; // Pet's don't get into statuses.
+        if ((newStance.top.isPet() && newStance.bottom.isPet())
+                        || ((newStance.top.isPet() || newStance.bottom.isPet()) 
+                                        && getStance().en != Stance.neutral
+                                        && !newStance.isThreesome())) {
+            // Pets don't get into stances with each other, and they don't usurp stances.
+            // Threesomes are exceptions to this.
+            return;
         }
         if ((newStance.top != getStance().bottom && newStance.top != getStance().top) || (newStance.bottom != getStance().bottom && newStance.bottom != getStance().top)) {
             if (initiator != null && initiator.isPet() && newStance.top == initiator) {

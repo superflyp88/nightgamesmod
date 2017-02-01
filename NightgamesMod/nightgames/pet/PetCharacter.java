@@ -223,13 +223,15 @@ public class PetCharacter extends Character {
             if (Global.isDebugOn(DebugFlags.DEBUG_PET)) {
                 System.out.println("Using enemy skill " + bestEnemySkill.skill.getLabel(c));
             }
-            c.write(this, String.format("<b>%s uses %s</b>\n", getTrueName(), bestEnemySkill.skill.getLabel(c)));
+            c.write(this, String.format("<b>%s uses %s against %s</b>\n", getTrueName(), 
+                            bestEnemySkill.skill.getLabel(c), target.nameDirectObject()));
             Skill.resolve(bestEnemySkill.skill, c, target);
         } else {
             if (Global.isDebugOn(DebugFlags.DEBUG_PET)) {
                 System.out.println("Using master skill " + bestMasterSkill.skill.getLabel(c));
             }
-            c.write(this, String.format("<b>%s uses %s</b>\n", getTrueName(), bestMasterSkill.skill.getLabel(c)));
+            c.write(this, String.format("<b>%s uses %s against %s</b>\n", 
+                            getTrueName(), bestMasterSkill.skill.getLabel(c), target.nameDirectObject()));
             Skill.resolve(bestMasterSkill.skill, c, self.owner());
         }
     }

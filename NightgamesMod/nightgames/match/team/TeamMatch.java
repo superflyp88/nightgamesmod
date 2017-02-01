@@ -195,7 +195,7 @@ public class TeamMatch extends Match {
 
     @Override
     protected void beforeAllTurns() {
-
+        map.values().forEach(a -> a.env.clear());
     }
 
     @Override
