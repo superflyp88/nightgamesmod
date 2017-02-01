@@ -534,8 +534,8 @@ public class Combat extends Observable implements Cloneable {
         Character mainOpponent = getOpponent(character);
         String buttslutCompletedFlag = Trait.buttslut.name() + "Completed";
         if (character.has(Trait.buttslut) && ((mainOpponent.hasDick() && mainOpponent.crotchAvailable() && mainOpponent.getArousal().percent() > 20) || mainOpponent.has(Trait.strapped)) && !getCombatantData(character).getBooleanFlag(buttslutCompletedFlag)) {
-            write(character, Global.format("Seeing the thick phallus in front of {self:reflective}, {self:subject} can't "
-                            + "but help offer up {self:possessive} ass in hopes that {other:subject} will fill {self:possessive} rear door.", character, mainOpponent));
+            write(character, Global.format("<b>Seeing the thick phallus in front of {self:reflective}, {self:subject} can't "
+                            + "but help offer up {self:possessive} ass in hopes that {other:subject} will fill {self:possessive} rear door.</b>", character, mainOpponent));
             for (int i = 0; i < 5; i++) {
                 Clothing article = character.strip(ClothingSlot.bottom, this);
                 if (article == null) {
@@ -1602,7 +1602,7 @@ public class Combat extends Observable implements Cloneable {
         parts2.forEach(part -> parts1.forEach(other -> part.onEndPenetration(this, partner, self, other)));
     }
 
-    private void doStartPenetration(Character self, Character partner) {
+    private void doStartPenetration(Position stance, Character self, Character partner) {
         List<BodyPart> parts1 = stance.getPartsFor(this, self, partner);
         List<BodyPart> parts2 = stance.getPartsFor(this, partner, self);
         parts1.forEach(part -> parts2.forEach(other -> part.onStartPenetration(this, self, partner, other)));
@@ -1623,11 +1623,9 @@ public class Combat extends Observable implements Cloneable {
                 PetInitiatedThreesome threesomeSkill = new PetInitiatedThreesome(initiator);
                 if (newStance.havingSex(this)) {
                     threesomeSkill.resolve(this, newStance.bottom);
-                    return;
                 } else if (!getStance().sub(newStance.bottom)) {
                     write(initiator, Global.format("{self:SUBJECT-ACTION:take|takes} the chance to send {other:name-do} sprawling to the ground", initiator, newStance.bottom));
                     newStance.bottom.add(this, new Falling(newStance.bottom));
-                    return;
                 }
             } else {
                 if (Global.isDebugOn(DebugFlags.DEBUG_SCENE)) {
@@ -1636,8 +1634,8 @@ public class Combat extends Observable implements Cloneable {
                                     newStance.getClass().getName());
                     Thread.dumpStack();
                 }
-                return;
             }
+            return;
         }
         if (Global.isDebugOn(DebugFlags.DEBUG_SCENE)) {
             System.out.printf("Stance Change: %s -> %s\n", stance.getClass()
@@ -1667,11 +1665,11 @@ public class Combat extends Observable implements Cloneable {
             getCombatantData(p1).setIntegerFlag("ChoseToFuck", 0);
             getCombatantData(p2).setIntegerFlag("ChoseToFuck", 0);
         } else if (!stance.inserted() && newStance.inserted()) {
-            doStartPenetration(p1, p2);
+            doStartPenetration(newStance, p1, p2);
             Character threePCharacter = stance.domSexCharacter(this);
             if (threePCharacter != p1 && threePCharacter != p2) {
-                doStartPenetration(p1, threePCharacter);
-                doStartPenetration(p2, threePCharacter);
+                doStartPenetration(newStance, p1, threePCharacter);
+                doStartPenetration(newStance, p2, threePCharacter);
             }
             Player player = null;
             if (p1.human() && p1 instanceof Player) {

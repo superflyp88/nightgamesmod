@@ -135,7 +135,7 @@ public class GenericBodyPart implements BodyPart {
 
     @Override
     public String toString() {
-        return fullDescribe(null);
+        return fullDescribe(Global.noneCharacter());
     }
 
     @Override
@@ -387,17 +387,27 @@ public class GenericBodyPart implements BodyPart {
         return newPart;
     }
 
+    public GenericBodyPart removeMod(PartMod mod) {
+        GenericBodyPart newPart = (GenericBodyPart) instance();
+        newPart.mods.removeIf(otherMod -> otherMod.getVariant().equals(mod.getVariant()));
+        return newPart;
+    }
+
     public BodyPart removeAllMods() {
         GenericBodyPart part = (GenericBodyPart) instance();
         part.mods.clear();
         return part;
     }
 
-    public List<? extends BodyPartMod> getMods() {
+    public List<? extends PartMod> getMods() {
         return mods;
     }
 
     protected List<PartMod> getPartMods() {
         return mods;
+    }
+
+    public void receiveCum(Combat c, Character self, Character donor, BodyPart sourcePart) {
+        getMods().stream().forEach(mod -> mod.receiveCum(c, self, this, donor, sourcePart));
     }
 }

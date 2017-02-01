@@ -1469,6 +1469,13 @@ public class Global {
             }
             return "";
         });
+
+        matchActions.put("if-nonhuman", (self, first, second, third) -> {
+            if (self != null && third != null) {
+                return !self.human() ? third : "";
+            }
+            return "";
+        });
         matchActions.put("subject", (self, first, second, third) -> {
             if (self != null) {
                 return self.subject();
@@ -1543,6 +1550,14 @@ public class Global {
                 return "mistress";
             } else {
                 return "master";
+            }
+        });
+
+        matchActions.put("mister", (self, first, second, third) -> {
+            if (self.useFemalePronouns()) {
+                return "miss";
+            } else {
+                return "mister";
             }
         });
 
