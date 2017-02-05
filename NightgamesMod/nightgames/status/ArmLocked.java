@@ -1,5 +1,7 @@
 package nightgames.status;
 
+import java.util.Optional;
+
 import com.google.gson.JsonObject;
 
 import nightgames.characters.Attribute;
@@ -12,6 +14,13 @@ import nightgames.requirements.RequirementShortcuts;
 
 public class ArmLocked extends Status {
     private float toughness;
+
+    /**
+     * Default constructor for loading
+     */
+    public ArmLocked() {
+        this(Global.noneCharacter(), 0);
+    }
 
     public ArmLocked(Character affected, float dc) {
         super("Arm Locked", affected);
@@ -32,7 +41,7 @@ public class ArmLocked extends Status {
     }
 
     @Override
-    public String initialMessage(Combat c, boolean replaced) {
+    public String initialMessage(Combat c, Optional<Status> replacement) {
         return String.format("%s being held down.\n", affected.subjectAction("are", "is"));
     }
 
@@ -63,12 +72,12 @@ public class ArmLocked extends Status {
     }
 
     @Override
-    public int weakened(int x) {
+    public int weakened(Combat c, int x) {
         return 0;
     }
 
     @Override
-    public int tempted(int x) {
+    public int tempted(Combat c, int x) {
         return 0;
     }
 

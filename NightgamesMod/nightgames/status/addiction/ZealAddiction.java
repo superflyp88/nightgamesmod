@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
-import nightgames.characters.Player;
 import nightgames.characters.body.BodyPart;
 import nightgames.combat.Combat;
 import nightgames.global.Global;
@@ -24,18 +23,18 @@ public class ZealAddiction extends Addiction {
 
     private boolean shouldApplyDivineCharge;
     
-    public ZealAddiction(Player affected, Character cause, float magnitude) {
+    public ZealAddiction(Character affected, Character cause, float magnitude) {
         super(affected, "Zeal", cause, magnitude);
         shouldApplyDivineCharge = false;
     }
 
-    public ZealAddiction(Player affected, Character cause) {
+    public ZealAddiction(Character affected, Character cause) {
         this(affected, cause, .01f);
     }
 
     @Override
     protected Optional<Status> withdrawalEffects() {
-        return Optional.of(new CrisisOfFaith(Global.getPlayer()));
+        return Optional.of(new CrisisOfFaith(affected));
     }
 
     @Override
@@ -73,7 +72,7 @@ public class ZealAddiction extends Addiction {
         super.tick(c);
         if ((c.getStance().en == Stance.neutral || c.getStance().en == Stance.behind)
                         && Global.randomdouble() < Math.min(.5f, combatMagnitude / 2.0)) {
-            c.write(Global.getPlayer(), "Overcome by your desire to serve " + cause.getName() + ", you get on the ground "
+            c.write(affected, "Overcome by your desire to serve " + cause.getName() + ", you get on the ground "
                             + "and prostrate yourself in front of " + cause.directObject() + ".");
             boolean behindPossible = cause.hasDick();
             Position pos;
@@ -173,7 +172,7 @@ public class ZealAddiction extends Addiction {
     }
 
     @Override
-    public String initialMessage(Combat c, boolean replaced) {
+    public String initialMessage(Combat c, Optional<Status> replacement) {
         if (inWithdrawal) {
             return "You tremble as " + cause.getName()
                             + " steps into view. Will " + cause.pronoun() + " punish you for not being pious enough?"
@@ -222,12 +221,12 @@ public class ZealAddiction extends Addiction {
     }
 
     @Override
-    public int weakened(int x) {
+    public int weakened(Combat c, int x) {
         return 0;
     }
 
     @Override
-    public int tempted(int x) {
+    public int tempted(Combat c, int x) {
         return 0;
     }
 
@@ -263,7 +262,7 @@ public class ZealAddiction extends Addiction {
 
     @Override
     public Status instance(Character newAffected, Character newOther) {
-        return new ZealAddiction((Player)newAffected, newOther, magnitude);
+        return new ZealAddiction((Character)newAffected, newOther, magnitude);
     }
 
     @Override public Status loadFromJson(JsonObject obj) {

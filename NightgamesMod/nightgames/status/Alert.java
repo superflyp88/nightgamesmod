@@ -1,5 +1,7 @@
 package nightgames.status;
 
+import java.util.Optional;
+
 import com.google.gson.JsonObject;
 
 import nightgames.characters.Attribute;
@@ -7,8 +9,16 @@ import nightgames.characters.Character;
 import nightgames.characters.Emotion;
 import nightgames.characters.body.BodyPart;
 import nightgames.combat.Combat;
+import nightgames.global.Global;
 
 public class Alert extends DurationStatus {
+
+    /**
+     * Default constructor for loading
+     */
+    public Alert() {
+        this(Global.noneCharacter());
+    }
     public Alert(Character affected) {
         super("Alert", affected, 3);
         flag(Stsflag.alert);
@@ -21,7 +31,7 @@ public class Alert extends DurationStatus {
     }
 
     @Override
-    public String initialMessage(Combat c, boolean replaced) {
+    public String initialMessage(Combat c, Optional<Status> replacement) {
         return String.format("%s now more alert\n", affected.subjectAction("are", "is"));
     }
 
@@ -53,12 +63,12 @@ public class Alert extends DurationStatus {
     }
 
     @Override
-    public int weakened(int x) {
+    public int weakened(Combat c, int x) {
         return 0;
     }
 
     @Override
-    public int tempted(int x) {
+    public int tempted(Combat c, int x) {
         return 0;
     }
 

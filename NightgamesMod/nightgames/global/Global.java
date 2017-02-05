@@ -714,13 +714,13 @@ public class Global {
         final int maxLevel = maxLevelTracker / players.size();
         players.stream().filter(c -> c.has(Trait.naturalgrowth)).filter(c -> c.getLevel() < maxLevel + 2).forEach(c -> {
             while (c.getLevel() < maxLevel + 2) {
-                c.ding();
+                c.ding(null);
             }
         });
         players.stream().filter(c -> c.has(Trait.unnaturalgrowth)).filter(c -> c.getLevel() < maxLevel + 5)
                         .forEach(c -> {
                             while (c.getLevel() < maxLevel + 5) {
-                                c.ding();
+                                c.ding(null);
                             }
                         });
 
@@ -1281,7 +1281,7 @@ public class Global {
                 targetLevel -= 4;
             }
             while (challenger.getCharacter().getLevel() <= targetLevel) {
-                challenger.getCharacter().ding();
+                challenger.getCharacter().ding(null);
             }
             players.add(challenger.getCharacter());
             return true;
@@ -1466,6 +1466,13 @@ public class Global {
             }
             return "";
         });
+
+        matchActions.put("if-nonhuman", (self, first, second, third) -> {
+            if (self != null && third != null) {
+                return !self.human() ? third : "";
+            }
+            return "";
+        });
         matchActions.put("subject", (self, first, second, third) -> {
             if (self != null) {
                 return self.subject();
@@ -1540,6 +1547,14 @@ public class Global {
                 return "mistress";
             } else {
                 return "master";
+            }
+        });
+
+        matchActions.put("mister", (self, first, second, third) -> {
+            if (self.useFemalePronouns()) {
+                return "miss";
+            } else {
+                return "mister";
             }
         });
 

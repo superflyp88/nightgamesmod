@@ -12,7 +12,6 @@ import nightgames.characters.NPC;
 import nightgames.json.JsonUtils;
 
 public class NpcConfiguration extends CharacterConfiguration {
-
     // Optional because NpcConfiguration is used for both NPCs and adjustments common to all NPCs
     protected String type;
     public Optional<Boolean> isStartCharacter;
@@ -56,6 +55,8 @@ public class NpcConfiguration extends CharacterConfiguration {
                 base.body.removeAll("pussy");
             }
             base.body.makeGenitalOrgans(sex);
+        } else {
+            base.body.makeGenitalOrgans(base.initialGender);
         }
         super.apply(base);
         if (isStartCharacter.isPresent()) {

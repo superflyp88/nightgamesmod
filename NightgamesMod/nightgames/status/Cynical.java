@@ -1,5 +1,7 @@
 package nightgames.status;
 
+import java.util.Optional;
+
 import com.google.gson.JsonObject;
 
 import nightgames.characters.Attribute;
@@ -23,7 +25,7 @@ public class Cynical extends DurationStatus {
     }
 
     @Override
-    public String initialMessage(Combat c, boolean replaced) {
+    public String initialMessage(Combat c, Optional<Status> replacement) {
         return String.format("%s now cynical towards future mind games.\n", affected.subjectAction("are", "is"));
     }
 
@@ -48,13 +50,13 @@ public class Cynical extends DurationStatus {
     }
 
     @Override
-    public int weakened(int x) {
+    public int weakened(Combat c, int x) {
         return 0;
     }
 
     @Override
-    public int tempted(int x) {
-        return -5;
+    public int tempted(Combat c, int x) {
+        return -Math.min(5, x / 4);
     }
 
     @Override

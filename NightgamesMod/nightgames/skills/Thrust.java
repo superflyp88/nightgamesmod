@@ -2,7 +2,6 @@ package nightgames.skills;
 
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
-import nightgames.characters.Player;
 import nightgames.characters.Trait;
 import nightgames.characters.body.BodyPart;
 import nightgames.combat.Combat;
@@ -37,7 +36,9 @@ public class Thrust extends Skill {
     }
 
     protected boolean havingSex(Combat c, Character target) {
-        return getSelfOrgan(c, target) != null && getTargetOrgan(c, target) != null && getSelf().canRespond() && c.getStance().havingSexOtherNoStrapped(c, getSelf());
+        return getSelfOrgan(c, target) != null && getTargetOrgan(c, target) != null && getSelf().canRespond()
+                        && (c.getStance().havingSexOtherNoStrapped(c, getSelf())
+                                        || c.getStance().partsForStanceOnly(c, getSelf(), target).stream().anyMatch(part -> part.isType("cock")));
     }
 
     @Override
@@ -83,25 +84,16 @@ public class Thrust extends Skill {
         }
         mt = target.modRecoilPleasure(c, mt);
 
-        Player p = null;
-        if (getSelf().human()) {
-            p = (Player) getSelf();
-        } else if (target.human()) {
-            p = (Player) target;
+        if (getSelf().checkAddiction(AddictionType.BREEDER, target)) {
+            float bonus = .3f * getSelf().getAddiction(AddictionType.BREEDER).map(Addiction::getCombatSeverity)
+                            .map(Enum::ordinal).orElse(0);
+            mt += mt * bonus;
         }
-        if (p != null) {
-            Character npc = c.getOpponent(p);
-            if (p.checkAddiction(AddictionType.BREEDER, npc)) {
-                float bonus = .3f * p.getAddiction(AddictionType.BREEDER).map(Addiction::getCombatSeverity)
-                                .map(Enum::ordinal).orElse(0);
-                if (p == getSelf()) {
-                    mt += mt * bonus;
-                } else {
-                    m += m * bonus;                    
-                }
-            }
+        if (target.checkAddiction(AddictionType.BREEDER, getSelf())) {
+            float bonus = .3f * target.getAddiction(AddictionType.BREEDER).map(Addiction::getCombatSeverity)
+                            .map(Enum::ordinal).orElse(0);
+            m += m * bonus;
         }
-        
         results[0] = m;
         results[1] = (int) mt;
 

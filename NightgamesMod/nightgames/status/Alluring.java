@@ -1,5 +1,7 @@
 package nightgames.status;
 
+import java.util.Optional;
+
 import com.google.gson.JsonObject;
 
 import nightgames.characters.Attribute;
@@ -9,6 +11,14 @@ import nightgames.combat.Combat;
 import nightgames.global.Global;
 
 public class Alluring extends DurationStatus {
+
+    /**
+     * Default constructor for loading
+     */
+    public Alluring() {
+        this(Global.noneCharacter());
+    }
+
     public Alluring(Character affected, int duration) {
         super("Alluring", affected, duration);
         flag(Stsflag.alluring);
@@ -20,7 +30,7 @@ public class Alluring extends DurationStatus {
     }
 
     @Override
-    public String initialMessage(Combat c, boolean replaced) {
+    public String initialMessage(Combat c, Optional<Status> replacement) {
         return Global.format("{self:SUBJECT-ACTION:are|is} now alluring.\n", affected, null);
     }
 
@@ -53,12 +63,12 @@ public class Alluring extends DurationStatus {
     }
 
     @Override
-    public int weakened(int x) {
+    public int weakened(Combat c, int x) {
         return 0;
     }
 
     @Override
-    public int tempted(int x) {
+    public int tempted(Combat c, int x) {
         return 0;
     }
 

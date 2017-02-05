@@ -2,7 +2,6 @@ package nightgames.skills;
 
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
-import nightgames.characters.Player;
 import nightgames.characters.Trait;
 import nightgames.combat.Combat;
 import nightgames.combat.Result;
@@ -38,7 +37,8 @@ public class Invitation extends Skill {
     public boolean usable(Combat c, Character target) {
         boolean insertable = c.getStance().insert(c, getSelf(), getSelf()) != c.getStance()
                         || c.getStance().insert(c, target, getSelf()) != c.getStance();
-        return c.getStance().distance() < 2 && insertable && getSelf().canRespond() && getSelf().crotchAvailable() && target.crotchAvailable()
+        boolean stanceInsertable = c.getStance().insertRandomDom(c, target) != c.getStance();
+        return stanceInsertable && c.getStance().distance() < 2 && insertable && getSelf().canRespond() && getSelf().crotchAvailable() && target.crotchAvailable()
                         && (getSelf().hasDick() && target.hasPussy() || getSelf().hasPussy() && target.hasDick()) && !target.isPet() && target.canRespond();
     }
 
@@ -46,8 +46,7 @@ public class Invitation extends Skill {
     public int getMojoCost(Combat c) {
         //Free if user is Kat and player has Breeder
         Character opp = c.getOpponent(getSelf());
-        boolean humanIsBreeder = opp.human() && (opp instanceof Player) && ((Player)opp).checkAddiction(AddictionType.BREEDER, getSelf());
-        if (getSelf().has(Trait.breeder) && humanIsBreeder)
+        if (getSelf().has(Trait.breeder) && opp.checkAddiction(AddictionType.BREEDER, getSelf()))
             return 0;
         return 50;
     }

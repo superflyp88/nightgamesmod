@@ -1,10 +1,11 @@
 package nightgames.status;
 
+import java.util.Optional;
+
 import com.google.gson.JsonObject;
 
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
-import nightgames.characters.Player;
 import nightgames.characters.Trait;
 import nightgames.characters.body.BodyPart;
 import nightgames.combat.Combat;
@@ -44,8 +45,8 @@ public class DivineCharge extends Status {
     public void tick(Combat c) {
         if (c != null) {
             Character opponent = c.getOpponent(affected);
-            if (!c.getStance().havingSex(c, affected) && opponent.human() && !(affected.has(Trait.zealinspiring)
-                            && !((Player)opponent).getAddiction(AddictionType.ZEAL).map(Addiction::isInWithdrawal).orElse(false))) {
+            if (!c.getStance().havingSex(c, affected) && !(affected.has(Trait.zealinspiring)
+                            && !opponent.getAddiction(AddictionType.ZEAL).map(Addiction::isInWithdrawal).orElse(false))) {
                 magnitude = magnitude / 2;
                 c.write(affected, "The holy energy seeps out of " + affected.nameDirectObject() + ".");
                 if (magnitude < .05f)
@@ -55,8 +56,8 @@ public class DivineCharge extends Status {
     }
 
     @Override
-    public String initialMessage(Combat c, boolean replaced) {
-        if (!replaced) {
+    public String initialMessage(Combat c, Optional<Status> replacement) {
+        if (!replacement.isPresent()) {
             return String.format("%s concentrating divine energy in %s %s.\n", affected.subjectAction("are", "is"),
                             affected.possessiveAdjective(), getPart(c));
         }
@@ -115,12 +116,12 @@ public class DivineCharge extends Status {
     }
 
     @Override
-    public int weakened(int x) {
+    public int weakened(Combat c, int x) {
         return 0;
     }
 
     @Override
-    public int tempted(int x) {
+    public int tempted(Combat c, int x) {
         return 0;
     }
 

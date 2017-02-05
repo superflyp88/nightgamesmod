@@ -1,10 +1,11 @@
 package nightgames.status;
 
+import java.util.Optional;
+
 import com.google.gson.JsonObject;
 
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
-import nightgames.characters.Player;
 import nightgames.characters.body.BodyPart;
 import nightgames.combat.Combat;
 import nightgames.global.Global;
@@ -25,7 +26,7 @@ public class HypnoVisor extends Status {
     }
 
     @Override
-    public String initialMessage(Combat c, boolean replaced) {
+    public String initialMessage(Combat c, Optional<Status> replacement) {
         return "The Hypno Visor comes to life, baragging you with images which you can't make sense"
                         + " of, but somehow just seem <i>right</i>.";
     }
@@ -46,8 +47,7 @@ public class HypnoVisor extends Status {
 
     @Override
     public void tick(Combat c) {
-        Player p = (Player) affected;
-        p.addict(AddictionType.MIND_CONTROL, cause, Addiction.LOW_INCREASE / 2);
+        affected.addict(c, AddictionType.MIND_CONTROL, cause, Addiction.LOW_INCREASE / 2);
         c.write(affected, Global.format("The Hypno Visor is corrupting your mind, rewiring it"
                         + " to follow {other:name-possessive} commands.", affected, cause));
     }
@@ -68,12 +68,12 @@ public class HypnoVisor extends Status {
     }
 
     @Override
-    public int weakened(int x) {
+    public int weakened(Combat c, int x) {
         return 0;
     }
 
     @Override
-    public int tempted(int x) {
+    public int tempted(Combat c, int x) {
         return 0;
     }
 

@@ -1,10 +1,11 @@
 package nightgames.status;
 
+import java.util.Optional;
+
 import com.google.gson.JsonObject;
 
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
-import nightgames.characters.Player;
 import nightgames.characters.body.BodyPart;
 import nightgames.combat.Combat;
 import nightgames.status.addiction.Addiction;
@@ -19,7 +20,7 @@ public class CrisisOfFaith extends Status {
     }
 
     @Override
-    public String initialMessage(Combat c, boolean replaced) {
+    public String initialMessage(Combat c, Optional<Status> replacement) {
         return ""; // explanation given in withdrawal message
     }
 
@@ -54,12 +55,12 @@ public class CrisisOfFaith extends Status {
     }
 
     @Override
-    public int weakened(int x) {
+    public int weakened(Combat c, int x) {
         return 0;
     }
 
     @Override
-    public int tempted(int x) {
+    public int tempted(Combat c, int x) {
         return 0;
     }
 
@@ -75,7 +76,7 @@ public class CrisisOfFaith extends Status {
 
     @Override
     public int gainmojo(int x) {
-        return (int) (x * (1.0f - ((Player)affected).getAddiction(AddictionType.ZEAL).map(Addiction::getMagnitude)
+        return (int) (x * (1.0f - affected.getAddiction(AddictionType.ZEAL).map(Addiction::getMagnitude)
                         .orElse(0f)));
     }
 

@@ -2,13 +2,15 @@ package nightgames.characters.body.mods;
 
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
+import nightgames.characters.Trait;
 import nightgames.characters.body.BodyPart;
 import nightgames.characters.body.CockMod;
+import nightgames.characters.body.GenericBodyPart;
 import nightgames.combat.Combat;
 import nightgames.global.Global;
 import nightgames.pet.PetCharacter;
 import nightgames.skills.damage.DamageType;
-import nightgames.status.Abuff;
+import nightgames.status.Drained;
 
 public class DemonicMod extends PartMod {
     public static final DemonicMod INSTANCE = new DemonicMod();
@@ -16,7 +18,7 @@ public class DemonicMod extends PartMod {
         super("demonic", .1, .5, .2, 5);
     }
 
-    public String adjective(BodyPart part) {
+    public String adjective(GenericBodyPart part) {
         if (part.getType().equals("pussy")) {
             return "succubus";
         }
@@ -27,6 +29,11 @@ public class DemonicMod extends PartMod {
     }
 
     public double applyBonuses(Combat c, Character self, Character opponent, BodyPart part, BodyPart target, double damage) {
+        if (opponent.has(Trait.succubus)) {
+            c.write(self, Global.format(
+                            "{self:NAME-POSSESSIVE} %s does nothing special against one of {self:possessive} own kind.", self, opponent, part.describe(self)));
+            return 0;
+        }
         boolean fucking = c.getStance().isPartFuckingPartInserted(c, opponent, target, self, part);
         if (target.moddedPartCountsAs(opponent, CockMod.runic)) {
             c.write(self, String.format(
@@ -64,10 +71,10 @@ public class DemonicMod extends PartMod {
                                                                                                 .size())];
                 if (stolen != Attribute.Perception && opponent.get(stolen) > 0) {
                     int stolenStrength = Math.min(strength / 10, opponent.get(stolen));
-                    Abuff.drain(c, self, opponent, stolen, stolenStrength, 20, true);
+                    Drained.drain(c, self, opponent, stolen, stolenStrength, 20, true);
                     if (self.isPet()) {
                         Character master = ((PetCharacter) self).getSelf().owner();
-                        master.add(c, new Abuff(master, stolen, stolenStrength, 20));
+                        master.add(c, new Drained(master, opponent, stolen, stolenStrength, 20));
                     }
                     break;
                 }
