@@ -646,7 +646,6 @@ public class GUI extends JFrame implements Observer {
         skills = new HashMap<>();
         clearCommand();
         currentTactics = TacticGroup.all;
-        createCharacter();
         setVisible(true);
         pack();
         JPanel panel = (JPanel) getContentPane();
@@ -1112,8 +1111,9 @@ public class GUI extends JFrame implements Observer {
         commandPanel.refresh();
     }
 
-    private void addToCommandPanel(KeyableButton button) {
+    public void addToCommandPanel(KeyableButton button) {
         commandPanel.add(button);
+        commandPanel.refresh();
     }
 
     public void addAction(Action action, Character user) {

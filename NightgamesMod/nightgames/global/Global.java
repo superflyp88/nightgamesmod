@@ -11,7 +11,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
@@ -154,7 +156,7 @@ public class Global {
     public static Daytime day;
     protected static int date;
     private static Time time;
-    private Date jdate;
+    private static Date jdate;
     private static TraitTree traitRequirements;
     public static Scene current;
     public static boolean debug[] = new boolean[DebugFlags.values().length];
@@ -163,11 +165,12 @@ public class Global {
     public static double xpRate = 1.0;
     public static ContextFactory factory;
     public static Context cx;
+    private static Character noneCharacter = new NPC("none", 1, null);
 
     public static final Path COMBAT_LOG_DIR = new File("combatlogs").toPath();
-
-    public Global(boolean headless) {
-        rng = new Random();
+    
+    static {
+        hookLogwriter();rng = new Random();
         flags = new HashSet<>();
         players = new HashSet<>();
         debugChars = new HashSet<>();
@@ -185,26 +188,26 @@ public class Global {
             OutputStream ostream = new TeeStream(System.out, fstream);
             System.setErr(new PrintStream(estream));
             System.setOut(new PrintStream(ostream));
-    		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    		InputStream stream = loader.getResourceAsStream("build.properties");
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            InputStream stream = loader.getResourceAsStream("build.properties");
 
             System.out.println("=============================================");
             System.out.println("Nightgames Mod");
-    		if (stream != null) {
-    			Properties prop = new Properties();
-    			prop.load(stream);
-    			System.out.println("version: " + prop.getProperty("version"));
-    			System.out.println("buildtime: " + prop.getProperty("buildtime"));
-    			System.out.println("builder: " + prop.getProperty("builder"));
-    		} else {
-    			System.out.println("dev-build");
-    		}
+            if (stream != null) {
+                Properties prop = new Properties();
+                prop.load(stream);
+                System.out.println("version: " + prop.getProperty("version"));
+                System.out.println("buildtime: " + prop.getProperty("buildtime"));
+                System.out.println("builder: " + prop.getProperty("builder"));
+            } else {
+                System.out.println("dev-build");
+            }
             System.out.println(new Timestamp(jdate.getTime()));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
 
 
         setTraitRequirements(new TraitTree(ResourceLoader.getFileResourceAsStream("data/TraitRequirements.xml")));
@@ -216,11 +219,10 @@ public class Global {
         buildFeatPool();
         buildSkillPool(noneCharacter);
         buildModifierPool();
-        gui = makeGUI(headless);
     }
 
-    protected GUI makeGUI(boolean headless) {
-        return headless ? new HeadlessGui() : new GUI();
+    protected static void makeGUI(boolean headless) {
+        gui = headless ? new HeadlessGui() : new GUI();
     }
 
     public static boolean meetsRequirements(Character c, Trait t) {
@@ -1300,9 +1302,9 @@ public class Global {
         System.err.println("NPC \"" + name + "\" is not loaded.");
         return null;
     }
-
+    
     public static void main(String[] args) {
-        new Logwriter();
+        hookLogwriter();
         for (String arg : args) {
             try {
                 DebugFlags flag = DebugFlags.valueOf(arg);
@@ -1311,9 +1313,19 @@ public class Global {
                 // pass
             }
         }
-        new Global(false);
+        makeGUI(false);
+        gui.createCharacter();
     }
 
+    public static void hookLogwriter() {
+        Thread.currentThread().setUncaughtExceptionHandler((t, e) -> {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String stacktrace = sw.toString();
+            System.err.println(stacktrace);
+        });
+    }
+    
     public static String getIntro() {
         return "You don't really know why you're going to the Student Union in the middle of the night."
                         + " You'd have to be insane to accept the invitation you received this afternoon."
@@ -1627,8 +1639,6 @@ public class Global {
         matcher.appendTail(b);
         return b.toString();
     }
-
-    private static Character noneCharacter = new NPC("none", 1, null);
 
     public static Character noneCharacter() {
         return noneCharacter;
