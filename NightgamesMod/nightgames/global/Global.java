@@ -166,6 +166,7 @@ public class Global {
     public static ContextFactory factory;
     public static Context cx;
     private static Character noneCharacter = new NPC("none", 1, null);
+    private static HashMap<String, MatchAction> matchActions;
 
     public static final Path COMBAT_LOG_DIR = new File("combatlogs").toPath();
     
@@ -260,7 +261,6 @@ public class Global {
         date = 1;
         setCharacterDisabledFlag(getNPCByType("Yui"));
         setFlag(Flag.systemMessages, true);
-        setUpMatch(new NoModifier());
     }
 
     public static int random(int start, int end) {
@@ -1405,8 +1405,6 @@ public class Global {
     interface MatchAction {
         String replace(Character self, String first, String second, String third);
     }
-
-    private static HashMap<String, MatchAction> matchActions = null;
 
     public static void buildParser() {
         matchActions = new HashMap<>();

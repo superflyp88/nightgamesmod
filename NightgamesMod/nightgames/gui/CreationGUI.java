@@ -36,6 +36,7 @@ import nightgames.global.Flag;
 import nightgames.global.Global;
 import nightgames.global.start.DefaultStart;
 import nightgames.global.start.GameStarter;
+import nightgames.global.start.TutorialStart;
 import nightgames.start.StartConfiguration;
 
 public class CreationGUI extends JPanel {
@@ -44,7 +45,7 @@ public class CreationGUI extends JPanel {
      */
     private static final long serialVersionUID = -101675245609325067L;
 
-    private static final GameStarter STARTER = new DefaultStart();
+    private static final GameStarter STARTER = new TutorialStart();
     
     private JTextField powerfield;
     private JTextField seductionfield;

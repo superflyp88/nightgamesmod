@@ -1,13 +1,10 @@
 package nightgames.global.start;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
+import nightgames.characters.Character;
 import nightgames.global.Global;
 import nightgames.global.Scene;
 import nightgames.gui.KeyableButton;
+import nightgames.modifier.standard.NoModifier;
 import nightgames.skills.Tactics;
 
 public class TutorialStart implements GameStarter, Scene {
@@ -71,9 +68,31 @@ public class TutorialStart implements GameStarter, Scene {
      */
     
     private enum Stage {
-        INTRO, BASICS, STRIPPING, POSITIONING_INTRO, POSITIONING_WAIT, POSITIONING_CHARGE,
-        ESCAPE_DOM, ESCAPE_SUB, STRUGGLE_1, STRUGGLE_2, STATUS, TF_INTRO, TF_HAD_DICK,
-        TF_NO_DICK, FUCK_INTRO, FUCK_HAD_DICK, FUCK_NO_DICK, EPILOGUE, DONE;
+        INTRO(null), 
+        BASICS("Cassie"), 
+        STRIPPING("Jewel"), 
+        POSITIONING_INTRO("Mara"), 
+        POSITIONING_WAIT("Mara"), 
+        POSITIONING_CHARGE("Mara"),
+        ESCAPE_DOM("Mara"), 
+        ESCAPE_SUB("Mara"), 
+        STRUGGLE_1("Mara"), 
+        STRUGGLE_2("Mara"), 
+        STATUS("Angel"), 
+        TF_INTRO("Angel"), 
+        TF_HAD_DICK("Mara"),
+        TF_NO_DICK("Mara"), 
+        FUCK_INTRO("Cassie"), 
+        FUCK_HAD_DICK("Cassie"), 
+        FUCK_NO_DICK("Cassie"), 
+        EPILOGUE("Cassie"), 
+        DONE(null);
+        
+        final String partner;
+        
+        private Stage(String partner) {
+            this.partner = partner;
+        }
     }
     
     private Stage current = Stage.INTRO;
@@ -82,6 +101,8 @@ public class TutorialStart implements GameStarter, Scene {
     public void respond(String response) {
         switch (current) {
             case INTRO:
+                message("Go go go!");
+                choice("Let's get started...", Tactics.positioning, Stage.BASICS);
                 break;
             case BASICS:
                 break;
@@ -134,22 +155,31 @@ public class TutorialStart implements GameStarter, Scene {
     }
     
     private void actuallyStart() {
-        Global.startMatch();
+        Global.gui().clearText();
+        Global.setUpMatch(new NoModifier());
     }
     
     private void choice(String text, Tactics color, Stage next) {
         Global.gui().addToCommandPanel(new TutorialButton(text, color, next));
     }
+    
+    private void message(String fmt, Object... args) {
+        Character npc = current.partner == null ? Global.noneCharacter() : 
+            Global.getCharacterByType(current.partner);
+        if (npc == null) {
+            npc = Global.noneCharacter();
+        }
+        Global.gui().message(Global.format(fmt, Global.getPlayer(), npc, args));
+    }
 
     private class TutorialButton extends KeyableButton {
 
+        private static final long serialVersionUID = 4905308524000195104L;
         private Tactics color;
-        private Stage next;
         
         public TutorialButton(String text, Tactics color, Stage next) {
             super(text);
             this.color = color;
-            this.next = next;
             getButton().addActionListener(e -> {
                 current = next;
                 respond(null);
