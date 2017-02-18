@@ -366,7 +366,7 @@ public abstract class Character extends Observable implements Cloneable {
             default:
                 break;
         }
-        return total;
+        return Math.max(0, total);
     }
 
     public boolean has(ClothingTrait attribute) {
@@ -1672,6 +1672,7 @@ public abstract class Character extends Observable implements Cloneable {
         xp = object.get("xp").getAsInt();
         if (object.has("growth")) {
             growth = JsonUtils.getGson().fromJson(object.get("growth"), Growth.class);
+            growth.removeNullTraits();
         }
         money = object.get("money").getAsInt();
         {
@@ -2022,7 +2023,7 @@ public abstract class Character extends Observable implements Cloneable {
                                             + opponent.possessiveAdjective() + " ego.</b>"));
             opponent.restoreWillpower(c, 10 + Global.random(10));
         }
-        if (opponent.has(Trait.leveldrainer) && !has(Trait.leveldrainer)
+        if (opponent.has(Trait.leveldrainer) && (!has(Trait.leveldrainer) || opponent.has(Trait.IndiscriminateThief))
                         && (((c.getStance().penetratedBy(c, opponent, this) || c.getStance().penetratedBy(c, this, opponent))
                                         && !has(Trait.strapped)
                                         && !opponent.has(Trait.strapped))
@@ -4031,7 +4032,7 @@ public abstract class Character extends Observable implements Cloneable {
         }
     }
 
-    private void removeStatusImmediately(Status status) {
+    public void removeStatusImmediately(Status status) {
         this.status.remove(status);
     }
 
