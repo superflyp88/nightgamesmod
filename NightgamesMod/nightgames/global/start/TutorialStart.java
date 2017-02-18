@@ -1,43 +1,36 @@
 package nightgames.global.start;
 
 import java.util.Arrays;
-import java.util.Collections;
-
-import nightgames.characters.Character;
 import nightgames.global.Global;
 import nightgames.global.Scene;
-import nightgames.gui.KeyableButton;
 import nightgames.gui.SceneButton;
 import nightgames.modifier.standard.NoModifier;
-import nightgames.skills.Tactics;
 
 public class TutorialStart implements GameStarter, Scene {
-
-    /*
-     * Tutorial: Girl npcs only, but should take player gender into account. It begins much like The Silver Bard's, but continues on for longer and has some variation. - General introduction: concepts, rules, etc. Explain win conditions, introduce main characters, pair up. - Player + Cassie, Mara + Jewel. Basic, skittish teasing. Tickle and the like. Maya says it's pretty lame, but we should just build some confidence (i.e. mojo) and then it'll be more fun. Mara and Jewel are a bit more adventureous, but not much. - Player + Jewel, Mara + Angel. Maya explains about stripping. Player goes for Jewel's jeans, but fails. Maya explains it's pretty difficult to strip bottoms of someone who is standing. Jewel launches a surprise attack and strips the player's shirt. Angel compliments him. Mara takes advantage of the distraction and strips Angel's shirt, revealing that she does not wear a bra. - Player + Mara, Cassie + Angel. Maya explains positions. Player gets a choice to wait and see or charge. Charge: get on top of Mara. Wait: Mara removes her bra, distracting the player, and then trips them. In either case, Mara feels between the player's legs. If they are male or female, they a compliment. If she's any of the 'special' genders, Mara makes a curious remark, which the rest hears. - Same pairs. Maya says how it's important to get out of submissive positions, because the one on top can do what they want. If the player is on top, he massages Mara's breasts and she ties his hands
-     * together and rolls over, just like in TSB's tutorial. If Mara is on top, she tickles and teases the player. When the player almost escapes, she ties them up. - Same pairs. Player has to struggle twice, Mara first removes their bottoms and then fondles the player. When the player breaks free, Maya ends the bout, but the player snags Mara's pants as she gets up. - Player + Angel, Jewel + Cassie. Status time. Maya says that combatants may find themselves affected by the fight in unusual ways, both good and bad. She whispers in Angel's ear. Then, Angel begins a strip tease, ending up naked. The player ends up Charmed, and this is explained. - Same pairs. Transformations! Maya explains that she has access to some rather exotic substances, and that the combatants might find a way to get them as well (Black Market). She hands the player a bottle, and tells him to get it onto Angel's breasts. She is, wisely, hesitant, but after a bit of wrestling the player succeeds. The bottle turns out to be a Bust Draft, and Angel's already consideranle breasts swell up even more, to her great enjoyment. Suddenly, Mara splashes something onto the player from behind. Turns out it's a Priapus Draft. If the player already had a dick, the girls voice their appreciation of the increased size. If not, everyone except Maya is amazed at the new appendage, and the player is rather nervous about it. - Player + Cassie, the others just watch. Maya suggests that we might as well put the new parts to
-     * good use. She has Cassie get naked, and the player charges her just as she finishes. They are a bit nervous and exchange a few kisses. Soon the player tries to fuck her, but finds that she is still a little dry due to the nerves. Maya says she really shouldn't have to explain this part, but that foreplay is important. The player proceeds to stimulate Cassie until she is sufficiently wet and then inserts. (Seperate flavor text if the player did not have a dick before.) It soon becomes clear that Cassie is much closer than the player is, and Maya says that whoever is on top and can control the pace hasa natural advantage. Not needing to be told twice, Cassie rolls the two of them over and starts riding the player with a vengance. They and up cumming pretty much simultaneously. Mara compliments them after a bit, saying that if they keep this up they'll be pros in no time. It's made clear that the other girls had been diddling themselves the whole time.
-     */
 
     @Override
     public void respond(String response) {
         switch (response) {
             case "Start":
+                Global.gui().prompt("Would you like to play the tutorial sequence?",
+                                Arrays.asList(new SceneButton("Yes"), new SceneButton("No")));
+                break;
+            case "Yes":
                 Global.gui()
-                      .prompt(fmt("\"So, we've got a group full of newbies,\" Maya says. \"I"
+                      .prompt(fmt("<i>\"So, we've got a group full of newbies,\"</i> Maya says. <i>\"I"
                                       + " think it would be a good idea to go over the rules in a bit"
                                       + " more detail, and to give you all some practical tips. Since"
                                       + " you will be fighting one-on-one - at least for now - you "
-                                      + "should pair up.\" You glance over to Cassie, and she seems to"
+                                      + "should pair up.\"</i> You glance over to Cassie, and she seems to"
                                       + " have the same idea you do. The two of you quickly stand "
                                       + "together, while Mara and Jewel do the same. Angel pairs with"
-                                      + " Maya, for now. \"Good. We will be changing up the pairs "
+                                      + " Maya, for now. <i>\"Good. We will be changing up the pairs "
                                       + "later on, but for now, let's get strated As I've explained,"
                                       + " to win, you are going to have to bring your opponent to "
                                       + "orgasm. Obviously, since sexfights are still sex, you don't"
                                       + " get to skip to the best part straight away; you need to"
                                       + " get them and yourself worked up a little, first. So that's"
-                                      + " where we are going to begin. Get yourselves ready.\""),
+                                      + " where we are going to begin. Get yourselves ready.\"</i>"),
                                       Arrays.asList(new SceneButton("Get Ready")));
                 break;
             case "Get Ready":
@@ -57,27 +50,27 @@ public class TutorialStart implements GameStarter, Scene {
                 Global.gui()
                       .prompt(fmt("Things soon develop into a full-blown ticklefight until Maya "
                                       + "comes along and puts a stop to it. You both sit down, breathing "
-                                      + "heavily after the exertion. \"Good, you're getting in the mood. "
+                                      + "heavily after the exertion. <i>\"Good, you're getting in the mood. "
                                       + "It's important that you feel at ease with the situation, and "
                                       + "confident in yourself and your abilities. Things like this help "
                                       + "where those are concerned; ticking, kissing, some light petting,"
                                       + " they are all good for building some confidence. Or, 'building "
                                       + "some mojo', as the kids call it these days. Once you're a bit "
                                       + "more at ease you can start trying some more adventureous things."
-                                      + " Which brings us to the next portion of the proceedings.\""),
+                                      + " Which brings us to the next portion of the proceedings.\"</i>"),
                                       Arrays.asList(new SceneButton("Continue")));
                 break;
             case "Continue":
                 Global.gui()
                       .prompt(fmt("Maya reforms the pairings, and you are now standing in"
                                       + " front of Jewel, while Angel and Mara are facing off to the"
-                                      + " side. \"As you will have noticed,\" Maya begins, \"all of"
+                                      + " side. <i>\"As you will have noticed,\"</i> Maya begins, <i>\"all of"
                                       + " you are wearing clothes. And as I'm sure you are all aware,"
                                       + " your partner wearing clothes is counter-productive when you"
                                       + " are trying to give them pleasure. So at some point, you are"
                                       + " going to have to get your opponent naked. Now that you've"
                                       + " all warmed up some, you can try getting some clothes off"
-                                      + " your opponent. Go!\" "), Arrays.asList(new SceneButton("Strip Bottoms")));
+                                      + " your opponent. Go!\"</i> "), Arrays.asList(new SceneButton("Strip Bottoms")));
                 break;
             case "Strip Bottoms":
                 Global.gui()
@@ -86,20 +79,20 @@ public class TutorialStart implements GameStarter, Scene {
                                       + " for her jeans. You try to yank these down her legs, but she "
                                       + "easily steps away from you and pulls her jeans back up into "
                                       + "position. She then immediately follows up by tugging your shirt"
-                                      + " off of you in a single, rapid motion. \"Good job, Jewel! As "
+                                      + " off of you in a single, rapid motion. <i>\"Good job, Jewel! As "
                                       + "you've both learned, taking someone's pants of while they are "
                                       + "standing is pretty difficult. Shirts are easier, but it still "
                                       + "takes some doing. You'll have a much better chance if you, for "
-                                      + "example, distract your opponent first.\" Getting the hint, you"
+                                      + "example, distract your opponent first.\"</i> Getting the hint, you"
                                       + " stealthily move behind Jewel as Maya drones on."),
                                       Arrays.asList(new SceneButton("Strip Top")));
                 break;
             case "Strip Top":
                 Global.gui()
                       .prompt(fmt("You quickly pull the straps of her tank top over her shoulders and pull"
-                                      + " it down to her waist. \"{self:name}!\" she yells, but she soon remembers"
-                                      + " where you both are and smiles. \"Nice job, {self:name}. It won't work "
-                                      + "again.\" Jewel lets the top fall down to her feet and steps out of it,"
+                                      + " it down to her waist. <i>\"{self:name}!\"</i> she yells, but she soon remembers"
+                                      + " where you both are and smiles. <i>\"Nice job, {self:name}. It won't work "
+                                      + "again.\"</i> Jewel lets the top fall down to her feet and steps out of it,"
                                       + " jiggling her bra-clad breasts on front of you. Off to the side, Mara "
                                       + "and Angel have been grappling back and forth a bit, neither gaining a"
                                       + " real advantage yet. Suddenly, however, Mara gains a good hold on "
@@ -109,18 +102,18 @@ public class TutorialStart implements GameStarter, Scene {
                                       + "make a habit of wearing bras, as her glorious, nude chest is exposed"
                                       + " for all to see. Angel catches you staring and grins broadly, "
                                       + "spreading her arms to give you a better view.Maya has to physically"
-                                      + " shake you to break your stare. \"Seriously, {self:name}? It's like"
+                                      + " shake you to break your stare. <i>\"Seriously, {self:name}? It's like"
                                       + " you've never seen tits before! {self:if-male:And I know that isn't"
-                                      + " true. None of you were selected without consulting some... <i>"
-                                      + "references</i>}{self:if-female:Which would be very surprising, "
+                                      + " true. None of you were selected without consulting some... </i>"
+                                      + "references<i>}{self:if-female:Which would be very surprising, "
                                       + "considering the fact you've got a fine pair of them yourself}. Anyway,"
-                                      + " now that we are all back on Earth, let's proceed, shall we?\""),
+                                      + " now that we are all back on Earth, let's proceed, shall we?\"</i>"),
                                       Arrays.asList(new SceneButton("Positioning")));
                 break;
             case "Positioning":
                 Global.gui()
                       .prompt(fmt("Maya matches you up with Mara now, Cassie and Angel"
-                                      + " form the second pair. \"Now, tickling and groping is all "
+                                      + " form the second pair. <i>\"Now, tickling and groping is all "
                                       + "well and good, but that's not what any of us are here for."
                                       + " We've already seen that getting into a good position is "
                                       + "important for getting your opponent's clothes off, but of"
@@ -134,14 +127,14 @@ public class TutorialStart implements GameStarter, Scene {
                                       + " before, tickling is one way to accomplish this. If you"
                                       + " want, you can also be a bit less nice. Slaps, knees, "
                                       + "kicks and most other things are allowed, as long as you "
-                                      + "don't cause injury.\" Jewel grins as she hears this and "
+                                      + "don't cause injury.\"</i> Jewel grins as she hears this and "
                                       + "cracks her kunckles in anticipation before Maya continues."
-                                      + " \"Ahem. As I was saying, once you think your opponent is "
+                                      + " <i>\"Ahem. As I was saying, once you think your opponent is "
                                       + "sufficiently softened up, give them a good shove. We'll "
-                                      + "continue once two of you are on the ground.\" She expects "
+                                      + "continue once two of you are on the ground.\"</i> She expects "
                                       + "you to actually hurt Mara? That doesn't sound very nice..."
                                       + " As you ponder this, Mara slaps you hard across the cheek."
-                                      + " \"Come on, {self:name}! You signed up for this!\" Well, "
+                                      + " <i>\"Come on, {self:name}! You signed up for this!\"</i> Well, "
                                       + "that's true. You and Mara exchange slaps, punches to the "
                                       + "stomach and the occasional tickle for a while, and you are"
                                       + " both getting out of breath. Then Mara draws back, panting"
@@ -155,12 +148,12 @@ public class TutorialStart implements GameStarter, Scene {
                                       + "takes your legs out from underneath you. You land flat on your "
                                       + "back and the impact knocks the wind out of you. Before you can "
                                       + "recover, Mara settles herself down on your stomach, grinning "
-                                      + "confidently. \"And stop!\" Maya calls. Cassie is in a similar"
+                                      + "confidently. <i>\"And stop!\"</i> Maya calls. Cassie is in a similar"
                                       + " position to you, with Angel atop her belly and those luscious"
                                       + " tits of hers in her face. At least you don't have that "
-                                      + "distraction. Mara looks down at you confidently, \"I think "
+                                      + "distraction. Mara looks down at you confidently, <i>\"I think "
                                       + "I like it up here, {self:name}. If we meet during the real match"
-                                      + " tonight, I'm going to make sure we revisit this.\""),
+                                      + " tonight, I'm going to make sure we revisit this.\"</i>"),
                                       Arrays.asList(new SceneButton("In Trouble")));
                 break;
             case "Tackle":
@@ -169,30 +162,30 @@ public class TutorialStart implements GameStarter, Scene {
                                       + " want to give her any opportunity to spring anything on you, so you "
                                       + "charge in and tackle her to the ground. She gasps as she hits the "
                                       + "ground, giving you an opening to sit down on her waist. Not wanting"
-                                      + " to miss the opportunity, you quickly get rid of her shirt. \"Hey! "
-                                      + "That wasn't part of the exercise! Give it back!\" Fortunately, Maya"
-                                      + " steps in. \"No, don't. You can't put clothing back on once it's "
+                                      + " to miss the opportunity, you quickly get rid of her shirt. <i>\"Hey! "
+                                      + "That wasn't part of the exercise! Give it back!\"</i> Fortunately, Maya"
+                                      + " steps in. <i>\"No, don't. You can't put clothing back on once it's "
                                       + "been taken off. Them's the rules. Okay, now that both bouts are "
-                                      + "finished, we can move on.\" Looking to the side, sure enough, Angel"
+                                      + "finished, we can move on.\"</i> Looking to the side, sure enough, Angel"
                                       + " is dangling her sumptuous busom in front of Cassie's face as she "
                                       + "sits atop her, pinning her hands over her head"),
                                       Arrays.asList(new SceneButton("On Top")));
                 break;
             case "On Top":
                 Global.gui()
-                      .prompt(fmt("\"So, {self:name} and Angel have the advantage now. That means "
+                      .prompt(fmt("<i>\"So, {self:name} and Angel have the advantage now. That means "
                                       + "Mara and Cassie need to do something to escape. Unfortunately for them,"
                                       + " their options are a little limited. You can try to exhaust your opponent, "
                                       + "just push them off, or slip out of their hold. If you're really clever "
                                       + "about it, you might be able to roll over and turn the tables on them,"
                                       + " but I don't think any of you have that much experience, yet. Meanwhile,"
                                       + " of course, {self:name} and Angel get to do whatever they like. Let's"
-                                      + " go!\" Whatever you want? Well, she doesn't need to ask twice. You "
+                                      + " go!\"</i> Whatever you want? Well, she doesn't need to ask twice. You "
                                       + "reach under Mara's back and unclasp her bra. She has moved her hands "
                                       + "down to her pants, so you lift them up over her head and pull the bra "
                                       + "off. You see a flash of black as you move her arms, but think nothing "
                                       + "of it. Mara wiggles her torso a bit, causing her breasts to jiggle. "
-                                      + "\"Come on then, show me what you've got!\" Mara seems to have forgotten"
+                                      + "<i>\"Come on then, show me what you've got!\"</i> Mara seems to have forgotten"
                                       + " the point of this 'fight', but that is no reason for you not to take"
                                       + " her up on her challenge. You reach out and grab a breast in each hand,"
                                       + " massaging them gently and then moving up to her nipples, giving them"
@@ -201,37 +194,37 @@ public class TutorialStart implements GameStarter, Scene {
                                       + " advantage of your surprise, she manages to roll you over, placing you "
                                       + "in the same position you were just in, but with your hands tied. Cassie,"
                                       + " too, has managed to escape, though not in such a grand fashion as Mara"
-                                      + " did. Maya seems quite happy with her performance. \"Excellent job, Mara!"
+                                      + " did. Maya seems quite happy with her performance. <i>\"Excellent job, Mara!"
                                       + " I think you're going to do just fine in these games. {self:name}, there's"
                                       + " not much you can do with your hands tied, so you will have to get that"
-                                      + " zip tie off. Meanwhile, of course, Mara can do as she pleases to you.\""),
+                                      + " zip tie off. Meanwhile, of course, Mara can do as she pleases to you.\"</i>"),
                                       Arrays.asList(new SceneButton("Bound")));
                 break;
             case "In Trouble":
                 Global.gui()
-                      .prompt(fmt("\"Okay, {self:name} and Cassie are in a bit of trouble right now. "
+                      .prompt(fmt("<i>\"Okay, {self:name} and Cassie are in a bit of trouble right now. "
                                       + "In their current situation, their options are limited and their opponents"
                                       + " can do pretty much whatever they like. To escape, they could try to "
                                       + "exhaust their opponent, shove them off, or just squirm out from underneath"
-                                      + " them. Let's see what they try, shall we?\""),
+                                      + " them. Let's see what they try, shall we?\"</i>"),
                                       Arrays.asList(new SceneButton("Escape")));
                 break;
             case "Escape":
                 Global.gui()
                       .prompt(fmt("Mara runs her hands over your naked chest, paying special attention "
-                                      + "to your nipples. \"Oh, yes. I really am going to enjoy these nights.\" It"
+                                      + "to your nipples. <i>\"Oh, yes. I really am going to enjoy these nights.\"</i> It"
                                       + " feels good, but you can't just let her get the upper hand. Surprising "
                                       + "her with a sudden move, you roll over onto your stomach and start to "
                                       + "crawl away. Mara was briefly dislodged, but easily catches up to you and "
                                       + "grabs your arms. She pulls them behind your back and ties your wrists "
                                       + "together with a zip tie! You try to escape, but Mara flips you over and"
                                       + " sits back down. That escape attempt did not accomplish much... Maya"
-                                      + " comes along to rub some salt into your wounded pride. \"Almost, but not"
+                                      + " comes along to rub some salt into your wounded pride. <i>\"Almost, but not"
                                       + " quite, {self:name}! You actually managed to be worse off than before."
                                       + " You've probably already discovered that having your hands tied is a "
                                       + "very bad thing. You're going to have to get that tie off before you can"
                                       + " fight back. Mara, of course, does not have to just sit back and watch"
-                                      + " you escape. She gets to do what she wants to you.\""),
+                                      + " you escape. She gets to do what she wants to you.\"</i>"),
                                       Arrays.asList(new SceneButton("Bound")));
                 break;
             case "Bound":
@@ -240,7 +233,7 @@ public class TutorialStart implements GameStarter, Scene {
                                       + "band, Mara moves down to your feet. It's not much of a surprise when"
                                       + " she hooks her fingers under your jeans and underwear and pulls it "
                                       + "all off in one go, exposing your {self:main-genitals} to all those "
-                                      + "assembled. \"Looking good, {self:name}!\" Angel chimes in from the"
+                                      + "assembled. <i>\"Looking good, {self:name}!\"</i> Angel chimes in from the"
                                       + " sideline. Having an audience for this kind of thing is going to "
                                       + "take some getting used to. Mara doesn't give you a chance to ponder"
                                       + " this, as she starts petting and fondling your {self:main-genitals},"
@@ -257,9 +250,9 @@ public class TutorialStart implements GameStarter, Scene {
                                       + "your struggling, and eventually manage to snap the zip tie. With "
                                       + "Mara now sitting on your feet, it's much easier for you to get "
                                       + "away from her. Within seconds you are both standing, the only "
-                                      + "difference being that you are now completely naked. \"Okay, now "
+                                      + "difference being that you are now completely naked. <i>\"Okay, now "
                                       + "that {self:name} is no longer a poor helpless naked {self:boy},"
-                                      + " just a naked one, we can continue.\""),
+                                      + " just a naked one, we can continue.\"</i>"),
                                       Arrays.asList(new SceneButton("On we go")));
                 break;
             case "On we go":
@@ -268,23 +261,23 @@ public class TutorialStart implements GameStarter, Scene {
                                       + "'practicing' with Angel. Her and those glorious tits, that is. "
                                       + "It's quite a chore to pull your eyes away and focus on Maya. "
                                       + "Angel notices for fascination and winks seductively at you. "
-                                      + "\"Ahem, {self:name}, you with us?\" Maya acts annoyed, but you"
-                                      + " hear thinly veiled amusement in her voice. \"Good, as I was "
+                                      + "<i>\"Ahem, {self:name}, you with us?\"</i> Maya acts annoyed, but you"
+                                      + " hear thinly veiled amusement in her voice. <i>\"Good, as I was "
                                       + "saying, you will be affected by any number of things in any ways"
                                       + " during a fight. Maybe your opponent pulls a clever trick to"
                                       + " distract you, or you find some inner focus and can suddenly"
                                       + " concentrate better. Then there are the more exotic things, "
                                       + "but you will have to discover those for yourselves. Angel and "
-                                      + "{self:name}, are you up for a little demonstration?\" It's not"
+                                      + "{self:name}, are you up for a little demonstration?\"</i> It's not"
                                       + " like you can refuse, is it? Maya pulls Angel to the side and "
                                       + "whispers in her ear. If Angel's wide grin is any indication, "
                                       + "she likes whatever Maya is suggesting. Having given her "
-                                      + "instructions to Angel, Maya speaks up again. \"Okay {self:name},"
+                                      + "instructions to Angel, Maya speaks up again. <i>\"Okay {self:name},"
                                       + " here's the challenge. When I say go, you will wait for ten "
                                       + "seconds, and then slap Angel as hard as you can. Angel is not"
                                       + " allowed to touch you, move away from you, or block your "
                                       + "attack in any way. If you succeed, you can have your undies "
-                                      + "back.\" Well that sounds easy enough. You and Angel face each"
+                                      + "back.\"</i> Well that sounds easy enough. You and Angel face each"
                                       + " other, and Maya gives the signal to start. Angel turns around"
                                       + " while swaying sinuously. It clicks in your mind when she "
                                       + "starts slowly pulling her skirt and underwear off. For some "
@@ -295,34 +288,34 @@ public class TutorialStart implements GameStarter, Scene {
                                       + "just can't get enough of to her slim belly and the naked slit "
                                       + "beneath. Remembering the challenge, somehow, you step in close "
                                       + "and draw back a hand in preparation, but you just can't bring "
-                                      + "yourself to go through with it. Maya breaks your stupor. \"Time!"
+                                      + "yourself to go through with it. Maya breaks your stupor. <i>\"Time!"
                                       + " Angel wins! She charmed {self:name} to the point where "
                                       + "{self:pronoun} just couldn't bear to hurt her. It's going to take"
                                       + " some practice for her to do this in the heat of the moment, but"
                                       + " I am sure she will manage it. The rest of you can learn to do "
                                       + "the same thing, of course, and this is only one of many ways in which"
                                       + " you can debilitate your opponent. Okay, we're almost done. Just "
-                                      + "two things left to explain.\""),
+                                      + "two things left to explain.\"</i>"),
                                       Arrays.asList(new SceneButton("The first thing")));
                 break;
             case "The first thing":
                 Global.gui()
-                      .prompt(fmt("\"I should probably take this opportunity to remind you all "
+                      .prompt(fmt("<i>\"I should probably take this opportunity to remind you all "
                                       + "of the confidentality agreement you signed. We have access to some "
                                       + "things that do not exist as far as the public is concerned, and we"
                                       + " would like to keep it that way. Most of this stuff, you won't be "
                                       + "seeing for a while. Some of it is for sale - if you know where to "
                                       + "buy it - but most is restricted to higher-ranked fighters. Still, "
                                       + "just to give you a taste, I brought some samples. Let's start with "
-                                      + "this one.\" She takes a flask out of her handbag and hands it over "
+                                      + "this one.\"</i> She takes a flask out of her handbag and hands it over "
                                       + "to you. It's filled with a pinkish liquid, but there are no identifying "
-                                      + "markers of any kind. \"Some of the goodies you might come across "
+                                      + "markers of any kind. <i>\"Some of the goodies you might come across "
                                       + "during your tenure at the Games can get pretty weird, and they might"
                                       + " have drastic, long-term consequences. These samples are more benign"
                                       + " ones, though; nothing to be afraid of. Right, Angel? Would you take"
-                                      + " one for the team, please?\" Angel hesitates for a few moments - "
-                                      + "wisely, you figure - but then agrees. \"Great! Okay, {self:name}, just"
-                                      + " throw some of that stuff onto her breasts, and we'll observe the results.\""),
+                                      + " one for the team, please?\"</i> Angel hesitates for a few moments - "
+                                      + "wisely, you figure - but then agrees. <i>\"Great! Okay, {self:name}, just"
+                                      + " throw some of that stuff onto her breasts, and we'll observe the results.\"</i>"),
                                       Arrays.asList(new SceneButton("Throw Draft")));
                 break;
             case "Throw Draft":
@@ -333,16 +326,16 @@ public class TutorialStart implements GameStarter, Scene {
                                       + "quickly into her skin, and her eyes widen as something begins to happen."
                                       + " Her breasts - which were plenty impressive already - swell up an "
                                       + "additional cup size. Angel runs her hands over her expaned bust and "
-                                      + "gasps at the sensation. \"As Angel just found out, this draft, which"
+                                      + "gasps at the sensation. <i>\"As Angel just found out, this draft, which"
                                       + " we call Bust Draft because we're not the most creative bunch, causes "
                                       + "breasts to grow both in size and sensitivity. I will leave the possible"
                                       + " use cases up to your perverted minds. Oh and yes, it does work on men"
-                                      + " as well.\" {self:if-male:She gives you a meaningful wink. You'll "
+                                      + " as well.\"</i> {self:if-male:She gives you a meaningful wink. You'll "
                                       + "probably want to evade that stuff, you figure.} Suddenly, a splash of "
                                       + "wetness hits your back. You turn around to see Mara holding a flask "
-                                      + "filled with a cloudy blue liquid, smiling at you. \"I just wanted to"
-                                      + " see what this one does,\" she says, \"For science, you know?\". Maya"
-                                      + " giggles. \"Oh, this is going to be good!\""),
+                                      + "filled with a cloudy blue liquid, smiling at you.<i> \"I just wanted to"
+                                      + " see what this one does,\"</i> she says, <i>\"For science, you know?\"</i>. Maya"
+                                      + " giggles. <i>\"Oh, this is going to be good!\"</i>"),
                                       Arrays.asList(new SceneButton(Global.getPlayer()
                                                                           .hasDick() ? "Oh, wow!" : "Oh, shit!")));
                 break;
@@ -354,11 +347,11 @@ public class TutorialStart implements GameStarter, Scene {
                                       + " rest of the girls also seem quite appreciative. Not that you were "
                                       + "going to complain, of course. Maya is the only one who does not give"
                                       + " more than a quick glance down at your elongated member. Not her "
-                                      + "preference, perhaps? \"Well, {self:name}, it was pretty good before,"
+                                      + "preference, perhaps? <i>\"Well, {self:name}, it was pretty good before,"
                                       + " but if the others' expressions are anything to go by I'd say you "
                                       + "just got about an inch and a half more popular around here. Sorry to"
                                       + " disappoint, but it will go back to normal in a little while. For "
-                                      + "now, though, what do you say we give it a test run?\" Uhh. Duh."),
+                                      + "now, though, what do you say we give it a test run?\"</i> Uhh. Duh."),
                                       Arrays.asList(new SceneButton("Sexytimes")));
                 break;
             case "Oh, shit!":
@@ -370,16 +363,16 @@ public class TutorialStart implements GameStarter, Scene {
                                       + " holding your own is something else entirely. With the shock of the whole "
                                       + "situation, it's no surprise that it hangs limp between your legs, but it "
                                       + "still seems a decent enough size. You try to ask a hundred questions at "
-                                      + "once of Maya, but only end up muttering nonsense. \"Like I said, pretty "
+                                      + "once of Maya, but only end up muttering nonsense. <i>\"Like I said, pretty "
                                       + "crazy stuff. Don't worry, it will wear of in ten minutes or so. Just enough"
-                                      + " time to take it for a test ride, don't you figure?\" You feel extremely "
+                                      + " time to take it for a test ride, don't you figure?\"</i> You feel extremely "
                                       + "uncomfortable with the whole situation. But... You are also curious what "
                                       + "it would feel like, so you agree."),
                                       Arrays.asList(new SceneButton("Sexytimes")));
                 break;
             case "Sexytimes":
                 Global.gui()
-                      .prompt(fmt("\"What we've done so far is foreplay, which while certainly a lot of fun, is often "
+                      .prompt(fmt("<i>\"What we've done so far is foreplay, which while certainly a lot of fun, is often "
                                       + "not the final destination of a sexual foray. There are some complications "
                                       + "where penetrative sex is concerned, though, so I figured we had best go over"
                                       + " some. Just to state the painfully obvious to begin with, limp dicks and "
@@ -394,7 +387,7 @@ public class TutorialStart implements GameStarter, Scene {
                                       + "control of the sex, you can still do plenty from the bottom to give your "
                                       + "opponent a hard time. You could use your hands or mouth, and even just "
                                       + "struggling will cause *ahem* friction. Alright, then, Angel and {self:name},"
-                                      + " up here please.\""),
+                                      + " up here please.\"</i>"),
                                       Arrays.asList(new SceneButton(Global.getPlayer()
                                                                           .hasDick() ? "Let's Go!"
                                                                                           : "Here goes nothing...")));
@@ -445,10 +438,10 @@ public class TutorialStart implements GameStarter, Scene {
                       .prompt(fmt("You settle into a comfortable pace, alternating kisses on her lips with ones in "
                                       + "her neck. Angel, meanwhile tweaks both of your nipples, which sends an "
                                       + "unexpected shock down to your cock. Her hips push back against you as she"
-                                      + " moans. \"Mmmm, {self:if-female:either that potion instilled some really"
+                                      + " moans. <i>\"Mmmm, {self:if-female:either that potion instilled some really"
                                       + " good instincts, or you have a natural gift}{self:if-male:I don't know how"
                                       + " good you were before that strange potion}, {self:name}, but I could "
-                                      + "certainly get used to this. But this isn't all you've got, is it.\""),
+                                      + "certainly get used to this. But this isn't all you've got, is it?\"</i>"),
                                       Arrays.asList(new SceneButton("Piston")));
                 break;
             case "Piston":
@@ -469,44 +462,45 @@ public class TutorialStart implements GameStarter, Scene {
                                       + "spasming dick, drawing out every bit of your sperm. After a short while,"
                                       + " she collapses on top of you, then rolls of to the side. The other girls"
                                       + " step in to surround your panting bodies, looking down at you from above, "
-                                      + "all clearly flustered with arousal. \"{self:name},\" Angel says between "
-                                      + "her heavy breathing, \"we are going to be doing that a lot more. And it's"
-                                      + " going to end with you losing every time.\" You agree with the first half"
+                                      + "all clearly flustered with arousal. <i>\"{self:name},\"</i> Angel says between "
+                                      + "her heavy breathing, <i>\"we are going to be doing that a lot more. And it's"
+                                      + " going to end with you losing every time.\"</i> You agree with the first half"
                                       + " of her assertion, but don't respond."),
                                       Arrays.asList(new SceneButton("Recover")));
                 break;
             case "Recover":
                 Global.gui()
-                      .prompt(fmt("You both get to your feet, and Maya presents each of you with a can. \"Don't worry."
+                      .prompt(fmt("You both get to your feet, and Maya presents each of you with a can. <i>\"Don't worry."
                                       + " Nothing transformative in these. They are just energy drinks. Well, they "
-                                      + "<i>might</i> contain something to make sure that {self:if-male:those of us"
+                                      + "</i>might<i> contain something to make sure that {self:if-male:those of us"
                                       + " endowed with equipment which might ordinarily not be up to repeated use "
                                       + "can go all night.}{self:if-female:you all recover from a fight's exertions"
-                                      + " in record speed.} But I'm sure no one has a problem with that, right?\" "
+                                      + " in record speed.} But I'm sure no one has a problem with that, right?\"</i> "
                                       + "Shrugging mentally, you open the can and chug down the caffeinated contents"
                                       + " in one go. That... Was pretty awful. Angel seems to share your opinion, "
                                       + "seeing how she has contorted her face into an expression which could almost"
                                       + " - almost - be construed as rather charmless. With a sudden, somewhat "
                                       + "queasy feeling, {self:if-female:your temporary dick draws back into your"
-                                      + " body, leaving only smooth flesh behind. \"Aww,\" Angel pouts, \"I was "
-                                      + "starting to like him!\"}{self:if-male:your dick shrinks back to its"
+                                      + " body, leaving only smooth flesh behind. <i>\"Aww,\"</i> Angel pouts, <i>\"I was "
+                                      + "starting to like him!\"</i>}{self:if-male:your dick shrinks back to its"
                                       + " original, though still respectable size, earning a few strange looks "
                                       + "from the girls.}"), Arrays.asList(new SceneButton("Awww")));
                 break;
             case "Awww":
                 Global.gui()
-                      .prompt(fmt("\"A fine effort from everyone! There is much more to learn, to experience, and to"
+                      .prompt(fmt("<i>\"A fine effort from everyone! There is much more to learn, to experience, and to"
                                       + " enjoy, but you will have to find out all of that for yourselves. If this "
                                       + "little practice session is any indication, I'm sure the rest of the "
                                       + "organization and I will be very well pleased with your participation."
                                       + " Now then, you've got your starting positions. Go there, and your first real"
-                                      + " match will start at ten. Have fun, and good luck!\" The girls and you get"
+                                      + " match will start at ten. Have fun, and good luck!\"</i> The girls and you get"
                                       + " your clothes back in order and exchange some final pleasantries before "
                                       + "leaving. Somehow, it seems as if you've gotten yourself in <i>way</i> over"
                                       + " your head. Will it work out, or be a complete disaster? Only time will tell."),
                                       Arrays.asList(new SceneButton("Done")));
                 break;
             case "Done":
+            case "No":
                 Global.gui()
                       .clearText();
                 Global.setUpMatch(new NoModifier());

@@ -34,7 +34,6 @@ import nightgames.characters.CharacterSex;
 import nightgames.characters.Trait;
 import nightgames.global.Flag;
 import nightgames.global.Global;
-import nightgames.global.start.DefaultStart;
 import nightgames.global.start.GameStarter;
 import nightgames.global.start.TutorialStart;
 import nightgames.start.StartConfiguration;
