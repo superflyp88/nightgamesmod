@@ -1425,7 +1425,7 @@ public class Body implements Cloneable {
     public void removeTemporaryPartMod(String type, PartMod mod) {
         List<PartModReplacement> replacements = modReplacements.get(type);
         if (replacements != null) {
-            replacements.remove(mod);
+            replacements.removeIf(r -> r.mod.equals(mod));
         }
     }
 
