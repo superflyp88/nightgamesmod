@@ -94,6 +94,8 @@ import nightgames.status.addiction.Addiction.Severity;
 import nightgames.status.addiction.AddictionType;
 
 public class Combat extends Observable implements Cloneable {
+    private static final int NPC_TURN_LIMIT = 75;
+    private static final double NPC_DRAW_ERROR_MARGIN = .15;
     private enum CombatPhase {
         START,
         PRETURN,
@@ -247,7 +249,11 @@ public class Combat extends Observable implements Cloneable {
         if (doExtendedLog()) {
             log.logHeader("\n");
         }
-        next();
+        if (shouldAutoresolve()) {
+            autoresolve();
+        } else {
+            next();
+        }
     }
 
     private void resumeNoClearFlag() {
@@ -1323,7 +1329,11 @@ public class Combat extends Observable implements Cloneable {
 
     private boolean next() {
         if (phase != CombatPhase.ENDED) {
-            if (!(wroteMessage || phase == CombatPhase.START) || !beingObserved || shouldAutoresolve() || (Global.checkFlag(Flag.AutoNext)
+            if (shouldAutoresolve()) {
+                return true;
+            }
+            if (!(wroteMessage || phase == CombatPhase.START) || !beingObserved 
+                            || (Global.checkFlag(Flag.AutoNext)
                             && FAST_COMBAT_SKIPPABLE_PHASES.contains(phase))) {
                 return false;
             } else {
@@ -1336,6 +1346,25 @@ public class Combat extends Observable implements Cloneable {
             end();
             return true;
         }
+    }
+
+    private void autoresolve() {
+        assert !p1.human() && !p2.human() && !beingObserved;
+        assert timer == 0;
+        while (timer < NPC_TURN_LIMIT && !winner.isPresent()) {
+            turn();
+        }
+        if (timer < NPC_TURN_LIMIT) {
+            double fitness1 = p1.getFitness(this);
+            double fitness2 = p2.getFitness(this);
+            double diff = Math.abs(fitness1 / fitness2 - 1.0);
+            if (diff > NPC_DRAW_ERROR_MARGIN) {
+                winner = Optional.of(fitness1 > fitness2 ? p1 : p2);
+            } else {
+                winner = Optional.of(Global.noneCharacter());
+            }
+        }
+        end();
     }
 
     public void intervene(Character intruder, Character assist) {

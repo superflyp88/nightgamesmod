@@ -1315,7 +1315,11 @@ public class Global {
                 // pass
             }
         }
-        makeGUI(false);
+        init(false);
+    }
+    
+    public static void init(boolean headless) {
+        makeGUI(headless);
         gui.createCharacter();
     }
 
