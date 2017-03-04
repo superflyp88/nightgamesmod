@@ -1782,4 +1782,8 @@ public class Global {
         FROZEN_RNG = new Random();
         rng = FROZEN_RNG;
     }
+    
+    public static boolean randomBool() {
+        return rng.nextBoolean();
+    }
 }
