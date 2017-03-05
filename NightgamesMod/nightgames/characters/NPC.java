@@ -25,6 +25,7 @@ import nightgames.characters.custom.CommentSituation;
 import nightgames.characters.custom.RecruitmentData;
 import nightgames.combat.Combat;
 import nightgames.combat.CombatScene;
+import nightgames.combat.CombatantData;
 import nightgames.combat.IEncounter;
 import nightgames.combat.Result;
 import nightgames.ftc.FTCMatch;
@@ -273,54 +274,60 @@ public class NPC extends Character {
         if (target.human() && Global.isDebugOn(DebugFlags.DEBUG_SKILL_CHOICES)) {
             pickSkillsWithGUI(c, target);
             return true;
-        } else {
-            // if there's no strategy, try getting a new one.
-            if (!c.getCombatantData(this).getStrategy().isPresent()) {
-                c.getCombatantData(this).setStrategy(c, this, pickStrategy(c));
-            }
-            // if the strategy is out of moves, try getting a new one.
-            Collection<Skill> possibleSkills = c.getCombatantData(this).getStrategy().get().nextSkills(c, this);
-            if (possibleSkills.isEmpty()) {
-                if (Global.isDebugOn(DebugFlags.DEBUG_STRATEGIES)) {
-                    System.out.printf("%s has no moves available for strategy %s, picking a new one\n", this.getTrueName(), c.getCombatantData(this).getStrategy().get().getClass().getSimpleName());
-                }
-                c.getCombatantData(this).setStrategy(c, this, pickStrategy(c));
-                possibleSkills = c.getCombatantData(this).getStrategy().get().nextSkills(c, this);
-            }
-            if (Global.isDebugOn(DebugFlags.DEBUG_STRATEGIES)) {
-                System.out.println("next skills: " +  possibleSkills);
-            }
-            // if there are still no moves, just use all available skills for this turn and try again next turn.
-            if (possibleSkills.isEmpty()) {
-                if (Global.isDebugOn(DebugFlags.DEBUG_STRATEGIES)) {
-                    System.out.printf("%s has no moves available for strategy %s\n", this.getTrueName(), c.getCombatantData(this).getStrategy().get().getClass().getSimpleName());
-                }
-                possibleSkills = getSkills();
-            } else {
-                if (Global.isDebugOn(DebugFlags.DEBUG_STRATEGIES)) {
-                    System.out.printf("%s is using strategy %s\n", this.getTrueName(), c.getCombatantData(this).getStrategy().get().getClass().getSimpleName());
-                }
-            }
-            HashSet<Skill> available = new HashSet<>();
-            for (Skill act : possibleSkills) {
-                if (Skill.skillIsUsable(c, act) && cooldownAvailable(act)) {
-                    available.add(act);
-                }
-            }
-            Skill.filterAllowedSkills(c, available, this, target);
-            if (available.size() == 0) {
-                available.add(new Nothing(this));
-            }
-            c.act(this, ai.act(available, c), "");
-            return false;
         }
+        
+        CombatantData combatantData = c.getCombatantData(this);
+
+        // if there's no strategy, try getting a new one.
+        if (!combatantData.hasStrategy()) {
+            combatantData.setStrategy(c, this, pickStrategy(c));
+        }
+        CombatStrategy strategy = combatantData.getStrategy().get();
+        
+        // if the strategy is out of moves, try getting a new one.
+        Collection<Skill> possibleSkills = strategy.nextSkills(c, this);
+        if (possibleSkills.isEmpty()) {
+            Global.ifDebuggingPrintf(DebugFlags.DEBUG_STRATEGIES,
+                "%s has no moves available for strategy %s, picking a new one\n",
+                this.getTrueName(), strategy.getClass().getSimpleName());
+            strategy = combatantData.setStrategy(c, this, pickStrategy(c));
+            possibleSkills = strategy.nextSkills(c, this);
+        }
+        Global.ifDebuggingPrintln(DebugFlags.DEBUG_STRATEGIES, "next skills: " +  possibleSkills);
+
+        // if there are still no moves, just use all available skills for this turn and try again next turn.
+        if (possibleSkills.isEmpty()) {
+            Global.ifDebuggingPrintf(DebugFlags.DEBUG_STRATEGIES,
+                "%s has no moves available for strategy %s\n",
+                this.getTrueName(), strategy.getClass().getSimpleName());
+            possibleSkills = getSkills();
+        } else {
+            Global.ifDebuggingPrintf(DebugFlags.DEBUG_STRATEGIES,
+                            "%s is using strategy %s\n",
+                            this.getTrueName(), strategy.getClass().getSimpleName());
+        }
+        HashSet<Skill> available = new HashSet<>();
+        for (Skill act : possibleSkills) {
+            if (Skill.skillIsUsable(c, act) && cooldownAvailable(act)) {
+                available.add(act);
+            }
+        }
+        Skill.filterAllowedSkills(c, available, this, target);
+        if (available.size() == 0) {
+            available.add(new Nothing(this));
+        }
+        c.act(this, ai.act(available, c), "");
+        return false;
     }
 
+    /**
+     * We choose a random strategy from union of the defaults and this NPC's
+     * personal strategies. The weights given to each strategy are dynamic,
+     * calculated from the state of the given Combat.
+     */
     private CombatStrategy pickStrategy(Combat c) {
         if (Global.random(100) < 60 ) {
-            if (Global.isDebugOn(DebugFlags.DEBUG_STRATEGIES)) {
-                System.out.println("Using default strategy");
-            }
+            Global.ifDebuggingPrintln(DebugFlags.DEBUG_STRATEGIES, "Using default strategy");
             // most of the time don't bother using a strategy.
             return new DefaultStrategy();
         }
@@ -338,9 +345,8 @@ public class NPC extends Character {
             lastWeight += strat.weight(c, this);
             stratsWithCumulativeWeights.put(lastWeight, strat);
         }
-        if (Global.isDebugOn(DebugFlags.DEBUG_STRATEGIES)) {
-            System.out.println("Available strategies: "+ stratsWithCumulativeWeights);
-        }
+        Global.ifDebuggingPrintln(DebugFlags.DEBUG_STRATEGIES,
+            "Available strategies: "+ stratsWithCumulativeWeights);
         double random = Global.randomdouble() * lastWeight;
         for (Map.Entry<Double, CombatStrategy> entry: stratsWithCumulativeWeights.entrySet()) {
             if (random < entry.getKey()) {
@@ -468,19 +474,16 @@ public class NPC extends Character {
 
     @Override
     public void move() {
-        if (Global.isDebugOn(DebugFlags.DEBUG_SCENE)) {
-            System.out.println(getTrueName() + " is moving with state " + state);
-        }
+        Global.ifDebuggingPrintln(DebugFlags.DEBUG_SCENE,
+            getTrueName() + " is moving with state " + state);
         if (state == State.combat) {
             if (location != null && location.fight != null) {
-                if (Global.isDebugOn(DebugFlags.DEBUG_SCENE)) {
-                    System.out.println(getTrueName() + " is battling in the " + location.name);
-                }
+                Global.ifDebuggingPrintln(DebugFlags.DEBUG_SCENE,
+                    getTrueName() + " is battling in the " + location.name);
                 location.fight.battle();
             } else {
-                if (Global.isDebugOn(DebugFlags.DEBUG_SCENE)) {
-                    System.out.println(getTrueName() + " is done battling in the " + location.name);
-                }
+                Global.ifDebuggingPrintln(DebugFlags.DEBUG_SCENE,
+                    getTrueName() + " is done battling in the " + location.name);
             }
         } else if (busy > 0) {
             busy--;
@@ -514,15 +517,15 @@ public class NPC extends Character {
                     match = (FTCMatch) Global.getMatch();
                     if (match.isPrey(this) && match.getFlagHolder() == null) {
                         moves.add(findPath(match.gps("Central Camp")));
-                        if (Global.isDebugOn(DebugFlags.DEBUG_FTC))
-                            System.out.println(getTrueName() + " moving to get flag (prey)");
+                        Global.ifDebuggingPrintln(DebugFlags.DEBUG_FTC,
+                            getTrueName() + " moving to get flag (prey)");
                     } else if (!match.isPrey(this) && has(Item.Flag) && !match.isBase(this, location)) {
                         moves.add(findPath(match.getBase(this)));
-                        if (Global.isDebugOn(DebugFlags.DEBUG_FTC))
-                            System.out.println(getTrueName() + " moving to deliver flag (hunter)");
+                        Global.ifDebuggingPrintln(DebugFlags.DEBUG_FTC,
+                            getTrueName() + " moving to deliver flag (hunter)");
                     } else if (!match.isPrey(this) && has(Item.Flag) && match.isBase(this, location)) {
-                        if (Global.isDebugOn(DebugFlags.DEBUG_FTC))
-                            System.out.println(getTrueName() + " delivering flag (hunter)");
+                        Global.ifDebuggingPrintln(DebugFlags.DEBUG_FTC,
+                            getTrueName() + " delivering flag (hunter)");
                         new Resupply().execute(this);
                         return;
                     }
@@ -733,9 +736,7 @@ public class NPC extends Character {
         for (WeightedSkill wskill : plist) {
             sum += wskill.weight;
             wlist.add(new WeightedSkill(sum, wskill.skill));
-            if (Global.isDebugOn(DebugFlags.DEBUG_SKILLS)) {
-                System.out.printf("%.1f %s\n", sum, wskill.skill);
-            }
+            Global.ifDebuggingPrintf(DebugFlags.DEBUG_SKILLS, "%.1f %s\n", sum, wskill.skill);
         }
 
         if (wlist.isEmpty()) {
@@ -743,9 +744,8 @@ public class NPC extends Character {
         }
         double s = Global.randomdouble() * sum;
         for (WeightedSkill wskill : wlist) {
-            if (Global.isDebugOn(DebugFlags.DEBUG_SKILLS)) {
-                System.out.printf("%.1f/%.1f %s\n", wskill.weight, s, wskill.skill);
-            }
+            Global.ifDebuggingPrintf(DebugFlags.DEBUG_SKILLS,
+                "%.1f/%.1f %s\n", wskill.weight, s, wskill.skill);
             if (wskill.weight > s) {
                 return wskill.skill;
             }
@@ -755,9 +755,8 @@ public class NPC extends Character {
 
     @Override
     public void emote(Emotion emo, int amt) {
-        if (Global.isDebugOn(DebugFlags.DEBUG_MOOD)) {
-            System.out.printf("%s: %+d %s", getTrueName(), amt, emo.name());
-        }
+        Global.ifDebuggingPrintf(DebugFlags.DEBUG_MOOD, 
+            "%s: %+d %s", getTrueName(), amt, emo.name());
         if (emo == mood) {
             // if already this mood, cut gain by half
             amt = Math.max(1, amt / 2);
@@ -776,9 +775,8 @@ public class NPC extends Character {
                     emotes.put(e2, emotes.get(e2) / 2);
                 }
                 mood = e;
-                if (Global.isDebugOn(DebugFlags.DEBUG_MOOD)) {
-                    System.out.printf("Moodswing: %s is now %s\n", getTrueName(), mood.name());
-                }
+                Global.ifDebuggingPrintf(DebugFlags.DEBUG_MOOD,
+                    "Moodswing: %s is now %s\n", getTrueName(), mood.name());
                 if (c.p1.human() || c.p2.human()) {
                     Global.gui().loadPortrait(c, c.p1, c.p2);
                 }
