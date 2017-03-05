@@ -308,7 +308,7 @@ public class NPC extends Character {
         }
         HashSet<Skill> available = new HashSet<>();
         for (Skill act : possibleSkills) {
-            if (Skill.skillIsUsable(c, act) && cooldownAvailable(act)) {
+            if (Skill.isUsable(c, act) && cooldownAvailable(act)) {
                 available.add(act);
             }
         }
@@ -366,7 +366,7 @@ public class NPC extends Character {
             target = c.p1;
         }
         for (Skill act : getSkills()) {
-            if (Skill.skillIsUsable(c, act) && cooldownAvailable(act)) {
+            if (Skill.isUsable(c, act) && cooldownAvailable(act)) {
                 available.add(act);
             }
         }

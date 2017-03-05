@@ -36,7 +36,19 @@ public abstract class Status implements Cloneable {
         return name;
     }
 
-    public Collection<Skill> allowedSkills(Combat c) {
+    /** The set of skills that this status effect restricts Characters to using. The union of
+     * these sets is taken if a Character is afflicted by multiple Statuses using this feature,
+     * so it's still possible that the Character will use a skill outside of this set.
+     */
+    public Collection<Skill> skillWhitelist(Combat c) {
+        return Collections.emptySet();
+    }
+    
+    /** The set of skills that this Status prevents a Character from using. This takes
+     * precedence over the whitelist. The sets of blackslists from all Statuses are also
+     * unioned.
+     */
+    public Set<Skill> skillBlacklist(Combat c) {
         return Collections.emptySet();
     }
     

@@ -3061,7 +3061,7 @@ public abstract class Character extends Observable implements Cloneable {
         HashSet<Skill> available = new HashSet<>();
         HashSet<Skill> cds = new HashSet<>();
         for (Skill a : getSkills()) {
-            if (Skill.skillIsUsable(c, a)) {
+            if (Skill.isUsable(c, a)) {
                 if (cooldownAvailable(a)) {
                     available.add(a);
                 } else {
