@@ -178,9 +178,13 @@
         "comment": "I love fucking a pretty ass! You love it too, right? I know you do. Are you actually going to cum like this now?"
       },
       {
-        "situation": "ANAL_SUB_CATCH_WIN",
-        "comment": "I have a {other:boy} pegging himself for me! Best. Day. Ever!"
+        "situation": "ANAL_SUB_PITCH_WIN",
+        "comment": "I have a {other:boy} pegging {other:direct-object}self for me! Best. Day. Ever!"
       },
+      {
+        "situation": "ANAL_SUB_CATCH_WIN",
+        "comment": "Ha! Even like this you can't keep up with me!"
+      }
       {
         "situation": "ANAL_DOM_CATCH_LOSE",
         "comment": "Fuck! I'm actually going to cum!"
@@ -240,10 +244,6 @@
       },
       {
         "situation": "ANAL_DOM_CATCH_WIN",
-        "comment": "Ooh! Are you going to fill up my ass?"
-      },
-      {
-        "situation": "ANAL_SUB_CATCH_WIN",
         "comment": "Ooh! Are you going to fill up my ass?"
       },
       {
