@@ -3379,6 +3379,14 @@ public abstract class Character extends Observable implements Cloneable {
             return "him";
         }
     }
+    
+    public String reflexivePronoun() {
+        if (useFemalePronouns()) {
+            return "herself";
+        } else {
+            return "himself";
+        }
+    }
 
     public boolean useFemalePronouns() {
         return hasPussy() 

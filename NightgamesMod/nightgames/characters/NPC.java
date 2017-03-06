@@ -561,7 +561,7 @@ public class NPC extends Character {
         }
         available.removeIf(a -> a == null || !a.usable(this));
         if (location.humanPresent()) {
-            Global.gui().message("You notice " + getName() + ai.move(available, radar).execute(this).describe());
+            Global.gui().message("You notice " + getName() + ai.move(available, radar).execute(this).describe(this));
         } else {
             ai.move(available, radar).execute(this);
         }
