@@ -33,6 +33,7 @@ import nightgames.requirements.Requirement;
 
 
 public enum CommentSituation {
+    
     // Fucking
     VAG_DOM_PITCH_WIN(2, inserted(), rev(anal()), dom(), winning()),
     VAG_DOM_PITCH_LOSE(2, inserted(), rev(not(anal())), dom(), rev(winning())),
@@ -91,12 +92,13 @@ public enum CommentSituation {
 
     NO_COMMENT(-1);
 
+    public static final String DEFAULT_COMMENTS_FILE = "data/DefaultComments.json";
     private static final Map<String, Map<CommentSituation, String>> DEFAULT_COMMENTS;
 
     static {
         DEFAULT_COMMENTS = new HashMap<>();
         try (InputStreamReader reader = new InputStreamReader(
-                        ResourceLoader.getFileResourceAsStream("data/DefaultComments.json"))) {
+                        ResourceLoader.getFileResourceAsStream(DEFAULT_COMMENTS_FILE))) {
             JsonArray root = JsonUtils.rootJson(reader).getAsJsonArray();
             root.forEach(element -> loadDefaultComment(element.getAsJsonObject()));
         } catch (JsonParseException | IOException e) {

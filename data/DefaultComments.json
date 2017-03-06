@@ -61,11 +61,11 @@
       },
       {
         "situation": "VAG_SUB_CATCH_WIN",
-        "comment": "Haha! I knew a horny {other:boy} like just can't resist once he's inside of me! Now finish it!"
+        "comment": "Haha! I knew a horny {other:boy} like {other:direct-object} just can't resist once {other:subject-action:is\\\\are} inside of me! Now finish it!"
       },
       {
         "situation": "VAG_SUB_CATCH_LOSE",
-        "comment": "Ah, ah ah! Please..."
+        "comment": "Ah, ah, ah! Please..."
       },
       {
         "situation": "ANAL_DOM_CATCH_WIN",
@@ -184,7 +184,7 @@
       {
         "situation": "ANAL_SUB_CATCH_WIN",
         "comment": "Ha! Even like this you can't keep up with me!"
-      }
+      },
       {
         "situation": "ANAL_DOM_CATCH_LOSE",
         "comment": "Fuck! I'm actually going to cum!"
@@ -297,11 +297,11 @@
       },
       {
         "situation": "ANAL_DOM_CATCH_WIN",
-        "comment": "So it's true that men enjoy anal more!"
+        "comment": "So it's true that pitchers enjoy anal more!"
       },
       {
         "situation": "ANAL_DOM_PITCH_WIN",
-        "comment": "Hah! I thought men would be ashamed of this, but you seem to like it! Show me how much!"
+        "comment": "Hah! I thought people were ashamed of this, but you seem to like it! Show me how much!"
       },
       {
         "situation": "BEHIND_DOM_WIN",

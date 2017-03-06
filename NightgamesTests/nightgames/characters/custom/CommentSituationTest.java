@@ -3,6 +3,8 @@ package nightgames.characters.custom;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import nightgames.Resources.ResourceLoader;
 import nightgames.json.JsonUtils;
 import org.hamcrest.core.IsEqual;
 import org.junit.Before;
@@ -11,11 +13,13 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import java.io.File;
+import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Tests for the CommentSituation class.
@@ -58,6 +62,17 @@ public class CommentSituationTest {
 
         for (Object commentJSON : failureCommentsJSON) {
             CommentSituation.parseComment((JsonObject) commentJSON, failureComments);
+        }
+    }
+    
+    @Test public void loadDefaultComments() {
+        try (InputStreamReader reader = new InputStreamReader(
+                        ResourceLoader.getFileResourceAsStream(
+                                        CommentSituation.DEFAULT_COMMENTS_FILE))) {
+        JsonUtils.rootJson(reader).getAsJsonArray();
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
         }
     }
 }
