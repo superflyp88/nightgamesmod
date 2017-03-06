@@ -68,8 +68,10 @@ public abstract class Status implements Cloneable {
 
     public abstract int regen(Combat c);
 
+    // Increases damage received by the returned value
     public abstract int damage(Combat c, int x);
 
+    // Increases pleasure received by the returned value
     public abstract double pleasure(Combat c, BodyPart withPart, BodyPart targetPart, double x);
 
     public abstract int weakened(Combat c, int x);

@@ -3631,6 +3631,10 @@ public abstract class Character extends Observable implements Cloneable {
     public String boyOrGirl() {
         return useFemalePronouns() ? "girl" : "boy";
     }
+    
+    public String gentlemanOrLady() {
+        return useFemalePronouns() ? "lady" : "gentleman";
+    }
 
     public boolean isDemonic() {
         return has(Trait.succubus) || body.get("pussy").stream()
