@@ -84,7 +84,21 @@ public class NoRecoveryModifier extends BaseModifier {
                             + "down her wrist. <i>\"That worked much better than I expected,\"</i> Lilly comments, licking her fingers clean. <i>\"Hopefully you're not "
                             + "too worn out. The match hasn't even started yet.\"</i>";
         } else {
-            return null;
+            return "<i>\"Come on,\"</i> Lilly says as she leads you into a nearby room. <i>\"I need to handle your naughty bits and I figured you would prefer some privacy.\"</i> It's "
+                            + "true, but you're a little surprised by her consideration. She generally seems to enjoy making you uncomfortable. <i>\"Ok, get your clothes off."
+                            + "Don't be shy, you have nothing I haven't seen before.\"</i> You bare your lower half and Lilly fixes the metal contraption to the middle "
+                            + "of your pelvis. It's not uncomfortable, though it does seem to cling to your skin in a way that seems weird.<br/><br/><i>\"Now, this may be "
+                            + "a little awkward for both of us, but I need you to try to masturbate to completion so we can verify that it works as intended.\"</i> This explains the privacy. "
+                            + "Is she just doing this to screw with you? She shakes her head with a serious expression. <i>\"If it turns out that accessory actually gives you an unfair advantage, "
+                            + "I can't let you wear it during the match. I do take my job seriously.\"</i> You feel a little bad for doubting her, so you slip a finger between your cheeks "
+                            + "without complaining.<br/><br/>It takes you some time to get aroused under Lilly's scrutinizing stare, but your fingers begin pushing deeper into your ass and "
+                            + "you begin to masturbate in earnest. No matter how much you try, you find yourself completely unable to cum. Eventually you notice Lilly trying to hide "
+                            + "her expression, her shoulders shaking with mirth. <i>\"I'm sorry,\"</i> she says between giggles. <i>\"I know it's really rude to laugh, but your expression is just too "
+                            + "funny. I'm really sorry.\"</i> She manages to calm down enough to gesture for you to stop. <i>\"Ok, I'm convinced the accessory effectively prevents masturbation. The "
+                            + "more important test is whether you can still be made to orgasm.\"</i> She replaces your hand with her own and skillfilly fingers your ass. "
+                            + "You immediately feel the pleasure start to build in your frustrated butt, and seconds later you shudder in climax and lean on her shoulder, your asshole "
+                            + "spasming around her probing fingers. <i>\"That worked much better than I expected,\"</i> Lilly comments as she pulls a tissue out of her pocket to clean up. "
+                            + "<i>\"Hopefully you're not too worn out. The match hasn't even started yet.\"</i>";
         }
     }
 
