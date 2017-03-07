@@ -61,7 +61,7 @@
       },
       {
         "situation": "VAG_SUB_CATCH_WIN",
-        "comment": "Haha! I knew a horny {other:boy} like {other:direct-object} just can't resist once {other:subject-action:is\\\\are} inside of me! Now finish it!"
+        "comment": "Haha! I knew a horny {other:boy} like {other:direct-object} just couldn't resist once {other:pronoun-action:were|was} inside of me! Now finish it!"
       },
       {
         "situation": "VAG_SUB_CATCH_LOSE",
