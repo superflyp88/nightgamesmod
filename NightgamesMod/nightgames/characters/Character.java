@@ -2340,6 +2340,7 @@ public abstract class Character extends Observable implements Cloneable {
         return check(Attribute.Cunning, Global.random(20) + perception) || state == State.hidden;
     }
 
+    // This shouldn't have any side effects
     public boolean spotCheck(Character checked) {
         if (bound()) {
             return false;

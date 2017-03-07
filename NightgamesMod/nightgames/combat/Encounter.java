@@ -62,101 +62,118 @@ public class Encounter implements Serializable, IEncounter {
                                           + " collapse to the floor, feeling helpless and"
                                           + " strangely oversensitive");
                 } else if (p2.human()) {
-                    Global.gui()
-                          .message(p1.getName() + " doesn't appear to notice you at first, but when you "
-                                          + "wave your hand close to her face her eyes open wide and"
-                                          + " she immediately drops to the floor. Although the display"
-                                          + " leaves you somewhat worried about her health, she is"
-                                          + " still in a very vulnerable position and you never were"
-                                          + " one to let an opportunity pass you by.");
+                    Global.gui().message(String.format(
+                                    "%s doesn't appear to notice you at first, but when you wave your hand close to %s face %s "
+                                    + "eyes open wide and %s immediately drops to the floor. Although the display leaves you "
+                                    + "somewhat worried about %s health, %s is still in a very vulnerable position and you never "
+                                    + "were one to let an opportunity pass you by.",
+                                    p1.getName(), p1.possessiveAdjective(), p1.possessiveAdjective(),
+                                    p1.pronoun(),
+                                    p1.possessiveAdjective(), p1.pronoun()));
                 }
             }
         }
     }
 
+    /**
+     * Checks for and runs any scenarios that arise from two Characters encountering each other. 
+     * Returns true if something has come up that prevents them from being presented with the usual
+     * campus Actions.
+     */
     public boolean spotCheck() {
         if (p1.eligible(p2) && p2.eligible(p1)) {
-            if (p1.state == State.shower) {
-                p2.showerScene(p1, this);
-                return true;
-            } else if (p2.state == State.shower) {
-                p1.showerScene(p2, this);
-                return true;
-            } else if (p1.state == State.webbed) {
-                spider(p2, p1);
-            } else if (p2.state == State.webbed) {
-                spider(p1, p2);
-            } else if (p1.state == State.crafting || p1.state == State.searching) {
-                p2.spy(p1, this);
-                return true;
-            } else if (p2.state == State.crafting || p2.state == State.searching) {
-                p1.spy(p2, this);
-                return true;
-            }
-            if (p1.state == State.shower) {
-                p2.showerScene(p1, this);
-                return true;
-            } else if (p2.state == State.shower) {
-                p1.showerScene(p2, this);
-                return true;
-            } else if (p1.state == State.masturbating) {
-                caught(p2, p1);
-                return true;
-            } else if (p2.state == State.masturbating) {
-                caught(p1, p2);
-                return true;
-            } else if (p2.spotCheck(p1)) {
-                if (p1.spotCheck(p2)) {
-                    p1.faceOff(p2, this);
-                    p2.faceOff(p1, this);
-                } else {
-                    p2.spy(p1, this);
-                }
-            } else {
-                if (p1.spotCheck(p2)) {
-                    p1.spy(p2, this);
-                } else {
-                    location.endEncounter();
-                }
-            }
+            eligibleSpotCheck();
             return true;
         } else {
-            if (p1.state == State.masturbating) {
-                if (p1.human()) {
-                    Global.gui()
-                          .message(p2.getName()
-                                          + " catches you masturbating, but fortunately she's still not allowed to attack you, so she just watches you jerk off with "
-                                          + "an amused grin.");
-                } else if (p2.human()) {
-                    Global.gui()
-                          .message("You stumble onto " + p1.getName()
-                                          + " with her hand between her legs, masturbating. Since you just fought, you still can't touch her, so "
-                                          + "you just watch the show until she orgasms.");
-                }
-            } else if (p2.state == State.masturbating) {
-                if (p2.human()) {
-                    Global.gui()
-                          .message(p1.getName()
-                                          + " catches you masturbating, but fortunately she's still not allowed to attack you, so she just watches you jerk off with "
-                                          + "an amused grin.");
-                } else if (p1.human()) {
-                    Global.gui()
-                          .message("You stumble onto " + p2.getName()
-                                          + " with her hand between her legs, masturbating. Since you just fought, you still can't touch her, so "
-                                          + "you just watch the show until she orgasms.");
-                }
-            } else if (!p1.eligible(p2) && p1.human()) {
-                Global.gui()
-                      .message("You encounter " + p2.getName()
-                                      + ", but you still haven't recovered from your last fight.");
-            } else if (p1.human()) {
-                Global.gui()
-                      .message("You find " + p2.getName()
-                                      + " still naked from your last encounter, but she's not fair game again until she replaces her clothes.");
-            }
-            location.endEncounter();
+            ineligibleSpotCheck();
             return false;
         }
+    }
+    
+    private void eligibleSpotCheck() {
+        if (p1.state == State.shower) {
+            p2.showerScene(p1, this);
+            return;
+        } else if (p2.state == State.shower) {
+            p1.showerScene(p2, this);
+            return;
+        } else if (p1.state == State.webbed) {
+            spider(p2, p1);
+            return;
+        } else if (p2.state == State.webbed) {
+            spider(p1, p2);
+            return;
+        } else if (p1.state == State.crafting || p1.state == State.searching) {
+            p2.spy(p1, this);
+            return;
+        } else if (p2.state == State.crafting || p2.state == State.searching) {
+            p1.spy(p2, this);
+            return;
+        } else if (p1.state == State.masturbating) {
+            caught(p2, p1);
+            return;
+        } else if (p2.state == State.masturbating) {
+            caught(p1, p2);
+            return;
+        }
+        
+        // We need to run both vision checks no matter what, and they have no
+        // side effects besides.
+        boolean p2_sees_p1 = p2.spotCheck(p1);
+        boolean p1_sees_p2 = p1.spotCheck(p1);
+        
+        if (p2_sees_p1 && p1_sees_p2) {
+            p1.faceOff(p2, this);
+            p2.faceOff(p1, this);
+        } else if (p2_sees_p1) {
+            p2.spy(p1, this);
+        } else if (p1_sees_p2) {
+            p1.spy(p2,  this);
+        } else {
+            // Ships passing in the night :(
+            location.endEncounter();
+        }
+    }
+    
+    private void ineligibleSpotCheck() {
+        // We can skip a lot of flavor lines if there aren't any humans around
+        if (p1.human() || p2.human()) {
+            Character human = p1.human() ? p1 : p2;
+            Character npc = p1 != human ? p1 : p2;
+            Character masturbating =
+                            p1.state == State.masturbating ? p1 :
+                                (p2.state == State.masturbating ? p2 : null);
+            
+            if (masturbating != null) {
+                if (human == masturbating) {
+                    ineligibleHumanCaughtMasturbatingBy(npc);
+                } else {
+                    ineligibleNpcCaughtMasturbating(npc);
+                }
+            } else if (p1 == human && !p1.eligible(p2)) {
+                Global.gui().message("You encounter " + p2.getName() + ", but you still haven't recovered from your last fight.");
+            } else if (p1 == human) {
+                Global.gui().message(String.format(
+                                "You find %s still naked from your last encounter, but %s's not fair game again until %s replaces %s clothes.",
+                                p2.getName(), p2.pronoun(), p2.pronoun(), p2.possessiveAdjective()));
+            }
+        }
+        location.endEncounter();
+    }
+    
+    private void ineligibleHumanCaughtMasturbatingBy(Character npc) {
+        Global.gui().message(String.format(
+                        "%s catches you masturbating, but fortunately %s's not yet allowed to attack you, so %s just "
+                        + "watches you pleasure yourself with an amused grin.",
+                        npc.getName(), npc.pronoun(), npc.pronoun()));
+    }
+    
+    private void ineligibleNpcCaughtMasturbating(Character npc) {
+        Global.gui().message(String.format(
+                        "You stumble onto %s with %s hand between %s legs, masturbating. Since you just fought you still can't touch %s, so "
+                        + "you just watch the show until %s orgasms.",
+                        npc.getName(), npc.possessiveAdjective(), npc.possessiveAdjective(), npc.directObject(),
+                        npc.pronoun()));
     }
 
     protected void fightOrFlight(Character p, boolean fight, Optional<String> guaranteed) {

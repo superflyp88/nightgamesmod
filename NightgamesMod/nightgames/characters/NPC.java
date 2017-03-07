@@ -507,50 +507,47 @@ public class NPC extends Character {
             state = State.ready;
         } else if (state == State.masturbating) {
             masturbate();
-        } else {
-            if (!location.encounter(this)) {
-                
-                HashSet<Action> moves = new HashSet<>();
-                HashSet<Movement> radar = new HashSet<>();
-                FTCMatch match;
-                if (Global.checkFlag(Flag.FTC) && allowedActions().isEmpty()) {
-                    match = (FTCMatch) Global.getMatch();
-                    if (match.isPrey(this) && match.getFlagHolder() == null) {
-                        moves.add(findPath(match.gps("Central Camp")));
-                        Global.ifDebuggingPrintln(DebugFlags.DEBUG_FTC,
-                            getTrueName() + " moving to get flag (prey)");
-                    } else if (!match.isPrey(this) && has(Item.Flag) && !match.isBase(this, location)) {
-                        moves.add(findPath(match.getBase(this)));
-                        Global.ifDebuggingPrintln(DebugFlags.DEBUG_FTC,
-                            getTrueName() + " moving to deliver flag (hunter)");
-                    } else if (!match.isPrey(this) && has(Item.Flag) && match.isBase(this, location)) {
-                        Global.ifDebuggingPrintln(DebugFlags.DEBUG_FTC,
-                            getTrueName() + " delivering flag (hunter)");
-                        new Resupply().execute(this);
-                        return;
-                    }
+        } else if (!location.encounter(this)) {
+            HashSet<Action> moves = new HashSet<>();
+            HashSet<Movement> radar = new HashSet<>();
+            FTCMatch match;
+            if (Global.checkFlag(Flag.FTC) && allowedActions().isEmpty()) {
+                match = (FTCMatch) Global.getMatch();
+                if (match.isPrey(this) && match.getFlagHolder() == null) {
+                    moves.add(findPath(match.gps("Central Camp")));
+                    Global.ifDebuggingPrintln(DebugFlags.DEBUG_FTC,
+                        getTrueName() + " moving to get flag (prey)");
+                } else if (!match.isPrey(this) && has(Item.Flag) && !match.isBase(this, location)) {
+                    moves.add(findPath(match.getBase(this)));
+                    Global.ifDebuggingPrintln(DebugFlags.DEBUG_FTC,
+                        getTrueName() + " moving to deliver flag (hunter)");
+                } else if (!match.isPrey(this) && has(Item.Flag) && match.isBase(this, location)) {
+                    Global.ifDebuggingPrintln(DebugFlags.DEBUG_FTC,
+                        getTrueName() + " delivering flag (hunter)");
+                    new Resupply().execute(this);
+                    return;
                 }
-                if (!has(Trait.immobile) && moves.isEmpty()) {
-                    for (Area path : location.adjacent) {
-                        moves.add(new Move(path));
-                        if (path.ping(get(Attribute.Perception))) {
-                            radar.add(path.id());
-                        }
-                    }
-                    if (getPure(Attribute.Cunning) >= 28) {
-                        for (Area path : location.shortcut) {
-                            moves.add(new Shortcut(path));
-                        }
-                    }
-                    if(getPure(Attribute.Ninjutsu)>=5){
-                        for(Area path:location.jump){
-                            moves.add(new Leap(path));
-                        }
-                    }
-                }
-                
-                pickAndDoAction(allowedActions(), moves, radar);
             }
+            if (!has(Trait.immobile) && moves.isEmpty()) {
+                for (Area path : location.adjacent) {
+                    moves.add(new Move(path));
+                    if (path.ping(get(Attribute.Perception))) {
+                        radar.add(path.id());
+                    }
+                }
+                if (getPure(Attribute.Cunning) >= 28) {
+                    for (Area path : location.shortcut) {
+                        moves.add(new Shortcut(path));
+                    }
+                }
+                if(getPure(Attribute.Ninjutsu)>=5){
+                    for(Area path:location.jump){
+                        moves.add(new Leap(path));
+                    }
+                }
+            }
+            
+            pickAndDoAction(allowedActions(), moves, radar);
         }
     }
     
