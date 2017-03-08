@@ -1595,6 +1595,13 @@ public class Global {
             }
             return "";
         });
+        matchActions.put("reflexive", (self, first, second, third) -> {
+           if (self.useFemalePronouns()) {
+               return "herself";
+           } else {
+               return "himself";
+           }
+        });
     }
 
     public static String format(String format, Character self, Character target, Object... strings) {

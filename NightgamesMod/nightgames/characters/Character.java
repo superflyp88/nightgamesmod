@@ -3615,6 +3615,8 @@ public abstract class Character extends Observable implements Cloneable {
         drainer.mojo.restore(drained);
     }
 
+    // TODO: Rename this method; it has the same name as Observer's update(), which is a little
+    // confusing given that this is an Observable.
     public void update() {
         setChanged();
         notifyObservers();
