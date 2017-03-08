@@ -26,8 +26,10 @@ public class Encounter implements Serializable, IEncounter {
     private static final long serialVersionUID = 3122246133619156539L;
     protected Character p1;
     protected Character p2;
+    
     protected boolean p1ff;
     protected boolean p2ff;
+    
     protected transient Optional<String> p1Guaranteed;
     protected transient Optional<String> p2Guaranteed;
     protected Area location;
@@ -176,6 +178,12 @@ public class Encounter implements Serializable, IEncounter {
                         npc.pronoun()));
     }
 
+    /**
+     * @param p The Character making the decision.
+     * @param fight Whether the Character wishes to fight (true) or flee (false).
+     * @param guaranteed Whether the Character's option is guaranteed to work. If so, the provided
+     * String is messaged to the Character.
+     */
     protected void fightOrFlight(Character p, boolean fight, Optional<String> guaranteed) {
         if (p == p1) {
             p1ff = fight;
@@ -187,115 +195,118 @@ public class Encounter implements Serializable, IEncounter {
             checkin++;
         }
         if (checkin >= 2) {
-            if (p1ff && p2ff) {
-                startFightTimer();
-                if (p1.human() || p2.human()) {
-                    this.fight = Global.gui().beginCombat(p1, p2);
-                } else {
-                    this.fight = new Combat(p1, p2, location);
-                }
-            } else if (p1ff) {
-                if (p1Guaranteed.isPresent() && !p2Guaranteed.isPresent()) {
-                    if (p1.human() || p2.human())
-                        Global.gui().message(p1Guaranteed.get());
-                    startFightTimer();
-                    this.fight = Global.gui().beginCombat(p1, p2);
-                } else if (p2Guaranteed.isPresent()) {
-                    if (p1.human() || p2.human())
-                        Global.gui().message(p2Guaranteed.get());
-                    p2.flee(location);
-                } else if (p2.check(Attribute.Speed, 10 + p1.get(Attribute.Speed) + (p1.has(Trait.sprinter) ? 5 : 0)
-                                + (p2.has(Trait.sprinter) ? -5 : 0))) {
-                    if (p1.human()) {
-                        Global.gui()
-                              .message(p2.getName() + " dashes away before you can move.");
-                    }
-                    p2.flee(location);
-                } else {
-                    startFightTimer();
-                    if (p1.human() || p2.human()) {
-                        if (p1.human()) {
-                            Global.gui()
-                                  .message(p2.getName() + " tries to run, but you stay right on her heels and catch her.");
-                        } else {
-                            Global.gui()
-                                  .message("You quickly try to escape, but " + p1.getName()
-                                                  + " is quicker. She corners you and attacks.");
-                        }
-                        this.fight = Global.gui()
-                                           .beginCombat(p1, p2);
-                    } else {
+            doFightOrFlight();
+        }
+    }
+    
+    private void doFightOrFlight() {
+        if (p1ff && p2ff) {
+            startFight();
+        } else if (p1ff) {
+            fightOrFlee(p1, p2);
+        } else if (p2ff) {
+            fightOrFlee(p2, p1);
+        } else {
+            bothFlee();
+        }
+    }
+    
+    private void startFight() {
+        startFightTimer();
+        if (p1.human() || p2.human()) {
+            this.fight = Global.gui().beginCombat(p1, p2);
+        } else {
+            this.fight = new Combat(p1, p2, location);
+        }
+    }
+    
+    // One Character wishes to Fight while the other attempts to flee.
+    private void fightOrFlee(Character fighter, Character fleer) {
+        Optional<String> fighterGuaranteed = (fighter == p1) ? p1Guaranteed : p2Guaranteed;
+        Optional<String> fleerGuaranteed = (fleer == p1) ? p1Guaranteed : p2Guaranteed;
+        
+        // Fighter wins automatically
+        if (fighterGuaranteed.isPresent() && !fleerGuaranteed.isPresent()) {
+            if (fighter.human() || fleer.human()) {
+                Global.gui().message(fighterGuaranteed.get());
+            }
+            startFightTimer();
+            this.fight = Global.gui().beginCombat(fighter, fleer);
+            return;
+        }
 
-                        // this.fight=new NullGUI().beginCombat(p1,p2);
-                        this.fight = new Combat(p1, p2, location);
-                    }
-                }
-            } else if (p2ff) {
-                if (p2Guaranteed.isPresent() && !p1Guaranteed.isPresent()) {
-                    if (p1.human() || p2.human())
-                        Global.gui().message(p2Guaranteed.get());
-                    startFightTimer();
-                    this.fight = Global.gui().beginCombat(p1, p2);
-                } else if (p1Guaranteed.isPresent()) {
-                    if (p1.human() || p2.human())
-                        Global.gui().message(p1Guaranteed.get());
-                    p1.flee(location);
-                } else if (p1.check(Attribute.Speed, 10 + p2.get(Attribute.Speed) + (p1.has(Trait.sprinter) ? -5 : 0)
-                                + (p2.has(Trait.sprinter) ? 5 : 0))) {
-                    if (p2.human()) {
-                        Global.gui()
-                              .message(p1.getName() + " dashes away before you can move.");
-                    }
-                    p1.flee(location);
+        // Fleer wins automatically
+        if (fleerGuaranteed.isPresent()) {
+            if (fighter.human() || fleer.human()) {
+                Global.gui().message(fleerGuaranteed.get());
+            }
+            p2.flee(location);
+            return;
+        }
+
+        // Roll to see who's will triumphs
+        if (rollFightVsFlee(fighter, fleer)) {
+            if (fighter.human()) {
+                Global.gui().message(fleer.getName() + " dashes away before you can move.");
+            }
+            fleer.flee(location);
+        } else {
+            startFightTimer();
+            if (fighter.human() || fleer.human()) {
+                if (fighter.human()) {
+                    Global.gui().message(String.format(
+                                    "%s tries to run, but you stay right on %s heels and catch %s.",
+                                    fleer.getName(), fleer.possessiveAdjective(), fleer.directObject()));
                 } else {
-                    startFightTimer();
-                    if (p1.human() || p2.human()) {
-                        if (p2.human()) {
-                            Global.gui()
-                                  .message(p1.getName() + " tries to run, but you stay right on her heels and catch her.");
-                        } else {
-                            Global.gui()
-                                  .message("You quickly try to escape, but " + p2.getName()
-                                                  + " is quicker. She corners you and attacks.");
-                        }
-                        this.fight = Global.gui()
-                                           .beginCombat(p1, p2);
-                    } else {
-                        // this.fight=new NullGUI().beginCombat(p1,p2);
-                        this.fight = new Combat(p1, p2, location);
-                    }
+                    Global.gui().message(String.format(
+                                    "You quickly try to escape, but %s is quicker. %s corners you and attacks.",
+                                    fighter.getName(), Global.capitalizeFirstLetter(fighter.pronoun())));
                 }
+                this.fight = Global.gui()
+                                   .beginCombat(fighter, fleer);
             } else {
-                boolean humanPresent = p1.human() || p2.human();
-                if (p1Guaranteed.isPresent()) {
-                    if (humanPresent) {
-                        Global.gui().message(p1Guaranteed.get());
-                    }
-                    p1.flee(location);
-                } else if (p2Guaranteed.isPresent()) {
-                    if (humanPresent) {
-                        Global.gui().message(p2Guaranteed.get());
-                    }
-                    p2.flee(location);
-                } else if (p1.get(Attribute.Speed) + Global.random(10) >= p2.get(Attribute.Speed) + Global.random(10)) {
-                    if (p2.human()) {
-                        Global.gui()
-                              .message(p1.getName() + " dashes away before you can move.");
-                    }
-                    p1.flee(location);
-                } else {
-                    if (p1.human()) {
-                        Global.gui()
-                              .message(p2.getName() + " dashes away before you can move.");
-                    }
-                    p2.flee(location);
-                }
+                this.fight = new Combat(fighter, fleer, location);
             }
         }
+    }
+    
+    /** Weights a roll with the fighter and fleers stats to determine who prevails. Returns
+     * true if the fleer escapes, false otherwise.
+     */
+    private boolean rollFightVsFlee(Character fighter, Character fleer) {
+        return fleer.check(Attribute.Speed, 10 + fighter.get(Attribute.Speed) + (fighter.has(Trait.sprinter) ? 5 : 0)
+                        + (fleer.has(Trait.sprinter) ? -5 : 0));
     }
 
     private void startFightTimer() {
         fightTime = 2;
+    }
+    
+    private void bothFlee() {
+        boolean humanPresent = p1.human() || p2.human();
+        if (p1Guaranteed.isPresent()) {
+            if (humanPresent) {
+                Global.gui().message(p1Guaranteed.get());
+            }
+            p1.flee(location);
+        } else if (p2Guaranteed.isPresent()) {
+            if (humanPresent) {
+                Global.gui().message(p2Guaranteed.get());
+            }
+            p2.flee(location);
+        } else if (p1.get(Attribute.Speed) + Global.random(10) >= p2.get(Attribute.Speed) + Global.random(10)) {
+            if (p2.human()) {
+                Global.gui()
+                      .message(p1.getName() + " dashes away before you can move.");
+            }
+            p1.flee(location);
+        } else {
+            if (p1.human()) {
+                Global.gui()
+                      .message(p2.getName() + " dashes away before you can move.");
+            }
+            p2.flee(location);
+        }
     }
 
     protected void ambush(Character attacker, Character target) {
