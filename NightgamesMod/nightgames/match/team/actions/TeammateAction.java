@@ -41,7 +41,7 @@ public abstract class TeammateAction extends Action implements IMovement {
     @Override
     public final IMovement execute(Character user) {
         if (self.human()) {
-            Global.gui().message(describe());
+            Global.gui().message(describe(user));
         }
         effects();
         return this;

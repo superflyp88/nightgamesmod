@@ -191,14 +191,14 @@ public class PetCharacter extends Character {
 
     public void act(Combat c, Character target) {
         List<Skill> allowedEnemySkills = new ArrayList<>(getSkills()
-                        .stream().filter(skill -> Skill.skillIsUsable(c, skill, target) && Collections.disjoint(skill.getTags(c), PET_UNUSABLE_TAG))
+                        .stream().filter(skill -> Skill.isUsableOn(c, skill, target) && Collections.disjoint(skill.getTags(c), PET_UNUSABLE_TAG))
                         .collect(Collectors.toList()));
         Skill.filterAllowedSkills(c, allowedEnemySkills, this, target);        
 
         List<Skill> possibleMasterSkills = new ArrayList<>(getSkills());
         possibleMasterSkills.addAll(Combat.WORSHIP_SKILLS);
         List<Skill> allowedMasterSkills = new ArrayList<>(getSkills()
-                        .stream().filter(skill -> Skill.skillIsUsable(c, skill, getSelf().owner)
+                        .stream().filter(skill -> Skill.isUsableOn(c, skill, getSelf().owner)
                                         && (skill.getTags(c).contains(SkillTag.helping) || (getSelf().owner.has(Trait.showmanship) && skill.getTags(c).contains(SkillTag.worship)))
                                         && Collections.disjoint(skill.getTags(c), PET_UNUSABLE_TAG))
                         .collect(Collectors.toList()));

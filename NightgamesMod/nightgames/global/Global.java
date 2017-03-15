@@ -235,6 +235,18 @@ public class Global {
     public static boolean isDebugOn(DebugFlags flag) {
         return debug[flag.ordinal()] && debugSimulation == 0;
     }
+    
+    public static void ifDebuggingPrintf(DebugFlags flag, String formatted, Object... args) {
+        if (isDebugOn(flag)) {
+            System.out.printf(formatted, args);
+        }
+    }
+    
+    public static void ifDebuggingPrintln(DebugFlags flag, String output) {
+        if (isDebugOn(flag)) {
+            System.out.println(output);
+        }
+    }
 
     public static void newGame(String playerName, Optional<StartConfiguration> config, List<Trait> pickedTraits,
                     CharacterSex pickedGender, Map<Attribute, Integer> selectedAttributes) {
@@ -1599,6 +1611,13 @@ public class Global {
                 return self.possessivePronoun();
             }
             return "";
+        });
+        matchActions.put("reflexive", (self, first, second, third) -> {
+           if (self.useFemalePronouns()) {
+               return "herself";
+           } else {
+               return "himself";
+           }
         });
     }
 

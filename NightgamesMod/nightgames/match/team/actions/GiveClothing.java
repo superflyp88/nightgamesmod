@@ -22,7 +22,7 @@ public class GiveClothing extends TeammateAction {
     }
     
     @Override
-    public String describe() {
+    public String describe(Character doer) {
         Clothing picked = decideClothing();
         boolean appropriate = isAppropriate(picked, getCaptain());
         if (getCaptain().getOutfit().slotEmpty(ClothingSlot.bottom) && picked.getSlots().contains(ClothingSlot.bottom)) {

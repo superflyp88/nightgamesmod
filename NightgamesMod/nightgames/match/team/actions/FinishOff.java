@@ -1,6 +1,5 @@
 package nightgames.match.team.actions;
 
-import nightgames.actions.IMovement;
 import nightgames.characters.Character;
 import nightgames.global.Global;
 import nightgames.items.clothing.ClothingSlot;
@@ -8,12 +7,14 @@ import nightgames.match.team.TeamMatch;
 
 public class FinishOff extends TeammateAction {
 
+    private static final long serialVersionUID = -4917537646787079575L;
+
     public FinishOff(TeamMatch match, Character self) {
         super("Finish Off Captain", match, self);
     }
 
     @Override
-    public String describe() {
+    public String describe(Character doer) {
         Character captain = getCaptain();
         return Global.format(
                         "{self:SUBJECT-ACTION:place|places} {self:possessive} hand"

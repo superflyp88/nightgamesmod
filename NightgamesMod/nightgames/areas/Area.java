@@ -119,7 +119,14 @@ public class Area implements Serializable {
         }
     }
 
+    /**
+     * Runs the given Character through any situations that might arise as the result
+     * of entering the Area (such as starting a fight, catching someone showering, etc),
+     * returning true if something has come up that prevents the Character from moving
+     * being presented with the normal campus Actions.
+     */
     public boolean encounter(Character p) {
+        // We can't run encounters if a fight is already occurring.
         if (fight != null && fight.checkIntrude(p)) {
             p.intervene(fight, fight.getPlayer(1), fight.getPlayer(2));
         } else if (present.size() > 1 && canFight(p)) {

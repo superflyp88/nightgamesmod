@@ -20,13 +20,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import javax.swing.plaf.basic.BasicTreeUI.TreeIncrementAction;
-
-import org.apache.commons.lang3.ObjectUtils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -39,9 +34,7 @@ import nightgames.areas.Area;
 import nightgames.areas.NinjaStash;
 import nightgames.characters.body.Body;
 import nightgames.characters.body.BodyPart;
-import nightgames.characters.body.BreastsPart;
 import nightgames.characters.body.CockMod;
-import nightgames.characters.body.PussyPart;
 import nightgames.characters.body.TentaclePart;
 import nightgames.characters.body.ToysPart;
 import nightgames.characters.body.mods.DemonicMod;
@@ -66,9 +59,8 @@ import nightgames.match.Match;
 import nightgames.match.ftc.FTCMatch;
 import nightgames.pet.CharacterPet;
 import nightgames.pet.PetCharacter;
-import nightgames.pet.arms.ArmType;
 import nightgames.pet.arms.ArmManager;
-import nightgames.skills.Command;
+import nightgames.pet.arms.ArmType;
 import nightgames.skills.AssFuck;
 import nightgames.skills.Nothing;
 import nightgames.skills.OrgasmicThrust;
@@ -88,17 +80,16 @@ import nightgames.status.DivineRecoil;
 import nightgames.status.Falling;
 import nightgames.status.Feral;
 import nightgames.status.Frenzied;
-import nightgames.status.Horny;
 import nightgames.status.InsertedStatus;
 import nightgames.status.Masochistic;
 import nightgames.status.Resistance;
 import nightgames.status.Status;
 import nightgames.status.Stsflag;
 import nightgames.status.addiction.Addiction;
+import nightgames.status.addiction.Addiction.Severity;
 import nightgames.status.addiction.AddictionType;
 import nightgames.status.addiction.Dominance;
 import nightgames.status.addiction.MindControl;
-import nightgames.status.addiction.Addiction.Severity;
 import nightgames.trap.Trap;
 import nightgames.utilities.DebugHelper;
 import nightgames.utilities.ProseUtils;
@@ -2338,6 +2329,7 @@ public abstract class Character extends Observable implements Cloneable {
         return check(Attribute.Cunning, Global.random(20) + perception) || state == State.hidden;
     }
 
+    // This shouldn't have any side effects
     public boolean spotCheck(Character checked) {
         if (bound()) {
             return false;
@@ -3044,7 +3036,7 @@ public abstract class Character extends Observable implements Cloneable {
         HashSet<Skill> available = new HashSet<>();
         HashSet<Skill> cds = new HashSet<>();
         for (Skill a : getSkills()) {
-            if (Skill.skillIsUsable(c, a)) {
+            if (Skill.isUsable(c, a)) {
                 if (cooldownAvailable(a)) {
                     available.add(a);
                 } else {
@@ -3362,6 +3354,14 @@ public abstract class Character extends Observable implements Cloneable {
             return "him";
         }
     }
+    
+    public String reflexivePronoun() {
+        if (useFemalePronouns()) {
+            return "herself";
+        } else {
+            return "himself";
+        }
+    }
 
     public boolean useFemalePronouns() {
         return hasPussy() 
@@ -3589,6 +3589,8 @@ public abstract class Character extends Observable implements Cloneable {
         drainer.mojo.restore(drained);
     }
 
+    // TODO: Rename this method; it has the same name as Observer's update(), which is a little
+    // confusing given that this is an Observable.
     public void update() {
         setChanged();
         notifyObservers();
@@ -3613,6 +3615,14 @@ public abstract class Character extends Observable implements Cloneable {
 
     public String boyOrGirl() {
         return useFemalePronouns() ? "girl" : "boy";
+    }
+    
+    public String gentlemanOrLady() {
+        return useFemalePronouns() ? "lady" : "gentleman";
+    }
+    
+    public String bitchOrBastard() {
+        return useFemalePronouns() ? "bitch" : "bastard";
     }
 
     public boolean isDemonic() {

@@ -14,7 +14,7 @@ public class GiveEnergyDrink extends TeammateAction {
     }
 
     @Override
-    public String describe() {
+    public String describe(Character doer) {
         return Global.format("<i>\"Hey {other:name}!\"</i> You turn to {self:name-do} just"
                         + " in time to catch the can of Energy Drink {self:pronoun} threw"
                         + " at you. You thank {self:direct-object} quickly and chug down the"
