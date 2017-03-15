@@ -8,7 +8,6 @@ import com.google.gson.JsonObject;
 
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
-import nightgames.characters.Player;
 import nightgames.characters.body.BodyPart;
 import nightgames.combat.Combat;
 import nightgames.global.Global;
@@ -24,18 +23,18 @@ public class ZealAddiction extends Addiction {
 
     private boolean shouldApplyDivineCharge;
     
-    public ZealAddiction(Player affected, Character cause, float magnitude) {
+    public ZealAddiction(Character affected, Character cause, float magnitude) {
         super(affected, "Zeal", cause, magnitude);
         shouldApplyDivineCharge = false;
     }
 
-    public ZealAddiction(Player affected, Character cause) {
+    public ZealAddiction(Character affected, Character cause) {
         this(affected, cause, .01f);
     }
 
     @Override
     protected Optional<Status> withdrawalEffects() {
-        return Optional.of(new CrisisOfFaith(Global.getPlayer()));
+        return Optional.of(new CrisisOfFaith(affected));
     }
 
     @Override
@@ -71,9 +70,9 @@ public class ZealAddiction extends Addiction {
     @Override
     public void tick(Combat c) {
         super.tick(c);
-        if ((c.getStance().en == Stance.neutral || c.getStance().en == Stance.behind)
+        if (c != null && (c.getStance().en == Stance.neutral || c.getStance().en == Stance.behind)
                         && Global.randomdouble() < Math.min(.5f, combatMagnitude / 2.0)) {
-            c.write(Global.getPlayer(), "Overcome by your desire to serve " + cause.getName() + ", you get on the ground "
+            c.write(affected, "Overcome by your desire to serve " + cause.getName() + ", you get on the ground "
                             + "and prostrate yourself in front of " + cause.directObject() + ".");
             boolean behindPossible = cause.hasDick();
             Position pos;
@@ -134,13 +133,13 @@ public class ZealAddiction extends Addiction {
                 return "<b>Your mind is completely preoccupied by " + cause.getName() + ". You didn't worship today!"
                                 + " Will " + cause.directObject() + " be angry? What will you do if " + cause.pronoun()
                                 + " is? You aren't going to be able to focus on much else tonight.</b>";
+            case MED:
+                return "<b>You are terribly nervous at the thought of having to face " + cause.getName()
+                + " tonight after failing to pray to " + cause.directObject() + " today. The rampaging"
+                + " thoughts are throwing you off your game.</b>";
             case LOW:
                 return "<b>You didn't pay your respects to " + cause.getName() + " today... Is that bad? Or isn't it?"
                                 + " You are confused, and will have less mojo tonight.</b>";
-            case MED:
-                return "<b>You are terribly nervous at the thought of having to face " + cause.getName()
-                                + " tonight after failing to pray to " + cause.directObject() + " today. The rampaging"
-                                + " thoughts are throwing you off your game.</b>";
             case NONE:
                 throw new IllegalStateException("Tried to describe withdrawal for an inactive zeal addiction.");
             default:
@@ -188,16 +187,15 @@ public class ZealAddiction extends Addiction {
         switch (getCombatSeverity()) {
             case HIGH:
                 return "Your knees tremble with your desire to offer yourself to your goddess.";
+            case MED:
+                return "A part of you is screaming to kneel before " + cause.getName()
+                + ". Perhaps it's better to just give in?";
             case LOW:
                 return cause.getName() + " divine presence makes you wonder whether you should really be fighting "
                         + cause.directObject() + ".";
-            case MED:
-                return "A part of you is screaming to kneel before " + cause.getName()
-                                + ". Perhaps it's better to just give in?";
             case NONE:
             default:
                 return "";
-
         }
     }
 
@@ -263,7 +261,7 @@ public class ZealAddiction extends Addiction {
 
     @Override
     public Status instance(Character newAffected, Character newOther) {
-        return new ZealAddiction((Player)newAffected, newOther, magnitude);
+        return new ZealAddiction((Character)newAffected, newOther, magnitude);
     }
 
     @Override public Status loadFromJson(JsonObject obj) {

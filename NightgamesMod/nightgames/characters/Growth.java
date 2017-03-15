@@ -67,8 +67,8 @@ public class Growth implements Cloneable {
 
     public void addTrait(int level, Trait trait) {
         if (trait == null) {
-            System.err.println("Tried to add an null trait to growth!");
-            DebugHelper.printStackFrame(3, 1);
+            System.err.println("Tried to add a null trait to a growth.");
+            DebugHelper.printStackFrame(4, 1);
             return;
         }
         if (!traits.containsKey(level)) {
@@ -195,5 +195,9 @@ public class Growth implements Cloneable {
         clone.bodyPartMods = Collections.unmodifiableMap(clone.bodyPartMods);
         clone.clothing = Collections.unmodifiableMap(clone.clothing);
         return clone;
+    }
+
+    public void removeNullTraits() {
+        traits.forEach((i, l) -> l.removeIf(t -> t == null));
     }
 }

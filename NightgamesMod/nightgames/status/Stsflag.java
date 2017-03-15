@@ -81,4 +81,6 @@ public enum Stsflag {
     compelled, 
     tailsucked, 
     tailfucked,
+    permanent,
+    mindgames,
 }

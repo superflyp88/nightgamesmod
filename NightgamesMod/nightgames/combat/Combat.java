@@ -19,7 +19,6 @@ import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.Emotion;
 import nightgames.characters.NPC;
-import nightgames.characters.Player;
 import nightgames.characters.State;
 import nightgames.characters.Trait;
 import nightgames.characters.body.Body;
@@ -96,6 +95,8 @@ import nightgames.status.addiction.Addiction.Severity;
 import nightgames.status.addiction.AddictionType;
 
 public class Combat extends Observable implements Cloneable {
+    private static final int NPC_TURN_LIMIT = 75;
+    private static final double NPC_DRAW_ERROR_MARGIN = .15;
     private enum CombatPhase {
         START,
         PRETURN,
@@ -191,18 +192,15 @@ public class Combat extends Observable implements Cloneable {
         if (other.human()) {
             write(self.challenge(other));
         }
-        if (self.human()) {
-            Player p = (Player) self;
-            for (Addiction a : p.getAddictions()) {
-                if (a.isActive()) {
-                    Optional<Status> status = a.startCombat(this, other);
-                    if (status.isPresent()) {
-                        self.add(this, status.get());
-                    }
+        self.getAddictions().forEach(a -> {
+            if (a.isActive()) {
+                Optional<Status> status = a.startCombat(this, other);
+                if (status.isPresent()) {
+                    self.add(this, status.get());
                 }
             }
-        } else if (other.human() && self.has(Trait.zealinspiring) && other instanceof Player && ((Player)other).getAddiction(AddictionType.ZEAL)
-                        .map(Addiction::isInWithdrawal).orElse(false)) {
+        });
+        if (self.has(Trait.zealinspiring) && other.getAddiction(AddictionType.ZEAL).map(Addiction::isInWithdrawal).orElse(false)) {
             self.add(this, new DivineCharge(self, .3));
         }
         if (self.has(Trait.suave) && !other.hasDick()) {
@@ -256,7 +254,11 @@ public class Combat extends Observable implements Cloneable {
         if (doExtendedLog()) {
             log.logHeader("\n");
         }
-        next();
+        if (shouldAutoresolve()) {
+            autoresolve();
+        } else {
+            next();
+        }
     }
 
     private void resumeNoClearFlag() {
@@ -434,8 +436,10 @@ public class Combat extends Observable implements Cloneable {
 
     private void checkForCombatComment() {
         Character other;
-        if (p1.human() || p2.human()) {
-            other = (NPC) getOpponent(Global.getPlayer());
+        if (p1.human()) {
+            other = p2;
+        } else if (p2.human()) {
+            other = p1;
         } else {
             other = (NPC) (Global.random(2) == 0 ? p1 : p2);
         }
@@ -686,24 +690,29 @@ public class Combat extends Observable implements Cloneable {
 
         getCombatantData(self).getManager().act(this, self, other);
 
-        if (self.has(Trait.mindcontroller) && other.human()) {
+        if (self.has(Trait.mindcontroller)) {
             Collection<Clothing> infra = self.outfit.getArticlesWithTrait(ClothingTrait.infrasound);
             float magnitude = infra.size() * (Addiction.LOW_INCREASE / 6);
             if (magnitude > 0) {
-                ((Player) other).addict(AddictionType.MIND_CONTROL, self, magnitude);
+                other.addict(this, AddictionType.MIND_CONTROL, self, magnitude);
                 if (Global.random(3) == 0) {
-                    Addiction add = ((Player) other).getAddiction(AddictionType.MIND_CONTROL).orElse(null);
+                    Addiction add = other.getAddiction(AddictionType.MIND_CONTROL).orElse(null);
                     Clothing source = (Clothing) infra.toArray()[0];
                     boolean knows = (add != null && add.atLeast(Severity.MED)) || other.get(Attribute.Cunning) >= 30
                                     || other.get(Attribute.Science) >= 10;
-                                String msg = "<i>You hear a soft buzzing, just at the edge of your hearing. ";
-                    if (knows) {
-                        msg += Global.format("Although you can't understand it, the way it draws your"
-                                        + " attention to {self:name-possessive} %s must mean it's"
-                                        + " influencing you somehow!", self, other, source.getName());
+                    String msg;
+                    if (other.human()) {
+                        msg = "<i>You hear a soft buzzing, just at the edge of your hearing. ";
+                        if (knows) {
+                            msg += Global.format("Although you can't understand it, the way it draws your"
+                                            + " attention to {self:name-possessive} %s must mean it's"
+                                            + " influencing you somehow!", self, other, source.getName());
+                        } else {
+                            msg += "It's probably nothing, though.</i>";
+                        }
                     } else {
-                        msg += "It's probably nothing, though.</i>";
-                    }   
+                        msg = Global.format("You see that {other:subject-action:is} distracted from {self:possessive} %s", self, other, source.getName());
+                    }
                     write(other, msg);
                 }
             }
@@ -1077,15 +1086,13 @@ public class Combat extends Observable implements Cloneable {
         }
 
         Character other = getStance().getPartner(this, self);
-        if (other.human() && other instanceof Player) {
-            Addiction add = ((Player)other).getAddiction(AddictionType.DOMINANCE).orElse(null);
-            if (add != null && add.atLeast(Severity.MED) && !add.wasCausedBy(self)) {
-                write(self, Global.format("{self:name} does {self:possessive} best to be dominant, but with the "
-                            + "way Jewel has been working you over you're completely desensitized." , self, other));
-                return;
-            }
+        Addiction add = other.getAddiction(AddictionType.DOMINANCE).orElse(null);
+        if (add != null && add.atLeast(Severity.MED) && !add.wasCausedBy(self)) {
+            write(self, Global.format("{self:name} does {self:possessive} best to be dominant, but with the "
+                        + "way Jewel has been working {self:direct-object} over {self:pronoun-action:are} completely desensitized." , self, other));
+            return;
         }
-        
+
         if (self.has(Trait.smqueen)) {
                 write(self,
                             Global.format("{self:NAME-POSSESSIVE} cold gaze in {self:possessive} dominant position"
@@ -1344,7 +1351,7 @@ public class Combat extends Observable implements Cloneable {
                     }
                 } else if (getStance().havingSex(this, p) && getStance().dom(p) && getStance().reversable(this)) {
                     write(getOpponent(p), Global.format("{other:SUBJECT-ACTION:take|takes} the chance to shift into a more dominant position.", p, getOpponent(p)));
-                    setStance(getStance().reverse(this, true));
+                    setStance(getStance().reverse(this, false));
                 } else {
                     if (stance.havingSex(this)) {
                         setStance(stance.reverse(this, true));
@@ -1361,25 +1368,29 @@ public class Combat extends Observable implements Cloneable {
                                                 .max()
                                 / 8, 15), true);
             }
-            if (p.human() && p instanceof Player && other.has(Trait.dominatrix)) {
-                if (((Player)p).hasAddiction(AddictionType.DOMINANCE)) {
-                    write(other, String.format("Being dominated by %s again reinforces your"
-                                    + " submissiveness towards %s.", other.getName(),
+            if (other.has(Trait.dominatrix)) {
+                if (p.hasAddiction(AddictionType.DOMINANCE)) {
+                    write(other, String.format("Being dominated by %s again reinforces %s"
+                                    + " submissiveness towards %s.", other.getName(), p.nameOrPossessivePronoun(),
                                     other.directObject()));
                 } else {
-                    write(other, String.format("There's something about the way %s knows just"
-                                    + " how and where to hurt you which some part of your"
-                                    + " psyche finds strangely appealing. You find yourself"
-                                    + " wanting more.", other.getName()));
+                    write(other, Global.format("There's something about the way {other:subject-action:know} just"
+                                    + " how and where to hurt {self:name-do} which some part of {self:possessive}"
+                                    + " psyche finds strangely appealing. {self:SUBJECT-ACTION:find} {self:reflective}"
+                                    + " wanting more.", p, other));
                 }
-                ((Player)p).addict(AddictionType.DOMINANCE, other, Addiction.HIGH_INCREASE);
+                p.addict(this, AddictionType.DOMINANCE, other, Addiction.HIGH_INCREASE);
             }
         }
     }
 
     private boolean next() {
         if (phase != CombatPhase.ENDED) {
-            if (!(wroteMessage || phase == CombatPhase.START) || !beingObserved || shouldAutoresolve() || (Global.checkFlag(Flag.AutoNext)
+            if (shouldAutoresolve()) {
+                return true;
+            }
+            if (!(wroteMessage || phase == CombatPhase.START) || !beingObserved 
+                            || (Global.checkFlag(Flag.AutoNext)
                             && FAST_COMBAT_SKIPPABLE_PHASES.contains(phase))) {
                 return false;
             } else {
@@ -1392,6 +1403,25 @@ public class Combat extends Observable implements Cloneable {
             end();
             return true;
         }
+    }
+
+    private void autoresolve() {
+        assert !p1.human() && !p2.human() && !beingObserved;
+        assert timer == 0;
+        while (timer < NPC_TURN_LIMIT && !winner.isPresent()) {
+            turn();
+        }
+        if (timer < NPC_TURN_LIMIT) {
+            double fitness1 = p1.getFitness(this);
+            double fitness2 = p2.getFitness(this);
+            double diff = Math.abs(fitness1 / fitness2 - 1.0);
+            if (diff > NPC_DRAW_ERROR_MARGIN) {
+                winner = Optional.of(fitness1 > fitness2 ? p1 : p2);
+            } else {
+                winner = Optional.of(Global.noneCharacter());
+            }
+        }
+        end();
     }
 
     public void intervene(Character intruder, Character assist) {
@@ -1466,8 +1496,8 @@ public class Combat extends Observable implements Cloneable {
         getCombatantData(p2).getRemovedItems().forEach(p2::gain);
         location.endEncounter();
         // it's a little ugly, but we must be mindful of lazy evaluation
-        boolean ding = p1.levelUpIfPossible() && p1.human();
-        ding = (p2.levelUpIfPossible() && p2.human()) || ding;
+        boolean ding = p1.levelUpIfPossible(this) && p1.human();
+        ding = (p2.levelUpIfPossible(this) && p2.human()) || ding;
         if (doExtendedLog()) {
             log.logEnd(winner);
         }
@@ -1664,44 +1694,26 @@ public class Combat extends Observable implements Cloneable {
             }
             getCombatantData(p1).setIntegerFlag("ChoseToFuck", 0);
             getCombatantData(p2).setIntegerFlag("ChoseToFuck", 0);
-        } else if (!stance.inserted() && newStance.inserted()) {
+        } else if (!stance.inserted() && newStance.inserted() && (newStance.penetrated(this, p1) || newStance.penetrated(this, p2)) ) {
             doStartPenetration(newStance, p1, p2);
+        } else if (!stance.havingSex(this) && newStance.havingSex(this)) {
             Character threePCharacter = stance.domSexCharacter(this);
             if (threePCharacter != p1 && threePCharacter != p2) {
                 doStartPenetration(newStance, p1, threePCharacter);
                 doStartPenetration(newStance, p2, threePCharacter);
             }
-            Player player = null;
-            if (p1.human() && p1 instanceof Player) {
-                player = (Player) p1;
-            } else if (p2.human() && p2 instanceof Player) {
-                player = (Player) p2;
-            }
-            if (player != null) {
-                Character opp = getOpponent(player);
-                if (voluntary) {
-                    if (initiator != null) {
-                        getCombatantData(initiator).setIntegerFlag("ChoseToFuck", 1);
-                        getCombatantData(getOpponent(initiator)).setIntegerFlag("ChoseToFuck", -1);
-                    }
-                    if (Global.isDebugOn(DebugFlags.DEBUG_SCENE)) {
-                        System.out.println(initiator + " initiated penetration, voluntary=" + voluntary);
-                    }
+
+            if (voluntary) {
+                if (initiator != null) {
+                    getCombatantData(initiator).setIntegerFlag("ChoseToFuck", 1);
+                    getCombatantData(getOpponent(initiator)).setIntegerFlag("ChoseToFuck", -1);
                 }
-                if (player.checkAddiction(AddictionType.BREEDER, opp)) {
-                    if (voluntary) {
-                        write(player, "As you enter Kat, instinct immediately kicks in. It just"
-                                        + " feels so right, like this is what you're supposed"
-                                        + " to be doing all the time.");
-                        player.addict(AddictionType.BREEDER, opp, Addiction.MED_INCREASE);
-                    } else {
-                        write(initiator, "Something shifts inside of you as Kat fills herself with"
-                                        + " you. A haze descends over your mind, clouding all but a desire"
-                                        + " to fuck her as hard as you can.");
-                        player.addict(AddictionType.BREEDER, opp, Addiction.LOW_INCREASE);
-                    }
+                if (Global.isDebugOn(DebugFlags.DEBUG_SCENE)) {
+                    System.out.println(initiator + " initiated penetration, voluntary=" + voluntary);
                 }
             }
+            checkBreeder(p1, voluntary);
+            checkBreeder(p2, voluntary);
         }
 
         if (stance != newStance && initiator != null && initiator.has(Trait.Catwalk)) {
@@ -1713,6 +1725,23 @@ public class Combat extends Observable implements Cloneable {
         listen(l -> l.onStanceChange(stance, t, initiator, voluntary));
         stance = newStance;
         offerImage(stance.image(), "");
+    }
+
+    private void checkBreeder(Character checked, boolean voluntary) {
+        Character opp = getStance().getPartner(this, checked);
+        if (checked.checkAddiction(AddictionType.BREEDER, opp) && getStance().inserted(checked)) {
+            if (voluntary) {
+                write(checked, "As you enter Kat, instinct immediately kicks in. It just"
+                                + " feels so right, like this is what you're supposed"
+                                + " to be doing all the time.");
+                checked.addict(this, AddictionType.BREEDER, opp, Addiction.MED_INCREASE);
+            } else {
+                write(checked, "Something shifts inside of you as Kat fills herself with"
+                                + " you. A haze descends over your mind, clouding all but a desire"
+                                + " to fuck her as hard as you can.");
+                checked.addict(this, AddictionType.BREEDER, opp, Addiction.LOW_INCREASE);
+            }
+        }
     }
 
     public Character getOpponent(Character self) {
@@ -1808,7 +1837,7 @@ public class Combat extends Observable implements Cloneable {
             int levelups = Math.max(5, master.getLevel() / 4);
             self.getSelf().setPower(self.getSelf().getPower() + levelups);
             for (int i = 0; i < levelups; i++) {
-                self.ding();
+                self.ding(this);
             }
         }
         if (master.has(Trait.tactician)) {

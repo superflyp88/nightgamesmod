@@ -1,7 +1,10 @@
 package nightgames.characters.body.mods;
 
+import java.util.EnumSet;
+
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
+import nightgames.characters.Trait;
 import nightgames.characters.body.BodyPart;
 import nightgames.characters.body.CockMod;
 import nightgames.characters.body.GenericBodyPart;
@@ -24,10 +27,18 @@ public class DemonicMod extends PartMod {
         if (part.getType().equals("ass")) {
             return "devilish";
         }
+        if (part.getType().equals("mouth")) {
+            return "tainted";
+        }
         return "demonic";
     }
 
     public double applyBonuses(Combat c, Character self, Character opponent, BodyPart part, BodyPart target, double damage) {
+        if (opponent.has(Trait.succubus)) {
+            c.write(self, Global.format(
+                            "{self:NAME-POSSESSIVE} %s does nothing special against one of {self:possessive} own kind.", self, opponent, part.describe(self)));
+            return 0;
+        }
         boolean fucking = c.getStance().isPartFuckingPartInserted(c, opponent, target, self, part);
         if (target.moddedPartCountsAs(opponent, CockMod.runic)) {
             c.write(self, String.format(
@@ -36,11 +47,15 @@ public class DemonicMod extends PartMod {
                             opponent.nameOrPossessivePronoun(), opponent.possessiveAdjective(),
                             target.describe(opponent)));
         } else {
+            boolean bottomless = self.has(Trait.BottomlessPit);
             String domSubText = c.getStance().dom(self) ? ("{self:pronoun-action:" + (part.isType("mouth") ? "suck" : "ride") + "} {other:direct-object}") : "{other:pronoun-action:fuck} {self:direct-object}";
             String fuckingText = Global.format("{self:POSSESSIVE} hot flesh kneads {other:possessive} %s as " + domSubText + ", drawing ", self, opponent, target.describe(opponent));
             String normalText = Global.format("As {self:possessive} %s touches {other:poss-pronoun}, {self:pronoun-action:draw} large ", self, opponent, part.getType(), target.describe(opponent));
-            c.write(self, (fucking ? fuckingText : normalText) + String.format("gouts of life energy out of %s %s which is greedily absorbed by %s %s.",
-                            opponent.possessiveAdjective(), target.describe(opponent), self.possessiveAdjective(),
+            c.write(self, (fucking ? fuckingText : normalText) + String.format("gouts of life energy out of %s %s which is %sabsorbed by %s %s%s.",
+                            opponent.possessiveAdjective(), target.describe(opponent),
+                            bottomless ? "greedily " : "",
+                            self.possessiveAdjective(),
+                            bottomless ? "seemingly bottomless " : "",
                             part.describe(self)));
             int strength;
             if (target.moddedPartCountsAs(opponent, CockMod.enlightened)) {
@@ -52,6 +67,9 @@ public class DemonicMod extends PartMod {
             } else {
                 strength = Global.random(10, 21);
             }
+            if (bottomless) {
+                strength = strength * 3 / 2;
+            }
             strength = (int) self.modifyDamage(DamageType.drain, opponent, strength);
             opponent.drain(c, self, strength);
             if (self.isPet()) {
@@ -60,10 +78,9 @@ public class DemonicMod extends PartMod {
                 master.heal(c, strength);
             }
             for (int i = 0; i < 10; i++) {
-                Attribute stolen = (Attribute) opponent.att.keySet()
-                                                           .toArray()[Global.random(opponent.att.keySet()
-                                                                                                .size())];
-                if (stolen != Attribute.Perception && opponent.get(stolen) > 0) {
+                Attribute canBeStolen[] = EnumSet.complementOf(EnumSet.of(Attribute.Speed, Attribute.Perception)).stream().filter(a -> opponent.get(a) > 0).toArray(size -> new Attribute[size]);
+                Attribute stolen = Global.pickRandom(canBeStolen).orElse(null);
+                if (stolen != null) {
                     int stolenStrength = Math.min(strength / 10, opponent.get(stolen));
                     Drained.drain(c, self, opponent, stolen, stolenStrength, 20, true);
                     if (self.isPet()) {

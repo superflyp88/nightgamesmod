@@ -11,7 +11,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
@@ -155,7 +157,7 @@ public class Global {
     public static Daytime day;
     protected static int date;
     private static Time time;
-    private Date jdate;
+    private static Date jdate;
     private static TraitTree traitRequirements;
     public static Scene current;
     public static boolean debug[] = new boolean[DebugFlags.values().length];
@@ -165,11 +167,13 @@ public class Global {
     public static ContextFactory factory;
     public static Context cx;
     private static MatchType currentMatchType = MatchType.NORMAL;
+    private static Character noneCharacter = new NPC("none", 1, null);
+    private static HashMap<String, MatchAction> matchActions;
 
     public static final Path COMBAT_LOG_DIR = new File("combatlogs").toPath();
-
-    public Global(boolean headless) {
-        rng = new Random();
+    
+    static {
+        hookLogwriter();rng = new Random();
         flags = new HashSet<>();
         players = new HashSet<>();
         debugChars = new HashSet<>();
@@ -187,26 +191,26 @@ public class Global {
             OutputStream ostream = new TeeStream(System.out, fstream);
             System.setErr(new PrintStream(estream));
             System.setOut(new PrintStream(ostream));
-    		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    		InputStream stream = loader.getResourceAsStream("build.properties");
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            InputStream stream = loader.getResourceAsStream("build.properties");
 
             System.out.println("=============================================");
             System.out.println("Nightgames Mod");
-    		if (stream != null) {
-    			Properties prop = new Properties();
-    			prop.load(stream);
-    			System.out.println("version: " + prop.getProperty("version"));
-    			System.out.println("buildtime: " + prop.getProperty("buildtime"));
-    			System.out.println("builder: " + prop.getProperty("builder"));
-    		} else {
-    			System.out.println("dev-build");
-    		}
+            if (stream != null) {
+                Properties prop = new Properties();
+                prop.load(stream);
+                System.out.println("version: " + prop.getProperty("version"));
+                System.out.println("buildtime: " + prop.getProperty("buildtime"));
+                System.out.println("builder: " + prop.getProperty("builder"));
+            } else {
+                System.out.println("dev-build");
+            }
             System.out.println(new Timestamp(jdate.getTime()));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
 
 
         setTraitRequirements(new TraitTree(ResourceLoader.getFileResourceAsStream("data/TraitRequirements.xml")));
@@ -218,11 +222,10 @@ public class Global {
         buildFeatPool();
         buildSkillPool(noneCharacter);
         buildModifierPool();
-        gui = makeGUI(headless);
     }
 
-    protected GUI makeGUI(boolean headless) {
-        return headless ? new HeadlessGui() : new GUI();
+    protected static void makeGUI(boolean headless) {
+        gui = headless ? new HeadlessGui() : new GUI();
     }
 
     public static boolean meetsRequirements(Character c, Trait t) {
@@ -257,9 +260,9 @@ public class Global {
         Map<String, Boolean> configurationFlags = JsonUtils.mapFromJson(JsonUtils.rootJson(new InputStreamReader(ResourceLoader.getFileResourceAsStream("data/globalflags.json"))).getAsJsonObject(), String.class, Boolean.class);
         configurationFlags.forEach((flag, val) -> Global.setFlag(flag, val));
         time = Time.NIGHT;
+        date = 1;
         setCharacterDisabledFlag(getNPCByType("Yui"));
         setFlag(Flag.systemMessages, true);
-        setUpMatch(new NoModifier());
     }
 
     public static int random(int start, int end) {
@@ -716,13 +719,13 @@ public class Global {
         final int maxLevel = maxLevelTracker / players.size();
         players.stream().filter(c -> c.has(Trait.naturalgrowth)).filter(c -> c.getLevel() < maxLevel + 2).forEach(c -> {
             while (c.getLevel() < maxLevel + 2) {
-                c.ding();
+                c.ding(null);
             }
         });
         players.stream().filter(c -> c.has(Trait.unnaturalgrowth)).filter(c -> c.getLevel() < maxLevel + 5)
                         .forEach(c -> {
                             while (c.getLevel() < maxLevel + 5) {
-                                c.ding();
+                                c.ding(null);
                             }
                         });
 
@@ -1129,6 +1132,7 @@ public class Global {
         data.counters.putAll(counters);
         data.time = time;
         data.date = date;
+        data.fontsize = gui.fontsize;
         return data;
     }
 
@@ -1271,6 +1275,7 @@ public class Global {
         counters.putAll(data.counters);
         date = data.date;
         time = data.time;
+        gui.fontsize = data.fontsize;
     }
 
     public static Set<Character> everyone() {
@@ -1284,7 +1289,7 @@ public class Global {
                 targetLevel -= 4;
             }
             while (challenger.getCharacter().getLevel() <= targetLevel) {
-                challenger.getCharacter().ding();
+                challenger.getCharacter().ding(null);
             }
             players.add(challenger.getCharacter());
             return true;
@@ -1302,9 +1307,9 @@ public class Global {
         System.err.println("NPC \"" + name + "\" is not loaded.");
         return null;
     }
-
+    
     public static void main(String[] args) {
-        new Logwriter();
+        hookLogwriter();
         for (String arg : args) {
             try {
                 DebugFlags flag = DebugFlags.valueOf(arg);
@@ -1313,9 +1318,23 @@ public class Global {
                 // pass
             }
         }
-        new Global(false);
+        init(false);
+    }
+    
+    public static void init(boolean headless) {
+        makeGUI(headless);
+        gui.createCharacter();
     }
 
+    public static void hookLogwriter() {
+        Thread.currentThread().setUncaughtExceptionHandler((t, e) -> {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String stacktrace = sw.toString();
+            System.err.println(stacktrace);
+        });
+    }
+    
     public static String getIntro() {
         return "You don't really know why you're going to the Student Union in the middle of the night."
                         + " You'd have to be insane to accept the invitation you received this afternoon."
@@ -1379,7 +1398,7 @@ public class Global {
         if (arr == null || arr.length == 0) return Optional.empty();
         return Optional.of(arr[Global.random(arr.length)]);
     }
-    
+
     public static <T> Optional<T> pickRandom(List<T> list) {
         if (list == null || list.size() == 0) {
             return Optional.empty();
@@ -1395,8 +1414,6 @@ public class Global {
     interface MatchAction {
         String replace(Character self, String first, String second, String third);
     }
-
-    private static HashMap<String, MatchAction> matchActions = null;
 
     public static void buildParser() {
         matchActions = new HashMap<>();
@@ -1630,8 +1647,6 @@ public class Global {
         return b.toString();
     }
 
-    private static Character noneCharacter = new NPC("none", 1, null);
-
     public static Character noneCharacter() {
         return noneCharacter;
     }
@@ -1716,6 +1731,7 @@ public class Global {
     }
 
     private static String DISABLED_FORMAT = "%sDisabled";
+    private static Random FROZEN_RNG = new Random();
     public static boolean checkCharacterDisabledFlag(Character self) {
         return checkFlag(String.format(DISABLED_FORMAT, self.getTrueName()));
     }
@@ -1757,4 +1773,20 @@ public class Global {
 			c.write(self, format(string, self, other, args));
 		}
 	}
+
+	/**
+	 * TODO Huge hack to freeze status descriptions.
+	 */
+    public static void freezeRNG() {
+        FROZEN_RNG = rng;
+        rng = new Random(0);
+    }
+
+    /**
+     * TODO Huge hack to freeze status descriptions.
+     */
+    public static void unfreezeRNG() {
+        FROZEN_RNG = new Random();
+        rng = FROZEN_RNG;
+    }
 }

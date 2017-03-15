@@ -6,12 +6,12 @@ import nightgames.nskills.tags.SkillTag;
 public enum Attribute {
     Power("weaker", "stronger", "physical strength", "power"),
     Seduction("less seductive", "more seductive", "allure", "seductiveness"),
-    Cunning("that it's harder to think", "more intelligent", "guile", "cunning"),
+    Cunning("less intelligent", "more intelligent", "guile", "cunning"),
     Perception("less perceptive", "more perceptive", "keenness", "perception"),
     Speed("slower", "faster", "quickness", "speed"),
     Arcane("more mundane", "more in tune with mystic energies", "mystic energies", "arcane powers"),
     Science("dumber", "more technologically inclined", "gadget know-how", "scientific knowledge"),
-    Dark("like {self:pronoun-action:are} lacking some of {self:possessive} usual darkness", "more sinful", "sin", "dark powers"),
+    Dark("like {self:pronoun-action:are} lacking some of {self:possessive} usual darkness", "more sinful", "sin", "darkness"),
     Fetish("like it's harder to fetishize things", "it's easier to dream about fetishes", "fantasies", "fetishes"),
     Animism("tamer", "wilder", "instinct", "animism"),
     Ki("like {self:pronoun-action:have} less aura", "more in control of your body", "spirit", "ki"),
@@ -69,5 +69,9 @@ public enum Attribute {
 
     public String getDrainerOwnDO() {
         return drainerDirectObject.isEmpty() ? "own" : "own " + drainerDirectObject;
+    }
+
+    public String getDrainerDO() {
+        return drainerDirectObject.isEmpty() ? drainedDirectObject : drainerDirectObject;
     }
 }

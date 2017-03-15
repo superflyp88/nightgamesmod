@@ -54,13 +54,17 @@ public class Winded extends DurationStatus {
 
     @Override
     public void onRemove(Combat c, Character other) {
-        if (affected.get(Attribute.Divinity) > 0) {
-            affected.addlist.add(new BastionOfFaith(affected));
-        } else {
-            affected.addlist.add(new Braced(affected));
+        if (c != null) {
+            if (c.getStance().mobile(affected)) {
+                if (affected.get(Attribute.Divinity) > 0) {
+                    affected.addlist.add(new BastionOfFaith(affected));
+                } else {
+                    affected.addlist.add(new Braced(affected));
+                }
+            }
+            affected.addlist.add(new Wary(affected, 3));
+            affected.heal(c, affected.getStamina().max(), " (Recovered)");
         }
-        affected.addlist.add(new Wary(affected, 3));
-        affected.heal(c, affected.getStamina().max(), " (Recovered)");
     }
 
     @Override
@@ -73,19 +77,19 @@ public class Winded extends DurationStatus {
 
     @Override
     public int damage(Combat c, int x) {
-        Global.writeIfCombat(c, affected, Global.format("Since {self:subject-action:are} already down, there's not much more that can be done.", affected, affected));
+        Global.writeIfCombat(c, affected, Global.format("Since {self:subject-action:are} already downed, there's not much more that can be done.", affected, affected));
         return -x;
     }
 
     @Override
     public int weakened(Combat c, int x) {
-        Global.writeIfCombat(c, affected, Global.format("Since {self:subject-action:are} already down, there's not much more that can be done.", affected, affected));
+        Global.writeIfCombat(c, affected, Global.format("Since {self:subject-action:are} already downed, there's not much more that can be done.", affected, affected));
         return -x;
     }
 
     @Override
     public int drained(Combat c, int x) {
-        Global.writeIfCombat(c, affected, Global.format("Since {self:subject-action:are} already down, there's not much to take.", affected, affected));
+        Global.writeIfCombat(c, affected, Global.format("Since {self:subject-action:are} already downed, there's not much to take.", affected, affected));
         return -x;
     }
 

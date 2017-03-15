@@ -2,7 +2,6 @@ package nightgames.characters.body;
 
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
-import nightgames.characters.Player;
 import nightgames.characters.Trait;
 import nightgames.characters.body.mods.SizeMod;
 import nightgames.combat.Combat;
@@ -119,14 +118,9 @@ public class BreastsPart extends GenericBodyPart {
             if (self.has(Trait.magicmilk)) {
                 float addictionLevel;
                 Addiction addiction;
-                if (opponent.human() && opponent instanceof Player) {
-                    ((Player)opponent).addict(AddictionType.MAGIC_MILK, self, Addiction.LOW_INCREASE);
-                    addiction = ((Player)opponent).getAddiction(AddictionType.MAGIC_MILK).get();
-                    addictionLevel = addiction.getMagnitude();
-                } else {
-                    addictionLevel = 0;
-                    addiction = null;
-                }
+                opponent.addict(c, AddictionType.MAGIC_MILK, self, Addiction.LOW_INCREASE);
+                addiction = opponent.getAddiction(AddictionType.MAGIC_MILK).get();
+                addictionLevel = addiction.getMagnitude();
                 if (addictionLevel < Addiction.LOW_THRESHOLD) {
                     // not addicted
                     c.write(opponent,
@@ -165,7 +159,7 @@ public class BreastsPart extends GenericBodyPart {
     
                 if (opponent.is(Stsflag.magicmilkcraving)) {
                     // temporarily relieve craving
-                    addiction.alleviateCombat(Addiction.LOW_INCREASE);
+                    addiction.alleviateCombat(c, Addiction.LOW_INCREASE);
                 }
                 if (c.getCombatantData(opponent) != null) {
                     int timesDrank = c.getCombatantData(opponent)
@@ -188,7 +182,7 @@ public class BreastsPart extends GenericBodyPart {
                                                 + " {self:pronoun} seems more and more impossibly beautiful to {other:possessive} eyes."
                                                 + " Why would {other:pronoun} want to mar such perfect beauty?",
                                                 self, opponent));
-                opponent.add(c, new Charmed(opponent, 2));
+                opponent.add(c, new Charmed(opponent, 2).withFlagRemoved(Stsflag.mindgames));
             }
             if (self.has(Trait.PheromonedMilk) && !opponent.has(Trait.Rut)) {
                 c.write(opponent, Global.format("<b>Drinking {self:possessive} breast milk sends {other:direct-object} into a chemically induced rut!</b>",

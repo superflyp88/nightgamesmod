@@ -41,11 +41,6 @@ public class Flatfooted extends DurationStatus {
     }
 
     @Override
-    public boolean mindgames() {
-        return false;
-    }
-
-    @Override
     public float fitnessModifier() {
         return -3;
     }
@@ -57,7 +52,7 @@ public class Flatfooted extends DurationStatus {
 
     @Override
     public void onRemove(Combat c, Character other) {
-        if (makesWary) {
+        if (makesWary && affected.canRespond()) {
             affected.addlist.add(new Wary(affected, 3));
         }
     }
