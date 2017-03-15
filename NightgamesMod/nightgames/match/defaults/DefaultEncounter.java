@@ -328,12 +328,14 @@ public class DefaultEncounter implements Encounter {
         } else if (location.id() == Movement.pool) {
             poolAmbush(attacker, target);
         }
-
+        
         if (p1.human() || p2.human()) {
             fight = Global.gui().beginCombat(p1, p2, 1);
         } else {
             fight = new Combat(p1, p2, location, 0);
         }
+        
+        target.add(fight, new Flatfooted(target, 4));
     }
     
     private void showerAmbush(Character attacker, Character target) {
