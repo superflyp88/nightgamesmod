@@ -1713,19 +1713,10 @@ public class Global {
     }
 
     public static MatchType decideMatchType() {
-        return MatchType.TEAM;
-        /*
-         * TODO Lots of FTC bugs right now, will disable it for the time being.
-         * Enable again once some of the bugs are sorted out.
-        
-        if (checkFlag(Flag.NoFTC)) return MatchType.NORMAL;
-        
-        if (human.getLevel() < 15)
-            return MatchType.NORMAL;
-        if (!checkFlag(Flag.didFTC))
-            return MatchType.FTC;
-        return isDebugOn(DebugFlags.DEBUG_FTC) || Global.random(10) == 0 ? MatchType.FTC : MatchType.NORMAL;
-        */
+        if (getPlayer().getLevel() >= 15 && random(10) < 2) {
+            return MatchType.TEAM;
+        }
+        return MatchType.NORMAL;
     }
 
     private static Match buildMatch(Collection<Character> combatants, Modifier mod) {
