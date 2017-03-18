@@ -198,6 +198,10 @@ public class Match {
     public boolean canEngage(Character initiator, Character opponent) {
         return true;
     }
+    
+    public void haveMercy(Character victor, Character loser) {
+        mercy.get(victor).add(loser);
+    }
 
     public final void round() {
         while (!shouldEndMatch()) {

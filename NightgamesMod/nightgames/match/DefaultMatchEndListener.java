@@ -5,6 +5,7 @@ import java.util.Optional;
 import nightgames.characters.Character;
 import nightgames.combat.Combat;
 import nightgames.combat.CombatListener;
+import nightgames.global.Global;
 
 public class DefaultMatchEndListener extends CombatListener {
 
@@ -18,11 +19,11 @@ public class DefaultMatchEndListener extends CombatListener {
     @Override
     public void postEnd(Optional<Character> winner) {
         if (winner.isPresent()) {
-            match.mercy.get(winner.get()).add(c.getOpponent(winner.get()));
+            Global.getMatch().haveMercy(winner.get(), c.getOpponent(winner.get()));
             match.score(winner.get(), 1, Optional.of(" for defeating " + c.getOpponent(winner.get()).getName()));
         } else {
-            match.mercy.get(c.p1).add(c.p2);
-            match.mercy.get(c.p2).add(c.p1);
+            Global.getMatch().haveMercy(c.p1, c.p2);
+            Global.getMatch().haveMercy(c.p2, c.p1);
         }
     }
 }

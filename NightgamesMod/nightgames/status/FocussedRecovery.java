@@ -11,7 +11,7 @@ import nightgames.skills.Skill;
 public class FocussedRecovery extends FocussedBase {
 
     public FocussedRecovery(Character affected) {
-        super("FocussedRecovery", affected, "recuperating and building strength",
+        super("Focussed on Recovery", affected, "recuperating and building strength",
                         "{self:possessive} ability to cause and withstand pleasure");
     }
 
@@ -37,9 +37,11 @@ public class FocussedRecovery extends FocussedBase {
     
     @Override
     public void tick(Combat c) {
-        c.write(affected, Global.format("{self:SUBJECT-ACTION:take} a deep breath, restoring"
-                        + " some of {self:possesssive} energy and calming {self:possessive}"
+        if (c != null) {
+            c.write(affected, Global.format("{self:SUBJECT-ACTION:take} a deep breath, restoring"
+                        + " some of {self:possessive} energy and calming {self:possessive}"
                         + " nerves", affected, c.getOpponent(affected)));
+        }
         affected.calm(c, affected.getArousal().max() / 20);
         affected.heal(c, affected.getStamina().max() / 10);
     }

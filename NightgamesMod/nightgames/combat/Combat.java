@@ -1507,10 +1507,10 @@ public class Combat extends Observable implements Cloneable {
         if (!p2.has(Trait.Pseudopod)) {
             Global.getMatch().getMatchData().getDataFor(p2).setArmManager(getCombatantData(p2).getManager());
         }
+        listen(l -> l.postEnd(winner));
         if (!ding && beingObserved) {
             Global.gui().endCombat();
         }
-        listen(l -> l.postEnd(winner));
     }
 
     private boolean doPostCombatScenes(NPC npc) {

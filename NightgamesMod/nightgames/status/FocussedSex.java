@@ -9,7 +9,7 @@ import nightgames.skills.Skill;
 public class FocussedSex extends FocussedBase {
 
     public FocussedSex(Character affected) {
-        super("FocussedSex", affected, "sex", "{self:possessive} foreplay skills");
+        super("Focussed on Sex", affected, "sex", "{self:possessive} foreplay skills");
     }
 
     @Override
