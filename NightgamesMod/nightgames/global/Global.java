@@ -571,6 +571,9 @@ public class Global {
         getSkillPool().add(new KiShout(ch));
         getSkillPool().add(new PressurePoint(ch));
         getSkillPool().add(new Deepen(ch));
+        getSkillPool().add(new Focus.OnForeplay(ch));
+        getSkillPool().add(new Focus.OnSex(ch));
+        getSkillPool().add(new Focus.OnRecovery(ch));
 
         if (Global.isDebugOn(DebugFlags.DEBUG_SKILLS)) {
             getSkillPool().add(new SelfStun(ch));

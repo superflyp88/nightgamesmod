@@ -78,7 +78,11 @@ public abstract class Status implements Cloneable {
 
     public abstract int tempted(Combat c, int x);
 
-    public double sensitivity(double x) {
+    public double sensitivity(double x, BodyPart withPart, BodyPart targetPart, Skill skill) {
+        return 0;
+    }
+    
+    public double opponentSensitivity(double x, BodyPart withPart, BodyPart targetPart, Skill skill) {
         return 0;
     }
 
