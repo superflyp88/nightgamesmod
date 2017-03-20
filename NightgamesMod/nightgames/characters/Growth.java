@@ -108,11 +108,14 @@ public class Growth implements Cloneable {
         clothing.putIfAbsent(level, c);
     }
     
-    public void addOrRemoveTraits(Character character) {
-        traits.values().forEach(l -> l.removeIf(t -> t == null));
-        traits.keySet().stream().filter(i -> i > character.level).forEach(i -> {
-            traits.get(i).forEach(character::remove);
-        });
+    public void addOrRemoveTraits(Character character) {addOrRemoveTraits(character, false);}
+    
+    public void addOrRemoveTraits(Character character, boolean addonly) {
+        if (!addonly) {
+            traits.keySet().stream().filter(i -> i > character.level).forEach(i -> {
+                traits.get(i).forEach(character::remove);
+            });
+        }
         traits.keySet().stream().filter(i -> i <= character.level).forEach(i -> {
             traits.get(i).forEach(character::add);
         });
@@ -199,5 +202,10 @@ public class Growth implements Cloneable {
 
     public void removeNullTraits() {
         traits.forEach((i, l) -> l.removeIf(t -> t == null));
+    }
+    
+    @Override 
+    public String toString() {
+        return "Growth with stamina "+stamina+" arousal "+arousal+" bonusStamina "+bonusStamina+" bonusArousal "+bonusArousal+" bonusAttributes "+bonusAttributes+" willpower "+willpower+" bonusWillpower "+bonusWillpower+" attributes "+attributes+" traits "+traits;
     }
 }

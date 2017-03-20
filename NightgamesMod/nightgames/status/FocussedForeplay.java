@@ -29,6 +29,11 @@ public class FocussedForeplay extends FocussedBase {
         }
         return .4;
     }
+    
+    @Override
+    public int gainmojo(int x) {
+        return -x/2;
+    }
 
     @Override
     public Status instance(Character newAffected, Character newOther) {

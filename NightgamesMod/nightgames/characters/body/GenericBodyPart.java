@@ -32,7 +32,7 @@ public class GenericBodyPart implements BodyPart {
     public double pleasure;
     public String descLong;
     private boolean notable;
-    private List<PartMod> mods;
+    protected List<PartMod> mods;
 
     public GenericBodyPart(String desc, String descLong, double hotness, double pleasure, double sensitivity,
                     boolean notable, String type, String prefix) {
@@ -407,7 +407,18 @@ public class GenericBodyPart implements BodyPart {
         return mods;
     }
 
+    @Override
     public void receiveCum(Combat c, Character self, Character donor, BodyPart sourcePart) {
         getMods().stream().forEach(mod -> mod.receiveCum(c, self, this, donor, sourcePart));
+    }
+    
+    @Override
+    public double getFetishEffectiveness() {
+        return sensitivity==0?0.25:1.0;
+    }
+    
+    @Override
+    public double getFetishChance() {
+        return sensitivity==0?0.1:0.25;
     }
 }

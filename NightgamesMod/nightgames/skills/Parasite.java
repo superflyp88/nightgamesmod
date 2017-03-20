@@ -15,6 +15,11 @@ public class Parasite extends Skill {
     public Parasite(Character self) {
         super("Parasite", self, 5);
     }
+    
+    @Override
+    public float priorityMod(Combat c) {
+        return 15.0f;
+    }
 
     @Override
     public boolean requirements(Combat c, Character user, Character target) {

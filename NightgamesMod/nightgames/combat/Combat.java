@@ -19,6 +19,7 @@ import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.Emotion;
 import nightgames.characters.NPC;
+import nightgames.characters.Player;
 import nightgames.characters.State;
 import nightgames.characters.Trait;
 import nightgames.characters.body.Body;
@@ -78,6 +79,7 @@ import nightgames.status.Compulsive;
 import nightgames.status.Compulsive.Situation;
 import nightgames.status.CounterStatus;
 import nightgames.status.DivineCharge;
+import nightgames.status.EnemyButtslutTrainingStatus;
 import nightgames.status.Enthralled;
 import nightgames.status.Falling;
 import nightgames.status.Flatfooted;
@@ -138,6 +140,41 @@ public class Combat extends Observable implements Cloneable {
     
     String imagePath = "";
 
+private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new HashMap<String, HashMap<String, List<Integer>>>();
+    
+    // result: 0 = not actually a fight, 1=p1 win, 2=p2 win, 3=draw
+    private static void registerCombatResult(Character p1, Character p2, int result) {
+        if (!getResultTracker().containsKey(p1.getName())) {getResultTracker().put(p1.getName(), new HashMap<String,List<Integer>>());}
+        if (!getResultTracker().containsKey(p2.getName())) {getResultTracker().put(p2.getName(), new HashMap<String,List<Integer>>());}
+        HashMap<String, List<Integer>> p1Results = getResultTracker().get(p1.getName());
+        HashMap<String, List<Integer>> p2Results = getResultTracker().get(p2.getName());
+        if (!p1Results.containsKey(p2.getName())) {p1Results.put(p2.getName(), Arrays.asList(0,0,0,0));}
+        if (!p2Results.containsKey(p1.getName())) {p2Results.put(p1.getName(), Arrays.asList(0,0,0,0));}
+        List<Integer> p1p2Results = p1Results.get(p2.getName());
+        List<Integer> p2p1Results = p2Results.get(p1.getName());
+        int reverseresult = (result==3?3:(result==1?2:0));
+        p1p2Results.set(result, 1+p1p2Results.get(result));
+        p2p1Results.set(reverseresult, 1+p2p1Results.get(reverseresult));
+        if(Global.isDebugOn(DebugFlags.DEBUG_SCENE)) {System.out.println("The combat record for "+p1.getName()+" against "+p2.getName()+" is: "+p1p2Results.get(1)+" wins, "+p1p2Results.get(2)+" losses, and "+p1p2Results.get(3)+" draws.");}
+    }
+    
+    public static void printResultsTracker() {
+        Set<String> all = new HashSet<String>();
+        for(String row:resultTracker.keySet()) {all.addAll(resultTracker.get(row).keySet());}
+        System.out.println("\t"+String.join(",\t", all));
+        for (String key:resultTracker.keySet()) {
+            System.out.print(key);
+            for(String key2:all) {
+                if(resultTracker.get(key).keySet().contains(key2)) System.out.print("\t"+resultTracker.get(key).get(key2).get(1));
+                else System.out.print("\t0");
+            }
+            System.out.println();;
+        }
+    }
+    public static HashMap<String, HashMap<String, List<Integer>>> getResultTracker() {
+        return resultTracker;
+    }
+    
     public Combat(Character p1, Character p2, Area loc) {
         this.p1 = p1;
         combatantData = new HashMap<>();
@@ -290,6 +327,7 @@ public class Combat extends Observable implements Cloneable {
     }
 
     public void doVictory(Character victor, Character loser) {
+        registerCombatResult(victor, loser, 1);
         if (loser.hasDick() && victor.has(Trait.succubus)) {
             victor.gain(Item.semen, 3);
             if (loser.human()) {
@@ -537,7 +575,11 @@ public class Combat extends Observable implements Cloneable {
 
         Character mainOpponent = getOpponent(character);
         String buttslutCompletedFlag = Trait.buttslut.name() + "Completed";
-        if (character.has(Trait.buttslut) && ((mainOpponent.hasDick() && mainOpponent.crotchAvailable() && mainOpponent.getArousal().percent() > 20) || mainOpponent.has(Trait.strapped)) && !getCombatantData(character).getBooleanFlag(buttslutCompletedFlag)) {
+        boolean isButtSlutting = (character.has(Trait.buttslut) 
+                        && !getCombatantData(character).getBooleanFlag(buttslutCompletedFlag)) 
+                        || (character instanceof Player && Global.getButtslutQuest().isPresent() 
+                            && Global.random(100) < 100*Global.getButtslutQuest().get().getAssPresentChance());
+        if (((mainOpponent.hasDick() && mainOpponent.crotchAvailable() && mainOpponent.getArousal().percent() > 20) || mainOpponent.has(Trait.strapped)) && isButtSlutting) {
             write(character, Global.format("<b>Seeing the thick phallus in front of {self:reflective}, {self:subject} can't "
                             + "but help offer up {self:possessive} ass in hopes that {other:subject} will fill {self:possessive} rear door.</b>", character, mainOpponent));
             for (int i = 0; i < 5; i++) {
@@ -548,7 +590,11 @@ public class Combat extends Observable implements Cloneable {
                     write(character, Global.format("{self:SUBJECT-ACTION:strip|strips} off {self:possessive} %s", character, mainOpponent, article.getName()));
                 }
             }
-            getCombatantData(character).setBooleanFlag(buttslutCompletedFlag, true);
+            if (character.has(Trait.buttslut)) {
+                getCombatantData(character).setBooleanFlag(buttslutCompletedFlag, true);
+            } else {
+                ((EnemyButtslutTrainingStatus)character.getStatus(Stsflag.buttslutificationReady)).activate();
+            }
             setStance(new Behind(mainOpponent, character));
         }
 
@@ -1080,7 +1126,7 @@ public class Combat extends Observable implements Cloneable {
     }
     
     private void doStanceTick(Character self) {
-        int stanceDominance = getStance().getDominanceOfStance(self);
+        double stanceDominance = getStance().getDominanceOfStance(this, self);
         if (!(stanceDominance > 0)) {
             return;
         }
@@ -1098,7 +1144,7 @@ public class Combat extends Observable implements Cloneable {
                             Global.format("{self:NAME-POSSESSIVE} cold gaze in {self:possessive} dominant position"
                                             + " makes {other:direct-object} shiver.",
                                             self, other));
-            other.loseWillpower(this, stanceDominance, 0, false, " (SM Queen)");
+            other.loseWillpower(this, (int) stanceDominance, 0, false, " (SM Queen)");
         } else if (getStance().time % 2 == 0 && getStance().time > 0) {
             if (other.has(Trait.indomitable)) {
                 write(self, Global.format("{other:SUBJECT}, typically being the dominant one,"
@@ -1109,7 +1155,7 @@ public class Combat extends Observable implements Cloneable {
                 write(self, Global.format("{other:NAME-POSSESSIVE} compromising position takes a toll on {other:possessive} willpower.",
                                             self, other));
             }
-            other.loseWillpower(this, stanceDominance, 0, false, " (Dominance)");
+            other.loseWillpower(this, (int) stanceDominance, 0, false, " (Dominance)");
         }
         
         if (self.has(Trait.confidentdom) && Global.random(2) == 0) {

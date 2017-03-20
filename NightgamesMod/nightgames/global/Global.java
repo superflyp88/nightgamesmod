@@ -118,6 +118,8 @@ import nightgames.modifier.standard.VibrationModifier;
 import nightgames.modifier.standard.VulnerableModifier;
 import nightgames.pet.PetCharacter;
 import nightgames.pet.Ptype;
+import nightgames.quest.ButtslutQuest;
+import nightgames.quest.Quest;
 import nightgames.skills.*;
 import nightgames.start.NpcConfiguration;
 import nightgames.start.PlayerConfiguration;
@@ -169,6 +171,8 @@ public class Global {
     private static MatchType currentMatchType = MatchType.NORMAL;
     private static Character noneCharacter = new NPC("none", 1, null);
     private static HashMap<String, MatchAction> matchActions;
+    private static final int LINEUP_SIZE = 5;
+    private static List<Quest> quests = new ArrayList<Quest>();
 
     public static final Path COMBAT_LOG_DIR = new File("combatlogs").toPath();
     
@@ -251,6 +255,8 @@ public class Global {
     public static void newGame(String playerName, Optional<StartConfiguration> config, List<Trait> pickedTraits,
                     CharacterSex pickedGender, Map<Attribute, Integer> selectedAttributes) {
         Optional<PlayerConfiguration> playerConfig = config.map(c -> c.player);
+        Collection<DebugFlags> cfgDebugFlags = config.map
+                        (StartConfiguration::getDebugFlags).orElse(new ArrayList<>());
         Collection<String> cfgFlags = config.map(StartConfiguration::getFlags).orElse(new ArrayList<>());
         human = new Player(playerName, pickedGender, playerConfig, pickedTraits, selectedAttributes);
         if(human.has(Trait.largereserves)) {
@@ -271,6 +277,14 @@ public class Global {
         }
         Map<String, Boolean> configurationFlags = JsonUtils.mapFromJson(JsonUtils.rootJson(new InputStreamReader(ResourceLoader.getFileResourceAsStream("data/globalflags.json"))).getAsJsonObject(), String.class, Boolean.class);
         configurationFlags.forEach((flag, val) -> Global.setFlag(flag, val));
+        if (!cfgDebugFlags.isEmpty()) {
+            for (DebugFlags db:cfgDebugFlags.stream().collect(Collectors.toSet())) {
+                debug[db.ordinal()]=true;
+            }
+        }
+        if (flags.contains("ButtslutQuesting")) {
+            quests.add(new ButtslutQuest());
+        }
         time = Time.NIGHT;
         date = 1;
         setCharacterDisabledFlag(getNPCByType("Yui"));
@@ -401,6 +415,7 @@ public class Global {
         getSkillPool().add(new NakedBloom(ch));
         getSkillPool().add(new ShrinkRay(ch));
         getSkillPool().add(new SpawnFaerie(ch, Ptype.fairyfem));
+        getSkillPool().add(new SpawnFaerie(ch, Ptype.fairyherm));
         getSkillPool().add(new SpawnImp(ch, Ptype.impfem));
         getSkillPool().add(new SpawnFaerie(ch, Ptype.fairymale));
         getSkillPool().add(new SpawnImp(ch, Ptype.impmale));
@@ -574,7 +589,11 @@ public class Global {
         getSkillPool().add(new Focus.OnForeplay(ch));
         getSkillPool().add(new Focus.OnSex(ch));
         getSkillPool().add(new Focus.OnRecovery(ch));
-
+        getSkillPool().add(new ManipulateFetish(ch));
+        //getSkillPool().add(new BreastGrowthSuper(ch));
+        getSkillPool().add(new Kneel(ch));
+        getSkillPool().add(new OfferAss(ch));
+        
         if (Global.isDebugOn(DebugFlags.DEBUG_SKILLS)) {
             getSkillPool().add(new SelfStun(ch));
         }
@@ -836,7 +855,7 @@ public class Global {
             NPC maya = Optional.ofNullable(getNPC("Maya")).orElseThrow(() -> new IllegalStateException(
                             "Maya data unavailable when attempting to add her to lineup."));
             lineup.add(maya);
-            lineup = pickCharacters(participants, lineup, 5);
+            lineup = pickCharacters(participants, lineup, LINEUP_SIZE);
             resting = new HashSet<>(players);
             resting.removeAll(lineup);
             maya.gain(Item.Aphrodisiac, 10);
@@ -859,12 +878,12 @@ public class Global {
             if (!prey.human()) {
                 lineup.add(prey);
             }
-            lineup = pickCharacters(participants, lineup, 5);
+            lineup = pickCharacters(participants, lineup, LINEUP_SIZE);
             resting = new HashSet<>(players);
             resting.removeAll(lineup);
             match = buildMatch(lineup, matchmod);
-        } else if (participants.size() > 5) {
-            lineup = pickCharacters(participants, lineup, 5);
+        } else if (participants.size() > LINEUP_SIZE) {
+            lineup = pickCharacters(participants, lineup, LINEUP_SIZE);
             resting = new HashSet<>(players);
             resting.removeAll(lineup);
             match = buildMatch(lineup, matchmod);
@@ -1145,6 +1164,7 @@ public class Global {
         data.players.addAll(players);
         data.flags.addAll(flags);
         data.counters.putAll(counters);
+        data.quests.addAll(quests);
         data.time = time;
         data.date = date;
         data.fontsize = gui.fontsize;
@@ -1288,6 +1308,7 @@ public class Global {
                         c -> characterPool.put(c.getType(), (NPC) c));
         flags.addAll(data.flags);
         counters.putAll(data.counters);
+        quests.addAll(data.quests);
         date = data.date;
         time = data.time;
         gui.fontsize = data.fontsize;
@@ -1787,6 +1808,11 @@ public class Global {
 		}
 	}
 
+	public static Optional<String> getFlagStartingWith(Collection<String> collection,
+	                String start) {
+        return collection.stream().filter(s -> s.startsWith(start)).findFirst();
+    }
+	
 	/**
 	 * TODO Huge hack to freeze status descriptions.
 	 */
@@ -1805,5 +1831,10 @@ public class Global {
     
     public static boolean randomBool() {
         return rng.nextBoolean();
+    }
+    
+    public static Optional<ButtslutQuest> getButtslutQuest() {
+        return quests.stream().filter(q -> q instanceof ButtslutQuest)
+                        .map(q -> (ButtslutQuest)q).findFirst();
     }
 }

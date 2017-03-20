@@ -142,6 +142,7 @@ public class GUI extends JFrame implements Observer {
     private JRadioButton rdimgoff;
     private JButton rdfntnorm;
     private JButton rdnfntlrg;
+    private JButton rdnfntsmall;
     private JSlider malePrefSlider;
     private int width;
     private int height;
@@ -442,6 +443,8 @@ public class GUI extends JFrame implements Observer {
             }
             if (Global.checkFlag(Flag.largefonts)) {
                 rdnfntlrg.setSelected(true);
+            } else if (Global.checkFlag(Flag.smallfonts)){
+                rdnfntsmall.setSelected(true);
             } else {
                 rdfntnorm.setSelected(true);
             }

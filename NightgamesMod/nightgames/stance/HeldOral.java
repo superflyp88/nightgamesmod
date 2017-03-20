@@ -51,7 +51,10 @@ public class HeldOral extends AbstractFacingStance {
 
     @Override
     public String image() {
-        if (bottom.hasDick()) {
+        if (bottom.hasDick() && bottom.hasPussy() && top.hasBreasts()
+                        /* && Global.checkFlag(Flag.isFuta)*/) {
+            return "futa_oralhold_fh.jpg";
+        } else if (bottom.hasDick()) {
             return "oralhold_fm.jpg";
         } else if (bottom.hasPussy() && top.hasPussy()) {
             return "oralhold_ff.jpg";

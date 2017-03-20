@@ -19,6 +19,11 @@ public class HeldPaizuri extends AbstractFacingStance {
                         "{self:SUBJECT-ACTION:are|is} holding {other:name-do} down with {self:possessive} breasts nested around {other:possessive} cock.",
                         top, bottom);
     }
+    
+    @Override
+    public boolean paizuri(Character c, Character target) {
+        return c==top && target==bottom;
+    }
 
     @Override
     public boolean inserted(Character c) {

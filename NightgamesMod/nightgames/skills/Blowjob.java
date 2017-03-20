@@ -137,7 +137,7 @@ public class Blowjob extends Skill {
             m = "You try to take " + target.getName() + "'s penis into your mouth, but she manages to pull away.";
         }
         if (target.getArousal().get() < 15) {
-            m = "You suck on " + target.getName()
+            m = "You suck on " + target.nameOrPossessivePronoun()
                             + " flaccid little penis until it grows into an intimidating large erection.";
         } else if (target.getArousal().percent() >= 90) {
             m = target.getName()

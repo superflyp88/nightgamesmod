@@ -78,6 +78,7 @@ public class CreationGUI extends JPanel {
     private JSeparator separator_2;
     private JLabel lblWeakness;
     protected JComboBox<Trait> WeaknessBox;
+    protected JComboBox<String> ExpBox;
     private JTextPane WeaknessDescription;
     private JPanel panel_1;
     private JPanel panel_4;
@@ -421,7 +422,7 @@ public class CreationGUI extends JPanel {
         expLbl.setForeground(new Color(240, 240, 255));
 
         verticalBox.add(new JLabel("Exp Rate"));
-        JComboBox<String> ExpBox = new JComboBox<>();
+        ExpBox = new JComboBox<>();
         ExpBox.setBackground(new Color(0, 10, 30));
         ExpBox.setForeground(new Color(200, 200, 0));
         ExpBox.addItem("Slow");
@@ -516,8 +517,8 @@ public class CreationGUI extends JPanel {
 
 
     protected void makeGame(Optional<StartConfiguration> startConfig) {
-        if (!namefield.getText()
-                        .isEmpty()) {
+        if (!namefield.getText().isEmpty() || (startConfig.isPresent() 
+                        && startConfig.get().player.nameIsSet())) {
             String name = namefield.getText();
             CharacterSex sex = (CharacterSex) sexBox.getSelectedItem();
             List<Trait> traits = Collections.emptyList();
@@ -535,6 +536,9 @@ public class CreationGUI extends JPanel {
             selectedAttributes.put(Attribute.Seduction, seduction);
             selectedAttributes.put(Attribute.Cunning, cunning);
             Global.newGame(name, startConfig, traits, sex, selectedAttributes);
+            if(startConfig.isPresent() && Global.getFlagStartingWith(startConfig.get().getFlags(), "SkipTutorial").isPresent() && STARTER instanceof TutorialStart) {
+                ((TutorialStart)STARTER).respond("No");return;
+            }
             STARTER.startGame();
         }
     }
@@ -552,6 +556,27 @@ public class CreationGUI extends JPanel {
         seduction = cfgAttributes.getOrDefault(Attribute.Seduction, 3);
         cunning = cfgAttributes.getOrDefault(Attribute.Cunning, 3);
         remaining = points;
+        
+        String defaultExp = "Normal";
+        if(Global.getFlagStartingWith(cfg.getFlags(), "defaultExp").isPresent()) {
+            defaultExp = Global.getFlagStartingWith(cfg.getFlags(), "defaultExp").get().substring(10);
+        }
+        ExpBox.setSelectedItem(defaultExp);
+        Trait defaultStrength = Trait.romantic;
+        if(Global.getFlagStartingWith(cfg.getFlags(), "defaultStrength").isPresent()) {
+            defaultStrength = Trait.valueOf(Global.getFlagStartingWith(cfg.getFlags(), "defaultStrength").get().substring(15));
+        }
+        StrengthBox.setSelectedItem(defaultStrength);
+        Trait defaultWeakness = Trait.insatiable;
+        if(Global.getFlagStartingWith(cfg.getFlags(), "defaultWeakness").isPresent()) {
+            defaultWeakness = Trait.valueOf(Global.getFlagStartingWith(cfg.getFlags(), "defaultWeakness").get().substring(15));
+        }
+        WeaknessBox.setSelectedItem(defaultWeakness);
+        
+        Optional<String> fontSizeFlag = Global.getFlagStartingWith(cfg.getFlags(), "DefaultFontSize");
+        if (fontSizeFlag.isPresent()) {Global.gui().fontsize=Integer.parseInt(fontSizeFlag.get().substring(15));}
+        
+        
         refresh();
     }
 

@@ -14,6 +14,7 @@ import nightgames.characters.body.Body;
 import nightgames.characters.body.BodyPart;
 import nightgames.combat.Combat;
 import nightgames.global.Global;
+import nightgames.quest.ButtslutQuest;
 import nightgames.skills.Skill;
 import nightgames.skills.damage.DamageType;
 import nightgames.status.InsertedStatus;
@@ -384,12 +385,13 @@ public abstract class Position implements Cloneable {
      * 3: Average dominance. Missionary, Kneeling, Standing, and other "vanilla" positions all have this rating.
      * 4: High dominance. Anal positions and Pin are examples of positions with this rating.
      * 5: Absurd dominance. Exotic positions like Engulfed and FlyingCarry have this rating, as well as the more mundane FaceSitting and Smothering.
-     *
+     * @param c TODO
      * @param self The character whose traits are checked to modify the current stance's dominance score.
+     *
      * @return The dominance of the current position, modified by one combatant's traits. Higher return values cause more willpower loss on each combat tick.
      * If a character is not the dominant character of the position, their effective dominance is 0.
      */
-    public int getDominanceOfStance(Character self) {
+    public double getDominanceOfStance(Combat c, Character self) {
         if (sub(self)) {
             return 0;
         }
@@ -402,6 +404,11 @@ public abstract class Position implements Cloneable {
         if (self.has(Trait.submissive)) {
             // Rescales stance dominance values from 0-1-2-3-4-5 to 0-0-1-1-2-3
             stanceDominance = Double.valueOf(Math.floor(stanceDominance * 0.6)).intValue();
+        }
+        Optional<ButtslutQuest> bsq = Global.getButtslutQuest();
+        if (bsq.isPresent() && this.anallyPenetrated(c, c.getOpponent(self)) 
+                        && c.getOpponent(self) == Global.getPlayer()) {
+            stanceDominance += bsq.get().getBonusDominance(this);
         }
         return Math.max(0, stanceDominance);
     }
