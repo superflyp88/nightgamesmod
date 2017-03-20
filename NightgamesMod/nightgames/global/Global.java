@@ -180,6 +180,7 @@ public class Global {
         hookLogwriter();rng = new Random();
         flags = new HashSet<>();
         players = new HashSet<>();
+        quests = new ArrayList<>();
         debugChars = new HashSet<>();
         resting = new HashSet<>();
         counters = new HashMap<>();
@@ -282,9 +283,24 @@ public class Global {
                 debug[db.ordinal()]=true;
             }
         }
-        if (flags.contains("ButtslutQuesting")) {
-            quests.add(new ButtslutQuest());
+        quests=new ArrayList<Quest>();
+        System.out.println("quests were: "+quests.toString());
+        if (flags.contains("ButtslutQuesting") && !getButtslutQuest().isPresent()) {quests.add(new ButtslutQuest());}
+        if (flags.contains("ButtslutQuestingTesting") && getButtslutQuest().isPresent()) {
+            System.out.println("Adding five loss points to each (unlocked) character");
+            ButtslutQuest bsq = getButtslutQuest().get();
+            for(Character ch:players) {
+                if (ch instanceof Player) {continue;}
+                bsq.addPlayerLossPoint(ch);
+                bsq.addPlayerLossPoint(ch);
+                bsq.addPlayerLossPoint(ch);
+                bsq.addPlayerLossPoint(ch);
+                bsq.addPlayerLossPoint(ch);
+
+            }
         }
+        System.out.println("quests are: "+quests.toString());
+
         time = Time.NIGHT;
         date = 1;
         setCharacterDisabledFlag(getNPCByType("Yui"));

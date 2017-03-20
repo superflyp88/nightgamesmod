@@ -421,7 +421,7 @@ public class CreationGUI extends JPanel {
         expLbl.setBackground(new Color(0, 10, 30));
         expLbl.setForeground(new Color(240, 240, 255));
 
-        verticalBox.add(new JLabel("Exp Rate"));
+        verticalBox.add(expLbl);
         ExpBox = new JComboBox<>();
         ExpBox.setBackground(new Color(0, 10, 30));
         ExpBox.setForeground(new Color(200, 200, 0));

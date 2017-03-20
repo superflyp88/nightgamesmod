@@ -32,16 +32,13 @@ public class NpcConfiguration extends CharacterConfiguration {
 
     public static Optional<NpcConfiguration> mergeOptionalNpcConfigs(Optional<NpcConfiguration> primaryConfig,
                     Optional<NpcConfiguration> secondaryConfig) {
-        if (primaryConfig.isPresent()) {
-            if (secondaryConfig.isPresent()) {
-                return Optional.of(new NpcConfiguration(
-                                primaryConfig.get(), secondaryConfig.get()));
+        if (!primaryConfig.isPresent()) {
+            return secondaryConfig;
+        } else if (secondaryConfig.isPresent()) {
+            return Optional.of(new NpcConfiguration(primaryConfig.get(), secondaryConfig.get()));
             } else {
                 return primaryConfig;
             }
-        } else {
-            return secondaryConfig;
-        }
     }
     public final void apply(NPC base) {
         if (gender.isPresent()) {
@@ -86,10 +83,5 @@ public class NpcConfiguration extends CharacterConfiguration {
 
         return config;
     }
-    
-    @Override 
-    public String toString() {
-        return "type: "+type+", start: "+isStartCharacter+"; "+super.toString();
-    }
-
+    @Override public String toString() {return "type: "+type+", start: "+isStartCharacter+"; "+super.toString();}
 }

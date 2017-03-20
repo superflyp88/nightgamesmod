@@ -40,7 +40,7 @@ public class ButtslutQuest extends Quest {
         super("Buttslut Training", 16); //8 characters, points for win and loss
     }
     
-    public ButtslutQuest(Map<Character, int[]> points) {
+    public ButtslutQuest(Map<String, int[]> points) {
         super(points, "Buttslut Training", 16);
     }
     
@@ -50,10 +50,11 @@ public class ButtslutQuest extends Quest {
     }
     
     public String getDescriptionFor(Character who) {
+        if (!(who instanceof Player)) {return "";}
         return "You have gained stats: \n" + Arrays.stream(new Integer[]{0,1,2,3,4,5,6,7}).filter(i -> getPointsForOfType(Global.getPlayer(),i)>0)
                         .map(i -> ("\n"+WHICH_ATTR[i].name()+": +"+(getPointsForOfType(Global.getPlayer(),i)))).collect(Collectors.joining()) 
-                        + " and been trained: \n" + Arrays.stream(new Integer[]{0,1,2,3,4,5,6,7}).filter(i -> getPointsForOfType(Global.getPlayer(),i)>0)
-                        .map(i -> ("\n by "+WHICH_ATTR[i].name()+": +"+(getPointsForOfType(Global.getPlayer(),i))+"times.")).collect(Collectors.joining()) ;
+                        + " and been trained: \n" + Arrays.stream(new Integer[]{8,9,10,11,12,13,14,15}).filter(i -> getPointsForOfType(Global.getPlayer(),i)>0)
+                        .map(i -> ("\n by "+Global.getNPCByType(WHICH_CHARACTER[i-8].getSimpleName()).getTrueName()+": +"+(getPointsForOfType(Global.getPlayer(),i))+" times.")).collect(Collectors.joining()) ;
     }
     
     public void addPlayerLossPoint(Character lostTo) {
@@ -66,6 +67,7 @@ public class ButtslutQuest extends Quest {
             Global.getPlayer().body.getRandomAss().upgrade();
             //Should probably be a message here
         }
+        Global.gui().displayStatus();
     }
     
     public void addPlayerWonPoint(Character defeated) {
@@ -74,6 +76,7 @@ public class ButtslutQuest extends Quest {
         int opponentIndex = Arrays.asList(WHICH_CHARACTER).indexOf(opponent.getClass());
         super.pointTo(Global.getPlayer(), opponentIndex);
         Global.getPlayer().mod(WHICH_ATTR[opponentIndex], 1);
+        Global.gui().displayStatus();
     }
     
     //Loss effects:
@@ -83,7 +86,7 @@ public class ButtslutQuest extends Quest {
     //Eve:    For a cock in the player's ass, the chance of fetish formation is increased by 5%*points, and any cock fetish magnitude increases are increased by 0.01*points
     //Jewel:  Reduces the dominance of stances where the player is anally penetrated by 0.2*points
     //Kat:    Each turn while anally penetrated causes 3.0*points of your stats to turn into submissive (like corruption)
-    //Mara:   Increases anal sensitivity by 0.25*points
+    //Mara:   Increases anal sensitivity by 0.25*points. Also applies mind control status when you orgasm from anal, independent of points.
     //Reyka:  Receiving cum in ass increases lust by 30*points
     
     public int getStruggleDiffMod() {
@@ -111,7 +114,7 @@ public class ButtslutQuest extends Quest {
     }
     
     public double applyReceiveBonusesAnal(Combat c, Character opponent, BodyPart ass) {
-        if (Global.isDebugOn(DebugFlags.DEBUG_ADDICTION)) {System.out.println("Doing attribute conversion");}
+        if (Global.isDebugOn(DebugFlags.DEBUG_SCENE)) {System.out.println("Doing attribute conversion");}
         //attribute converting text copied from Corruption
         int strength = (int) (getPointsForOfType(Global.getPlayer(),13) * STATS_CONVERTED_TO_SUB_PER_POINT13);
         Map<Attribute, Integer> buffs = new HashMap<>();
@@ -138,7 +141,7 @@ public class ButtslutQuest extends Quest {
     }
     
     public int getAnalCreampieLust() {
-        return (int)(getPointsForOfType(Global.getPlayer(),13) * ANAL_CREAMPIE_LUST_PER_POINT15);
+        return (int)(getPointsForOfType(Global.getPlayer(),15) * ANAL_CREAMPIE_LUST_PER_POINT15);
     }
     
 }
