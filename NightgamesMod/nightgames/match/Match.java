@@ -173,7 +173,7 @@ public class Match {
 
     protected void afterTurn(Character combatant) {
         if (combatant.state == State.resupplying) {
-            mercy.get(combatant).clear();
+            mercy.values().forEach(l -> l.remove(combatant));
         }
     }
 
