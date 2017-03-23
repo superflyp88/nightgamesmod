@@ -1502,6 +1502,7 @@ private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new
             Global.gui().watchCombat(this);
             resumeNoClearFlag();
         }
+        listen(l -> l.postEnd(Optional.of(assist)));
     }
 
     /**
