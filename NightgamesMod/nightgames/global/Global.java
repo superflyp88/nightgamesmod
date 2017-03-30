@@ -11,7 +11,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.StringWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
@@ -94,12 +96,13 @@ import nightgames.characters.custom.JsonSourceNPCDataLoader;
 import nightgames.characters.custom.NPCData;
 import nightgames.combat.Combat;
 import nightgames.daytime.Daytime;
-import nightgames.ftc.FTCMatch;
 import nightgames.gui.GUI;
 import nightgames.gui.HeadlessGui;
 import nightgames.items.Item;
 import nightgames.items.clothing.Clothing;
 import nightgames.json.JsonUtils;
+import nightgames.match.Match;
+import nightgames.match.MatchType;
 import nightgames.modifier.CustomModifierLoader;
 import nightgames.modifier.Modifier;
 import nightgames.modifier.standard.FTCModifier;
@@ -115,6 +118,8 @@ import nightgames.modifier.standard.VibrationModifier;
 import nightgames.modifier.standard.VulnerableModifier;
 import nightgames.pet.PetCharacter;
 import nightgames.pet.Ptype;
+import nightgames.quest.ButtslutQuest;
+import nightgames.quest.Quest;
 import nightgames.skills.*;
 import nightgames.start.NpcConfiguration;
 import nightgames.start.PlayerConfiguration;
@@ -154,7 +159,7 @@ public class Global {
     public static Daytime day;
     protected static int date;
     private static Time time;
-    private Date jdate;
+    private static Date jdate;
     private static TraitTree traitRequirements;
     public static Scene current;
     public static boolean debug[] = new boolean[DebugFlags.values().length];
@@ -163,13 +168,19 @@ public class Global {
     public static double xpRate = 1.0;
     public static ContextFactory factory;
     public static Context cx;
+    private static MatchType currentMatchType = MatchType.NORMAL;
+    private static Character noneCharacter = new NPC("none", 1, null);
+    private static HashMap<String, MatchAction> matchActions;
+    private static final int LINEUP_SIZE = 5;
+    private static List<Quest> quests = new ArrayList<Quest>();
 
     public static final Path COMBAT_LOG_DIR = new File("combatlogs").toPath();
-
-    public Global(boolean headless) {
-        rng = new Random();
+    
+    static {
+        hookLogwriter();rng = new Random();
         flags = new HashSet<>();
         players = new HashSet<>();
+        quests = new ArrayList<>();
         debugChars = new HashSet<>();
         resting = new HashSet<>();
         counters = new HashMap<>();
@@ -185,26 +196,26 @@ public class Global {
             OutputStream ostream = new TeeStream(System.out, fstream);
             System.setErr(new PrintStream(estream));
             System.setOut(new PrintStream(ostream));
-    		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-    		InputStream stream = loader.getResourceAsStream("build.properties");
+            ClassLoader loader = Thread.currentThread().getContextClassLoader();
+            InputStream stream = loader.getResourceAsStream("build.properties");
 
             System.out.println("=============================================");
             System.out.println("Nightgames Mod");
-    		if (stream != null) {
-    			Properties prop = new Properties();
-    			prop.load(stream);
-    			System.out.println("version: " + prop.getProperty("version"));
-    			System.out.println("buildtime: " + prop.getProperty("buildtime"));
-    			System.out.println("builder: " + prop.getProperty("builder"));
-    		} else {
-    			System.out.println("dev-build");
-    		}
+            if (stream != null) {
+                Properties prop = new Properties();
+                prop.load(stream);
+                System.out.println("version: " + prop.getProperty("version"));
+                System.out.println("buildtime: " + prop.getProperty("buildtime"));
+                System.out.println("builder: " + prop.getProperty("builder"));
+            } else {
+                System.out.println("dev-build");
+            }
             System.out.println(new Timestamp(jdate.getTime()));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-			e.printStackTrace();
-		}
+            e.printStackTrace();
+        }
 
 
         setTraitRequirements(new TraitTree(ResourceLoader.getFileResourceAsStream("data/TraitRequirements.xml")));
@@ -216,11 +227,10 @@ public class Global {
         buildFeatPool();
         buildSkillPool(noneCharacter);
         buildModifierPool();
-        gui = makeGUI(headless);
     }
 
-    protected GUI makeGUI(boolean headless) {
-        return headless ? new HeadlessGui() : new GUI();
+    protected static void makeGUI(boolean headless) {
+        gui = headless ? new HeadlessGui() : new GUI();
     }
 
     public static boolean meetsRequirements(Character c, Trait t) {
@@ -246,6 +256,8 @@ public class Global {
     public static void newGame(String playerName, Optional<StartConfiguration> config, List<Trait> pickedTraits,
                     CharacterSex pickedGender, Map<Attribute, Integer> selectedAttributes) {
         Optional<PlayerConfiguration> playerConfig = config.map(c -> c.player);
+        Collection<DebugFlags> cfgDebugFlags = config.map
+                        (StartConfiguration::getDebugFlags).orElse(new ArrayList<>());
         Collection<String> cfgFlags = config.map(StartConfiguration::getFlags).orElse(new ArrayList<>());
         human = new Player(playerName, pickedGender, playerConfig, pickedTraits, selectedAttributes);
         if(human.has(Trait.largereserves)) {
@@ -266,11 +278,33 @@ public class Global {
         }
         Map<String, Boolean> configurationFlags = JsonUtils.mapFromJson(JsonUtils.rootJson(new InputStreamReader(ResourceLoader.getFileResourceAsStream("data/globalflags.json"))).getAsJsonObject(), String.class, Boolean.class);
         configurationFlags.forEach((flag, val) -> Global.setFlag(flag, val));
+        if (!cfgDebugFlags.isEmpty()) {
+            for (DebugFlags db:cfgDebugFlags.stream().collect(Collectors.toSet())) {
+                debug[db.ordinal()]=true;
+            }
+        }
+        quests=new ArrayList<Quest>();
+        System.out.println("quests were: "+quests.toString());
+        if (flags.contains("ButtslutQuesting") && !getButtslutQuest().isPresent()) {quests.add(new ButtslutQuest());}
+        if (flags.contains("ButtslutQuestingTesting") && getButtslutQuest().isPresent()) {
+            System.out.println("Adding five loss points to each (unlocked) character");
+            ButtslutQuest bsq = getButtslutQuest().get();
+            for(Character ch:players) {
+                if (ch instanceof Player) {continue;}
+                bsq.addPlayerLossPoint(ch);
+                bsq.addPlayerLossPoint(ch);
+                bsq.addPlayerLossPoint(ch);
+                bsq.addPlayerLossPoint(ch);
+                bsq.addPlayerLossPoint(ch);
+
+            }
+        }
+        System.out.println("quests are: "+quests.toString());
+
         time = Time.NIGHT;
         date = 1;
         setCharacterDisabledFlag(getNPCByType("Yui"));
         setFlag(Flag.systemMessages, true);
-        setUpMatch(new NoModifier());
     }
 
     public static int random(int start, int end) {
@@ -397,6 +431,7 @@ public class Global {
         getSkillPool().add(new NakedBloom(ch));
         getSkillPool().add(new ShrinkRay(ch));
         getSkillPool().add(new SpawnFaerie(ch, Ptype.fairyfem));
+        getSkillPool().add(new SpawnFaerie(ch, Ptype.fairyherm));
         getSkillPool().add(new SpawnImp(ch, Ptype.impfem));
         getSkillPool().add(new SpawnFaerie(ch, Ptype.fairymale));
         getSkillPool().add(new SpawnImp(ch, Ptype.impmale));
@@ -567,7 +602,14 @@ public class Global {
         getSkillPool().add(new KiShout(ch));
         getSkillPool().add(new PressurePoint(ch));
         getSkillPool().add(new Deepen(ch));
-
+        getSkillPool().add(new Focus.OnForeplay(ch));
+        getSkillPool().add(new Focus.OnSex(ch));
+        getSkillPool().add(new Focus.OnRecovery(ch));
+        getSkillPool().add(new ManipulateFetish(ch));
+        //getSkillPool().add(new BreastGrowthSuper(ch));
+        getSkillPool().add(new Kneel(ch));
+        getSkillPool().add(new OfferAss(ch));
+        
         if (Global.isDebugOn(DebugFlags.DEBUG_SKILLS)) {
             getSkillPool().add(new SelfStun(ch));
         }
@@ -772,14 +814,16 @@ public class Global {
     }
 
     public static void startNight() {
-        decideMatchType().buildPrematch(human);
+        currentMatchType = decideMatchType();
+        currentMatchType.runPrematch();
     }
 
     public static List<Character> getMatchParticipantsInAffectionOrder() {
         if (match == null) {
             return Collections.emptyList();
         }
-        return getInAffectionOrder(match.combatants.stream().filter(c -> !c.human()).collect(Collectors.toList()));
+        return getInAffectionOrder(match.getCombatants().stream()
+                        .filter(c -> !c.human()).collect(Collectors.toList()));
     }
 
     public static List<Character> getInAffectionOrder(List<Character> viableList) {
@@ -827,7 +871,7 @@ public class Global {
             NPC maya = Optional.ofNullable(getNPC("Maya")).orElseThrow(() -> new IllegalStateException(
                             "Maya data unavailable when attempting to add her to lineup."));
             lineup.add(maya);
-            lineup = pickCharacters(participants, lineup, 5);
+            lineup = pickCharacters(participants, lineup, LINEUP_SIZE);
             resting = new HashSet<>(players);
             resting.removeAll(lineup);
             maya.gain(Item.Aphrodisiac, 10);
@@ -850,12 +894,12 @@ public class Global {
             if (!prey.human()) {
                 lineup.add(prey);
             }
-            lineup = pickCharacters(participants, lineup, 5);
+            lineup = pickCharacters(participants, lineup, LINEUP_SIZE);
             resting = new HashSet<>(players);
             resting.removeAll(lineup);
             match = buildMatch(lineup, matchmod);
-        } else if (participants.size() > 5) {
-            lineup = pickCharacters(participants, lineup, 5);
+        } else if (participants.size() > LINEUP_SIZE) {
+            lineup = pickCharacters(participants, lineup, LINEUP_SIZE);
             resting = new HashSet<>(players);
             resting.removeAll(lineup);
             match = buildMatch(lineup, matchmod);
@@ -871,7 +915,7 @@ public class Global {
             withEffect.ifPresent(s -> Global.getPlayer().addNonCombat(s));
         });
         Global.gui().startMatch();
-        match.round();
+        match.start();
     }
 
     public static String gainSkills(Character c) {
@@ -1136,6 +1180,7 @@ public class Global {
         data.players.addAll(players);
         data.flags.addAll(flags);
         data.counters.putAll(counters);
+        data.quests.addAll(quests);
         data.time = time;
         data.date = date;
         data.fontsize = gui.fontsize;
@@ -1209,7 +1254,6 @@ public class Global {
         characterPool.put(eve.getCharacter().getType(), eve.getCharacter());
         characterPool.put(maya.getCharacter().getType(), maya.getCharacter());
         characterPool.put(yui.getCharacter().getType(), yui.getCharacter());
-        debugChars.add(reyka.getCharacter());
     }
     
     public static void loadWithDialog() {
@@ -1280,6 +1324,7 @@ public class Global {
                         c -> characterPool.put(c.getType(), (NPC) c));
         flags.addAll(data.flags);
         counters.putAll(data.counters);
+        quests.addAll(data.quests);
         date = data.date;
         time = data.time;
         gui.fontsize = data.fontsize;
@@ -1314,9 +1359,9 @@ public class Global {
         System.err.println("NPC \"" + name + "\" is not loaded.");
         return null;
     }
-
+    
     public static void main(String[] args) {
-        new Logwriter();
+        hookLogwriter();
         for (String arg : args) {
             try {
                 DebugFlags flag = DebugFlags.valueOf(arg);
@@ -1325,9 +1370,23 @@ public class Global {
                 // pass
             }
         }
-        new Global(false);
+        init(false);
+    }
+    
+    public static void init(boolean headless) {
+        makeGUI(headless);
+        gui.createCharacter();
     }
 
+    public static void hookLogwriter() {
+        Thread.currentThread().setUncaughtExceptionHandler((t, e) -> {
+            StringWriter sw = new StringWriter();
+            e.printStackTrace(new PrintWriter(sw));
+            String stacktrace = sw.toString();
+            System.err.println(stacktrace);
+        });
+    }
+    
     public static String getIntro() {
         return "You don't really know why you're going to the Student Union in the middle of the night."
                         + " You'd have to be insane to accept the invitation you received this afternoon."
@@ -1407,8 +1466,6 @@ public class Global {
     interface MatchAction {
         String replace(Character self, String first, String second, String third);
     }
-
-    private static HashMap<String, MatchAction> matchActions = null;
 
     public static void buildParser() {
         matchActions = new HashMap<>();
@@ -1649,8 +1706,6 @@ public class Global {
         return b.toString();
     }
 
-    private static Character noneCharacter = new NPC("none", 1, null);
-
     public static Character noneCharacter() {
         return noneCharacter;
     }
@@ -1695,31 +1750,14 @@ public class Global {
     }
 
     public static MatchType decideMatchType() {
+        if (getPlayer().getLevel() >= 15 && random(10) < 2) {
+            return MatchType.TEAM;
+        }
         return MatchType.NORMAL;
-        /*
-         * TODO Lots of FTC bugs right now, will disable it for the time being.
-         * Enable again once some of the bugs are sorted out.
-        
-        if (checkFlag(Flag.NoFTC)) return MatchType.NORMAL;
-        
-        if (human.getLevel() < 15)
-            return MatchType.NORMAL;
-        if (!checkFlag(Flag.didFTC))
-            return MatchType.FTC;
-        return isDebugOn(DebugFlags.DEBUG_FTC) || Global.random(10) == 0 ? MatchType.FTC : MatchType.NORMAL;
-        */
     }
 
     private static Match buildMatch(Collection<Character> combatants, Modifier mod) {
-        if (mod.name().equals("ftc")) {
-            if (combatants.size() < 5) {
-                return new Match(combatants, new NoModifier());
-            }
-            flag(Flag.FTC);
-            return new FTCMatch(combatants, ((FTCModifier) mod).getPrey());
-        } else {
-            return new Match(combatants, mod);
-        }
+        return currentMatchType.buildMatch(combatants, mod);
     }
 
     public static HashSet<Character> getParticipants() {
@@ -1786,6 +1824,11 @@ public class Global {
 		}
 	}
 
+	public static Optional<String> getFlagStartingWith(Collection<String> collection,
+	                String start) {
+        return collection.stream().filter(s -> s.startsWith(start)).findFirst();
+    }
+	
 	/**
 	 * TODO Huge hack to freeze status descriptions.
 	 */
@@ -1804,5 +1847,10 @@ public class Global {
     
     public static boolean randomBool() {
         return rng.nextBoolean();
+    }
+    
+    public static Optional<ButtslutQuest> getButtslutQuest() {
+        return quests.stream().filter(q -> q instanceof ButtslutQuest)
+                        .map(q -> (ButtslutQuest)q).findFirst();
     }
 }

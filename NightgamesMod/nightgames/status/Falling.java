@@ -41,10 +41,13 @@ public class Falling extends Status {
 
     @Override
     public int regen(Combat c) {
+        if (c==null) return 0;
         affected.removelist.add(this);
         if (c.getStance().havingSex(c) && c.getStance().dom(affected) && c.getStance().reversable(c)) {
             c.write(c.getOpponent(affected), Global.format("{other:SUBJECT-ACTION:take|takes} the chance to shift into a more dominant position.", affected, c.getOpponent(affected)));
             c.setStance(c.getStance().reverse(c, true));
+        } else if (c.getStance().havingSex(c)) {
+            c.write(Global.format("As {self:SUBJECT-ACTION:collapse|collapses}, {other:direct-object} {other:SUBJECT-ACTION:retain|retains} {other:possessive-adjective} dominant position.", affected, c.getOpponent(affected)));    
         } else if (!c.getStance().prone(affected)) {
             c.setStance(new StandingOver(c.getOpponent(affected), affected));
         }

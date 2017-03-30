@@ -1,6 +1,5 @@
-package nightgames.combat;
+package nightgames.match.defaults;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 import nightgames.actions.Movement;
@@ -9,10 +8,12 @@ import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.State;
 import nightgames.characters.Trait;
+import nightgames.combat.Combat;
 import nightgames.global.DebugFlags;
 import nightgames.global.Encs;
 import nightgames.global.Global;
 import nightgames.items.Item;
+import nightgames.match.Encounter;
 import nightgames.status.Enthralled;
 import nightgames.status.Flatfooted;
 import nightgames.status.Hypersensitive;
@@ -21,9 +22,8 @@ import nightgames.status.Stsflag;
 import nightgames.trap.Spiderweb;
 import nightgames.trap.Trap;
 
-public class Encounter implements Serializable, IEncounter {
+public class DefaultEncounter implements Encounter {
 
-    private static final long serialVersionUID = 3122246133619156539L;
     protected Character p1;
     protected Character p2;
     
@@ -37,7 +37,7 @@ public class Encounter implements Serializable, IEncounter {
     protected int checkin;
     protected int fightTime;
 
-    public Encounter(Character first, Character second, Area location) {
+    public DefaultEncounter(Character first, Character second, Area location) {
         this.location = location;
         p1 = first;
         p2 = second;
@@ -328,12 +328,14 @@ public class Encounter implements Serializable, IEncounter {
         } else if (location.id() == Movement.pool) {
             poolAmbush(attacker, target);
         }
-
+        
         if (p1.human() || p2.human()) {
             fight = Global.gui().beginCombat(p1, p2, 1);
         } else {
             fight = new Combat(p1, p2, location, 0);
         }
+        
+        target.add(fight, new Flatfooted(target, 4));
     }
     
     private void showerAmbush(Character attacker, Character target) {

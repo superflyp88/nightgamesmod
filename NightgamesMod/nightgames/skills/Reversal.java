@@ -9,7 +9,6 @@ import nightgames.combat.Combat;
 import nightgames.combat.Result;
 import nightgames.global.Global;
 import nightgames.nskills.tags.SkillTag;
-import nightgames.stance.Pin;
 import nightgames.status.Compulsive;
 import nightgames.status.Compulsive.Situation;
 
@@ -48,7 +47,7 @@ public class Reversal extends Skill {
         if (target.roll(getSelf(), c, accuracy(c, target))) {
             writeOutput(c, Result.normal, target);
 
-            c.setStance(new Pin(getSelf(), target), getSelf(), true);
+            c.setStance(c.getStance().reverse(c,true));
             target.emote(Emotion.nervous, 10);
             getSelf().emote(Emotion.dominant, 10);
         } else {

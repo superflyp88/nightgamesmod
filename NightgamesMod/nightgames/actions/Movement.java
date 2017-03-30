@@ -1,9 +1,9 @@
 package nightgames.actions;
 
 import nightgames.areas.Area;
-import nightgames.characters.NPC;
+import nightgames.characters.Character;
 
-public enum Movement {
+public enum Movement implements IMovement {
     // All of the movement strings are appended to 'You notice NAME', to produce
     // a line like 'You notice Cassie move to the indoor pool."
     quad(" head outside, toward the quad."),
@@ -29,14 +29,14 @@ public enum Movement {
     scavenge(" begin scrounging through some boxes in the corner."),
     craft(" start mixing various liquids. Whatever it is doesn't look healthy."),
     wait(" loitering nearby"),
-    struggle((NPC n) -> String.format(" is struggling against %s bondage.", n.possessiveAdjective())),
+    struggle((Character n) -> String.format(" is struggling against %s bondage.", n.possessiveAdjective())),
     resupply(" heads for one of the safe rooms, probably to get a change of clothes."),
-    oil((NPC n) -> String.format(" rubbing body oil on every inch of %s skin. Wow, you wouldn't mind watching that again.", n.possessiveAdjective())),
+    oil((Character n) -> String.format(" rubbing body oil on every inch of %s skin. Wow, you wouldn't mind watching that again.", n.possessiveAdjective())),
     enerydrink(" opening an energy drink and downing the whole thing."),
     beer(" opening a beer and downing the whole thing."),
     recharge(" plugging a battery pack into a nearby charging station."),
-    locating((NPC n) -> String.format(" is holding someone's underwear in %s hands and breathing deeply. Strange.", n.possessiveAdjective())),
-    mana((NPC n) -> String.format(" doing something with a large book. When %s's finished, you can see a sort of aura coming from %s.", n.pronoun(), n.possessiveAdjective())),
+    locating((Character n) -> String.format(" is holding someone's underwear in %s hands and breathing deeply. Strange.", n.possessiveAdjective())),
+    mana((Character n) -> String.format(" doing something with a large book. When %s's finished, you can see a sort of aura coming from %s.", n.pronoun(), n.possessiveAdjective())),
     retire(" has left the match."),
     ftcNorthBase(" head to the north camp."),
     ftcWestBase(" move to the west camp."),
@@ -59,7 +59,7 @@ public enum Movement {
     ftcBushAmbush(" dive into some bushes."),
     ftcPassAmbush(" slip into an alcove."),
     disguise(" shimmer and turn into someone else!"),
-    masturbate((NPC n) -> {
+    masturbate((Character n) -> {
         String mast;
         if (n.hasDick()) {
             mast = String.format(" starts to stroke %s cock ", n.possessiveAdjective());
@@ -74,14 +74,14 @@ public enum Movement {
     private String desc;
     
     private interface DescriptionProducer {
-        public String getDescriptionFor(NPC doer);
+        public String getDescriptionFor(Character doer);
     }
     private DescriptionProducer producer;
 
     /**
      * @return the Item name
      */
-    public String describe(NPC doer) {
+    public String describe(Character doer) {
         if (desc != null) {
             return desc;
         } else {

@@ -74,12 +74,16 @@ public enum Flag {
     NPCFemalePronounsOnly,
     skipMM,
     skipFF,
+    isFuta,
     hermHasBalls,
     shemaleNoBalls,
     femaleTGIntoHerm, 
     SuperTraitMode,
     AutoNext,
-    NoFTC
+    Buttslutification,
+    CanResupplyAnywhere,
+    NoFTC,
+    smallfonts,
     ;
     
     public static boolean exists(String flag) {

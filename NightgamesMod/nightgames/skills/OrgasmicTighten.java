@@ -10,7 +10,7 @@ import nightgames.nskills.tags.SkillTag;
 import nightgames.stance.Stance;
 import nightgames.status.BodyFetish;
 
-public class OrgasmicTighten extends Thrust {
+public class OrgasmicTighten extends Tighten {
     public OrgasmicTighten(Character self) {
         super("Orgasmic Tighten", self);
         removeTag(SkillTag.pleasureSelf);

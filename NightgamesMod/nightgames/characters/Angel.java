@@ -17,6 +17,8 @@ import nightgames.global.Global;
 import nightgames.items.Item;
 import nightgames.items.clothing.Clothing;
 import nightgames.start.NpcConfiguration;
+import nightgames.status.EnemyButtslutTrainingStatus;
+import nightgames.status.Stsflag;
 
 public class Angel extends BasePersonality {
     private static final long serialVersionUID = -8169646189131720872L;
@@ -24,6 +26,7 @@ public class Angel extends BasePersonality {
     private static final String ANGEL_NYMPHOMANIA_FOCUS = "AngelNymphomaniaFocus";
     private static final String ANGEL_WORSHIP_FOCUS = "AngelWorshipFocus";
     private static final String ANGEL_FOLLOWERS_FOCUS = "AngelFollowersFocus";
+
     public Angel() {
         this(Optional.empty(), Optional.empty());
     }
@@ -33,7 +36,7 @@ public class Angel extends BasePersonality {
         constructLines();
     }
 
-    public void applyBasicStats(Character self ) {
+    public void applyBasicStats(Character self) {
         preferredCockMod = CockMod.blessed;
         self.outfitPlan.add(Clothing.getByID("Tshirt"));
         self.outfitPlan.add(Clothing.getByID("bra"));
@@ -45,8 +48,10 @@ public class Angel extends BasePersonality {
         self.modAttributeDontSaveData(Attribute.Perception, 1);
         Global.gainSkills(self);
 
-        self.getStamina().setMax(60);
-        self.getArousal().setMax(110);
+        self.getStamina()
+            .setMax(60);
+        self.getArousal()
+            .setMax(110);
 
         self.setTrophy(Item.AngelTrophy);
         if (self instanceof NPC) {
@@ -57,7 +62,8 @@ public class Angel extends BasePersonality {
         self.initialGender = CharacterSex.female;
     }
 
-    @Override public void applyStrategy(NPC self) {
+    @Override
+    public void applyStrategy(NPC self) {
         NPC npcSelf = (NPC) self;
         npcSelf.plan = Plan.hunting;
         npcSelf.mood = Emotion.confident;
@@ -71,40 +77,42 @@ public class Angel extends BasePersonality {
         character.getGrowth().bonusArousal = 4;
 
         character.addCombatScene(new CombatScene((c, self, other) -> {
-            return self.getLevel() >= 10 && !Global.checkFlag(ANGEL_SEX_FOCUS) && !Global.checkFlag(ANGEL_NYMPHOMANIA_FOCUS);
-        }, (c, self, player) -> Global.format("After another exhausting fight with her where you've been pretty much been driven insane with her sexual prowess, "
-                        + "Angel shows a rare moment of vulnerability and slides into your arms. <i>\"Hey {other:name}, I've been thinking, do you think this is wrong?\"</i> "
-                        + "Puzzled, you ask her what she means. <i>\"Well... you know, fucking like rabbits every day. "
-                        + "I love feeling good and I know I'm good at making other people feel good. Sometimes though, I wonder if I'm being too overbearing. "
-                        + "Most " + player.guyOrGirl() + "s can't even keep up with me, but I feel like I always want more. I feel like sometimes I'm no longer in control you know?\"</i>"
-                        + "<br/><br/>"
-                        + "", self, player),
-                Arrays.asList(
-                        new CombatSceneChoice("Tell her you love her technique.", (c, self, other) -> {
+            return self.getLevel() >= 10 && !Global.checkFlag(ANGEL_SEX_FOCUS)
+                            && !Global.checkFlag(ANGEL_NYMPHOMANIA_FOCUS);
+        }, (c, self, player) -> Global.format(
+                        "After another exhausting fight with her where you've been pretty much been driven insane with her sexual prowess, "
+                                        + "Angel shows a rare moment of vulnerability and slides into your arms. <i>\"Hey {other:name}, I've been thinking, do you think this is wrong?\"</i> "
+                                        + "Puzzled, you ask her what she means. <i>\"Well... you know, fucking like rabbits every day. "
+                                        + "I love feeling good and I know I'm good at making other people feel good. Sometimes though, I wonder if I'm being too overbearing. "
+                                        + "Most " + player.guyOrGirl()
+                                        + "s can't even keep up with me, but I feel like I always want more. I feel like sometimes I'm no longer in control you know?\"</i>"
+                                        + "<br/><br/>" + "",
+                        self, player),
+                        Arrays.asList(new CombatSceneChoice("Tell her you love her technique.", (c, self, other) -> {
                             c.write("You hug Angel, and tell her that you love how she makes you feel, and sex with her is akin to a religious experience for you. "
                                             + "Angel looks surprised for a second before giving you a wry grin. <i>\"You're not so bad yourself. But you're right, I am better.\"</i>"
                                             + "<br/><br/>"
                                             + "As if to prove a point, she sits down again on your rehardened cock. "
                                             + "You groan as she slides rocks herself back and forth yet again, fucking you with a soft smile. "
-                                            + "<i>\"Quality over quantity as they say. I'll train you so you'll only be able to cum inside me. Wouldn't that be amusing " + other.getName() + "?\" </i>"
+                                            + "<i>\"Quality over quantity as they say. I'll train you so you'll only be able to cum inside me. Wouldn't that be amusing "
+                                            + other.getName() + "?\" </i>"
                                             + "It's too much for your poor oversensitive cock, as you pump what remains in you into Angel a final time."
                                             + "<br/>"
-                                            + "Angel gives you a quick kiss on the lips before leaving. <i>\"Thanks for listening to me "+ other.getName() + ", but you better be ready for me next time.\"</i>");
+                                            + "Angel gives you a quick kiss on the lips before leaving. <i>\"Thanks for listening to me "
+                                            + other.getName() + ", but you better be ready for me next time.\"</i>");
                             useSex();
                             return true;
-                        }),
-                        new CombatSceneChoice("Tell her you love her sex drive", (c, self, other) -> {
+                        }), new CombatSceneChoice("Tell her you love her sex drive", (c, self, other) -> {
                             c.write("You tell Angel that her insatiable sex drive is one of the things you like best about her. "
                                             + "After all, there's nothing else quite like fucking someone as enthusiastic as her. "
                                             + "Angel looks up and makes eye contact with you. She seems rather... amused? "
-                                            + "<i>\"That's what all " + other.boyOrGirl() + "s say before they're squeezed dry. "
-                                            + "You're not going to be the same are you?\"</i>"
-                                            + "<br/><br/>"
+                                            + "<i>\"That's what all " + other.boyOrGirl()
+                                            + "s say before they're squeezed dry. "
+                                            + "You're not going to be the same are you?\"</i>" + "<br/><br/>"
                                             + "You swallow your saliva a bit worriedly. What have you gotten yourself into?");
                             useNymphomania();
                             return true;
-                        }),
-                        new CombatSceneChoice("Tell her you love both [Hard Mode]", (c, self, other) -> {
+                        }), new CombatSceneChoice("Tell her you love both [Hard Mode]", (c, self, other) -> {
                             c.write("You tell Angel that her insatiable sex drive and amazing sex technique are both part of what makes her unique and amazing(ly attractive). "
                                             + "There are people out there with one or the other, but no one but Angel is as good at both. Angel grins and licks her lips"
                                             + "<i>\"From most people, that would sound like a pathetic wishy-washy non-answer, but the way you put that made it sound like "
@@ -115,13 +123,14 @@ public class Angel extends BasePersonality {
                             useSex();
                             character.getGrowth().extraAttributes += 1;
                             // some compensation for the added difficulty. She gets 6 traits and 2 attribute points/level, and you only get 2 traits, but you are fighting more people than just her.
-                            Global.getPlayer().getGrowth().addTraitPoints(new int[]{12,39},Global.getPlayer());
+                            Global.getPlayer()
+                                  .getGrowth()
+                                  .addTraitPoints(new int[] {12, 39}, Global.getPlayer());
                             return true;
-                        })
-                    )
-                ));
+                        }))));
         character.addCombatScene(new CombatScene((c, self, other) -> {
-            return self.getLevel() >= 20 && !Global.checkFlag(ANGEL_FOLLOWERS_FOCUS) && !Global.checkFlag(ANGEL_WORSHIP_FOCUS)
+            return self.getLevel() >= 20 && !Global.checkFlag(ANGEL_FOLLOWERS_FOCUS)
+                            && !Global.checkFlag(ANGEL_WORSHIP_FOCUS)
                             && (Global.checkFlag(ANGEL_SEX_FOCUS) || Global.checkFlag(ANGEL_NYMPHOMANIA_FOCUS));
         }, (c, self, player) -> "After another session of fantastic sex with your favorite sex goddess, Angel looks a bit reluctant to leave. "
                         + "You do want to try to get some more matches in, but her broody look invites some discussion. "
@@ -135,136 +144,178 @@ public class Angel extends BasePersonality {
                         + "but recently I've started hearing a voice in my head asking me to gather faith. "
                         + "I don't know what to think of it. I'm pretty happy with who I am now, and my friends are very important to me. "
                         + "If I do try and build a following, I'm worried that I'll start leaving them behind.\"</i>",
-                Arrays.asList(
-                        new CombatSceneChoice("Answer: Focus on your friends", (c, self, other) -> {
+                        Arrays.asList(new CombatSceneChoice("Answer: Focus on your friends", (c, self, other) -> {
                             c.write("You answer that it just doesn't seem like Angel to abandon her friends even if she does become a full Goddess. "
                                             + "There's no need to pick right? If she tells them, Mei, Sarah and Caroline would probably volunteer to be "
-                                            + "her followers numbers 1, 2 and 3."
-                                            + "<br/><br/>"
+                                            + "her followers numbers 1, 2 and 3." + "<br/><br/>"
                                             + "Angel scowls a bit at you and questions, <i>\"You mean you're not going to be my follower?\"</i> "
                                             + "You hastily deny that and try to resolve the misunderstanding before you realize Angel's stern "
                                             + "expression melts into a smile and you realize she was just joking. "
-                                            + "<i>\"Thanks "+ other.getName() + ", that took a lot off my mind. I'll pay you back, don't worry. "
-                                                            + "A Goddess always keeps her promises.\"</i>");
+                                            + "<i>\"Thanks " + other.getName()
+                                            + ", that took a lot off my mind. I'll pay you back, don't worry. "
+                                            + "A Goddess always keeps her promises.\"</i>");
                             useFollowers();
                             return true;
-                        }),
-                        new CombatSceneChoice("Answer: Focus on gathering a following", (c, self, other) -> {
-                            c.write(Global.format("You reply that you would her first follower if she was looking for them. "
-                                            + "You jokingly kneel in front of her and kiss her feet. "
-                                            + "Angel seems surprised for a moment before a familiar lascivious smile creeps into her expression. "
-                                            + "<i>\"{other:name}, {other:name}, {other:name}, what do we have here? A willing supplicant? "
-                                            + "Do you want to serve your Goddess? Groveling, begging, pleading, does that thrill you?\"</i>"
-                                            + "<br/><br/>"
-                                            + "There's a bit of a dangerous tone in Angel's voice, and you motion to get back up. "
-                                            + "However, a shapely foot forces your head onto the ground again. "
-                                            + "<i>\"Stand down!\"</i> she demands. This started off as a joke, but something in Angel's voice demands your obedience. "
-                                            + "Trembling, you do as she says and avert her eyes, looking only at the lower half of her perfect body. Angel chuckles as she inspects your prone form. "
-                                            + "<i>\"You know {other:name}, I wasn't sure I was cut out for this deity business, but I have to admit, this feels pretty good right now. "
-                                            + "Well what are you waiting for? Show me your faith!\"</i> "
-                                            + "You scramble to your feet and start lapping at Angel's heavenly orfice. "
-                                            + "Only after you bring her to two consecutive climaxes does she let you go. "
-                                            + "<br/><br/>"
-                                            + "Before she leaves, Angel kneels down to face you, and gives you a big kiss on the lips."
-                                            + "<i>\"Thanks {other:name} for being patient with me. This is all pretty so new, but I feel good with you by my side.\"</i>", self, other));
+                        }), new CombatSceneChoice("Answer: Focus on gathering a following", (c, self, other) -> {
+                            c.write(Global.format(
+                                            "You reply that you would her first follower if she was looking for them. "
+                                                            + "You jokingly kneel in front of her and kiss her feet. "
+                                                            + "Angel seems surprised for a moment before a familiar lascivious smile creeps into her expression. "
+                                                            + "<i>\"{other:name}, {other:name}, {other:name}, what do we have here? A willing supplicant? "
+                                                            + "Do you want to serve your Goddess? Groveling, begging, pleading, does that thrill you?\"</i>"
+                                                            + "<br/><br/>"
+                                                            + "There's a bit of a dangerous tone in Angel's voice, and you motion to get back up. "
+                                                            + "However, a shapely foot forces your head onto the ground again. "
+                                                            + "<i>\"Stand down!\"</i> she demands. This started off as a joke, but something in Angel's voice demands your obedience. "
+                                                            + "Trembling, you do as she says and avert her eyes, looking only at the lower half of her perfect body. Angel chuckles as she inspects your prone form. "
+                                                            + "<i>\"You know {other:name}, I wasn't sure I was cut out for this deity business, but I have to admit, this feels pretty good right now. "
+                                                            + "Well what are you waiting for? Show me your faith!\"</i> "
+                                                            + "You scramble to your feet and start lapping at Angel's heavenly orfice. "
+                                                            + "Only after you bring her to two consecutive climaxes does she let you go. "
+                                                            + "<br/><br/>"
+                                                            + "Before she leaves, Angel kneels down to face you, and gives you a big kiss on the lips."
+                                                            + "<i>\"Thanks {other:name} for being patient with me. This is all pretty so new, but I feel good with you by my side.\"</i>",
+                                            self, other));
                             useWorship();
                             return true;
-                        }),
-                        new CombatSceneChoice("Answer: Why not both? [Hard Mode]", (c, self, other) -> {
-                            c.write(Global.format("You tell her that the Angel you know wouldn't even think of choosing between either of them. "
-                                            + "The Angel you know could gather a following within a day even while maintaining her close friendships. She's just amazing like that. "
-                                            + "<br/>For the first time since you've gotten to know her, Angel seems to blush. \"<i>Enough flattery " + other.getName() + ", it wont make me go any easier on you. "
-                                                            + "But you know, you're right. Why should I choose? They should be happy to grovel for me. I <b>am</b> a Goddess after all.</i>\"", self, other));
+                        }), new CombatSceneChoice("Answer: Why not both? [Hard Mode]", (c, self, other) -> {
+                            c.write(Global.format(
+                                            "You tell her that the Angel you know wouldn't even think of choosing between either of them. "
+                                                            + "The Angel you know could gather a following within a day even while maintaining her close friendships. She's just amazing like that. "
+                                                            + "<br/>For the first time since you've gotten to know her, Angel seems to blush. \"<i>Enough flattery "
+                                                            + other.getName()
+                                                            + ", it wont make me go any easier on you. "
+                                                            + "But you know, you're right. Why should I choose? They should be happy to grovel for me. I <b>am</b> a Goddess after all.</i>\"",
+                                            self, other));
                             useWorship();
                             useFollowers();
                             character.getGrowth().extraAttributes += 1;
                             // some compensation for the added difficulty. She gets 6 traits and 1 attribute point/level, and you only get 2 traits, but you are fighting more people than just her.
-                            Global.getPlayer().getGrowth().addTraitPoints(new int[]{21,48},Global.getPlayer());
+                            Global.getPlayer()
+                                  .getGrowth()
+                                  .addTraitPoints(new int[] {21, 48}, Global.getPlayer());
                             return true;
-                        })
-                    )
-                ));
-        character.getGrowth().addTrait(0, Trait.undisciplined);
-        character.getGrowth().addTrait(0, Trait.lickable);
-        character.getGrowth().addTrait(3, Trait.responsive);
-        character.getGrowth().addTrait(9, Trait.sexTraining1);
+                        }))));
+        character.getGrowth()
+                 .addTrait(0, Trait.undisciplined);
+        character.getGrowth()
+                 .addTrait(0, Trait.lickable);
+        character.getGrowth()
+                 .addTrait(3, Trait.responsive);
+        character.getGrowth()
+                 .addTrait(9, Trait.sexTraining1);
         // 12 - first choice 1
-        character.getGrowth().addTrait(15, Trait.expertGoogler);
-        character.getGrowth().addTrait(18, Trait.experienced);
-        character.getGrowth().addTrait(20, Trait.skeptical);
+        character.getGrowth()
+                 .addTrait(15, Trait.expertGoogler);
+        character.getGrowth()
+                 .addTrait(18, Trait.experienced);
+        character.getGrowth()
+                 .addTrait(20, Trait.skeptical);
         // 21 - second choice 1
-        character.getGrowth().addTrait(24, Trait.tongueTraining1);
+        character.getGrowth()
+                 .addTrait(24, Trait.tongueTraining1);
         // 27 - first choice 2
         // 30 - second choice 2
-        character.getGrowth().addTrait(33, Trait.sexTraining2);
-        character.getGrowth().addTrait(36, Trait.tongueTraining2);
+        character.getGrowth()
+                 .addTrait(33, Trait.sexTraining2);
+        character.getGrowth()
+                 .addTrait(36, Trait.tongueTraining2);
         // 39 - first choice 3
         // 42 - second choice 3
         // 45 - second choice 4
         // 48 - second choice 5
-        character.getGrowth().addTrait(51, Trait.desensitized);
+        character.getGrowth()
+                 .addTrait(51, Trait.desensitized);
         // 54 - first choice 4
-        character.getGrowth().addTrait(57, Trait.desensitized2);
+        character.getGrowth()
+                 .addTrait(57, Trait.desensitized2);
         // 60 - second choice 6
-        preferredAttributes
-                        .add(c -> c.get(Attribute.Divinity) < 50 ? Optional.of(Attribute.Divinity) : Optional.empty());
+        preferredAttributes.add(
+                        c -> c.get(Attribute.Divinity) < 50 ? Optional.of(Attribute.Divinity) : Optional.empty());
         preferredAttributes.add(c -> Optional.of(Attribute.Seduction));
-        preferredAttributes.add(c -> (c.has(Trait.nymphomania) && c.get(Attribute.Nymphomania) < (c.getLevel() - 10) / 2) ? Optional.of(Attribute.Nymphomania) : Optional.empty());
+        preferredAttributes.add(
+                        c -> (c.has(Trait.nymphomania) && c.get(Attribute.Nymphomania) < (c.getLevel() - 10) / 2)
+                                        ? Optional.of(Attribute.Nymphomania) : Optional.empty());
     }
 
     private void useSex() {
         Global.flag(ANGEL_SEX_FOCUS);
-        character.getGrowth().addTrait(12, Trait.holecontrol);
-        character.getGrowth().addTrait(20, Trait.zealinspiring);
-        character.getGrowth().addTrait(25, Trait.powerfulhips);
-        character.getGrowth().addTrait(39, Trait.insertion);
-        character.getGrowth().addTrait(54, Trait.autonomousPussy);
+        character.getGrowth()
+                 .addTrait(12, Trait.holecontrol);
+        character.getGrowth()
+                 .addTrait(20, Trait.zealinspiring);
+        character.getGrowth()
+                 .addTrait(25, Trait.powerfulhips);
+        character.getGrowth()
+                 .addTrait(39, Trait.insertion);
+        character.getGrowth()
+                 .addTrait(54, Trait.autonomousPussy);
     }
 
     private void useNymphomania() {
         Global.flag(ANGEL_NYMPHOMANIA_FOCUS);
         character.modAttributeDontSaveData(Attribute.Nymphomania, 1);
-        character.getGrowth().addTrait(12, Trait.lastStand);
-        character.getGrowth().addTrait(20, Trait.nymphomania);
-        character.getGrowth().addTrait(25, Trait.RawSexuality);
-        character.getGrowth().addTrait(39, Trait.erophage);
-        character.getGrowth().addTrait(54, Trait.sexualDynamo);
+        character.getGrowth()
+                 .addTrait(12, Trait.lastStand);
+        character.getGrowth()
+                 .addTrait(20, Trait.nymphomania);
+        character.getGrowth()
+                 .addTrait(25, Trait.RawSexuality);
+        character.getGrowth()
+                 .addTrait(39, Trait.erophage);
+        character.getGrowth()
+                 .addTrait(54, Trait.sexualDynamo);
     }
 
     private void useFollowers() {
         Global.flag(ANGEL_FOLLOWERS_FOCUS);
-        character.getGrowth().addTrait(21, Trait.apostles);
-        character.getGrowth().addTrait(30, Trait.leadership);
+        character.getGrowth()
+                 .addTrait(21, Trait.apostles);
+        character.getGrowth()
+                 .addTrait(30, Trait.leadership);
         if (Global.checkFlag(ANGEL_SEX_FOCUS)) {
-            character.getGrowth().addTrait(42, Trait.inspirational);
+            character.getGrowth()
+                     .addTrait(42, Trait.inspirational);
         }
         if (Global.checkFlag(ANGEL_NYMPHOMANIA_FOCUS)) {
-            character.getGrowth().addTrait(42, Trait.showmanship);
+            character.getGrowth()
+                     .addTrait(42, Trait.showmanship);
         }
-        character.getGrowth().addTrait(45, Trait.tactician);
-        character.getGrowth().addTrait(48, Trait.devoteeFervor);
-        character.getGrowth().addTrait(60, Trait.congregation);
+        character.getGrowth()
+                 .addTrait(45, Trait.tactician);
+        character.getGrowth()
+                 .addTrait(48, Trait.devoteeFervor);
+        character.getGrowth()
+                 .addTrait(60, Trait.congregation);
     }
 
     private void useWorship() {
         Global.flag(ANGEL_WORSHIP_FOCUS);
-        character.getGrowth().addTrait(21, Trait.objectOfWorship);
-        character.getGrowth().addTrait(30, Trait.magicEyeArousal);
-        character.getGrowth().addTrait(42, Trait.sacrosanct);
-        character.getGrowth().addTrait(45, Trait.genuflection);
+        character.getGrowth()
+                 .addTrait(21, Trait.objectOfWorship);
+        character.getGrowth()
+                 .addTrait(30, Trait.magicEyeArousal);
+        character.getGrowth()
+                 .addTrait(42, Trait.sacrosanct);
+        character.getGrowth()
+                 .addTrait(45, Trait.genuflection);
         if (Global.checkFlag(ANGEL_SEX_FOCUS)) {
-            character.getGrowth().addTrait(48, Trait.piety);
-        } 
-        if (Global.checkFlag(ANGEL_NYMPHOMANIA_FOCUS)) {
-            character.getGrowth().addTrait(48, Trait.mandateOfHeaven);
+            character.getGrowth()
+                     .addTrait(48, Trait.piety);
         }
-        character.getGrowth().addTrait(60, Trait.revered);
+        if (Global.checkFlag(ANGEL_NYMPHOMANIA_FOCUS)) {
+            character.getGrowth()
+                     .addTrait(48, Trait.mandateOfHeaven);
+        }
+        character.getGrowth()
+                 .addTrait(60, Trait.revered);
     }
 
     @Override
     public void rest(int time) {
         if (character.rank >= 1) {
-            if (!character.has(Trait.demigoddess) && (Global.checkFlag(ANGEL_SEX_FOCUS) || Global.checkFlag(ANGEL_NYMPHOMANIA_FOCUS))) {
+            if (!character.has(Trait.demigoddess)
+                            && (Global.checkFlag(ANGEL_SEX_FOCUS) || Global.checkFlag(ANGEL_NYMPHOMANIA_FOCUS))) {
                 advance();
             }
         }
@@ -295,46 +346,59 @@ public class Angel extends BasePersonality {
         if (character.rank >= 1) {
             if (!character.has(Trait.lacedjuices) && character.money >= 1000) {
                 character.money -= 1000;
-                character.getGrowth().addTrait(Math.min(20, character.getLevel()), Trait.lacedjuices);
+                character.getGrowth()
+                         .addTrait(Math.min(20, character.getLevel()), Trait.lacedjuices);
             }
             if (character.money > 0) {
-                Global.getDay().visit("Body Shop", character, Global.random(character.money));
+                Global.getDay()
+                      .visit("Body Shop", character, Global.random(character.money));
             }
             if (character.money > 0) {
-                Global.getDay().visit("Black Market", character, Global.random(character.money));
+                Global.getDay()
+                      .visit("Black Market", character, Global.random(character.money));
             }
             if (character.money > 0) {
-                Global.getDay().visit("Workshop", character, Global.random(character.money));
+                Global.getDay()
+                      .visit("Workshop", character, Global.random(character.money));
             }
         }
         if (character.money > 0) {
-            Global.getDay().visit("XXX Store", character, Global.random(character.money));
+            Global.getDay()
+                  .visit("XXX Store", character, Global.random(character.money));
         }
         if (character.money > 0) {
-            Global.getDay().visit("Black Market", character, Global.random(character.money));
+            Global.getDay()
+                  .visit("Black Market", character, Global.random(character.money));
         }
         if (character.money > 0) {
-            Global.getDay().visit("Bookstore", character, Global.random(character.money));
+            Global.getDay()
+                  .visit("Bookstore", character, Global.random(character.money));
         }
         if (character.money > 0) {
-            Global.getDay().visit("Hardware Store", character, Global.random(character.money));
+            Global.getDay()
+                  .visit("Hardware Store", character, Global.random(character.money));
         }
         Decider.visit(character);
         int r;
         for (int i = 0; i < time; i++) {
             r = Global.random(8);
             if (r == 1) {
-                Global.getDay().visit("Exercise", this.character, 0);
+                Global.getDay()
+                      .visit("Exercise", this.character, 0);
             } else if (r == 0) {
-                Global.getDay().visit("Browse Porn Sites", this.character, 0);
+                Global.getDay()
+                      .visit("Browse Porn Sites", this.character, 0);
             }
         }
     }
-    
+
     private void constructLines() {
-        character.addLine(CharacterLine.BB_LINER, (c, self, other) -> "Angel seems to enjoy your anguish in a way that makes you more than a little nervous. <i>\"That's a great look for you, I'd like to see it more often.\"</i>");
-        character.addLine(CharacterLine.NAKED_LINER, (c, self, other) -> "Angel gives you a haughty look, practically showing off her body. <i>\"I can't blame you for wanting to see me naked, everyone does.\"</i>");
-        character.addLine(CharacterLine.STUNNED_LINER, (c, self, other) -> "Angel groans on the floor. <i>\"You really are a beast. It takes a gentle touch to please a lady.\"</i>");
+        character.addLine(CharacterLine.BB_LINER, (c, self,
+                        other) -> "Angel seems to enjoy your anguish in a way that makes you more than a little nervous. <i>\"That's a great look for you, I'd like to see it more often.\"</i>");
+        character.addLine(CharacterLine.NAKED_LINER, (c, self,
+                        other) -> "Angel gives you a haughty look, practically showing off her body. <i>\"I can't blame you for wanting to see me naked, everyone does.\"</i>");
+        character.addLine(CharacterLine.STUNNED_LINER, (c, self,
+                        other) -> "Angel groans on the floor. <i>\"You really are a beast. It takes a gentle touch to please a lady.\"</i>");
         character.addLine(CharacterLine.TAUNT_LINER, (c, self, other) -> {
             if (other.hasDick()) {
                 return "Angel pushes the head of your dick with her finger and watches it spring back into place. <i>\"You obviously can't help yourself. If only you were a little bigger, we could have a lot of fun.\"</i>";
@@ -342,14 +406,14 @@ public class Angel extends BasePersonality {
                 return "Angel spreads your cleft with her fingers, <i>\"So wet. Does my little slut want to come? Can't help yourself?\"</i>";
             }
         });
-        character.addLine(CharacterLine.CHALLENGE, (c, self, other) -> "{self:SUBJECT} licks {self:possessive} lips and stalks {other:name-do} like a predator.");
-        character.addLine(CharacterLine.TEMPT_LINER, (c, self, other) -> "Angel looks at you with a grin, <i>\"You're almost drooling. Is staring at my body that much fun? If you want me that much, why don't you just sit there and let me make you feel good.\"</i>");
+        character.addLine(CharacterLine.CHALLENGE, (c, self,
+                        other) -> "{self:SUBJECT} licks {self:possessive} lips and stalks {other:name-do} like a predator.");
+        character.addLine(CharacterLine.TEMPT_LINER, (c, self,
+                        other) -> "Angel looks at you with a grin, <i>\"You're almost drooling. Is staring at my body that much fun? If you want me that much, why don't you just sit there and let me make you feel good.\"</i>");
         character.addLine(CharacterLine.ORGASM_LINER, (c, self, other) -> {
-            final String finalLines[] = {
-                            "<i>\"Fill me! Fill me with everything you have!\"</i>",
+            final String finalLines[] = {"<i>\"Fill me! Fill me with everything you have!\"</i>",
                             "Angel pants with a flushed face and lidded eyes, <i>\"I'll pay you back... I wont let you escape!\"</i>",
-                            "<i>\"Fuck me! fuck me! fuck me! fuck!\"</i>",
-                            };
+                            "<i>\"Fuck me! fuck me! fuck me! fuck!\"</i>",};
             switch (self.orgasms) {
                 case 0:
                     return "<i>\"Mmm, maybe you do have promise. Care to try that again?\"</i>";
@@ -358,15 +422,14 @@ public class Angel extends BasePersonality {
                 case 2:
                     return "Angel massages her own cunt as she cums, <i>\"Not enough... Not nearly enough!\"<i>";
                 default:
-                    return Global.pickRandom(Arrays.asList(finalLines)).get();
+                    return Global.pickRandom(Arrays.asList(finalLines))
+                                 .get();
             }
         });
         character.addLine(CharacterLine.MAKE_ORGASM_LINER, (c, self, other) -> {
-            final String finalLines[] = {
-                            "<i>\"You're making this too easy. Put your back into it!\"</i>",
+            final String finalLines[] = {"<i>\"You're making this too easy. Put your back into it!\"</i>",
                             "<i>\"I'm not satisfied. No, not at all. So keep going.\"</i>",
-                            "<i>\"No resting. I won't allow it.\"</i>",
-                            };
+                            "<i>\"No resting. I won't allow it.\"</i>",};
             switch (other.orgasms) {
                 case 0:
                     return "Angel stares you in the eye as your consciousness returns from the precipice <i>\"Once isn't enough. I need more. You can do that for me, right?\"</i>";
@@ -375,15 +438,18 @@ public class Angel extends BasePersonality {
                 case 2:
                     return "<i>\"Enough? This is no where near enough. Stop panting and keep going.\"</i>";
                 default:
-                    return Global.pickRandom(Arrays.asList(finalLines)).get();
-            }});
-        character.addLine(CharacterLine.NIGHT_LINER, (c, self, other) -> "As you start to head back after the match, Angel grabs your hand and drags you in the other direction. <i>\"You're officially kidnapped, because I haven't had "
-                        + "enough sex yet tonight.\"</i> That makes sense... kinda? You did just finish three hours of intense sex-fighting. If she wants too much more than that, you're "
-                        + "both going to end up pretty sleep deprived. Angel looks like she's struggling to put her thoughts into words. <i>\"I had enough sex in general, but I want some "
-                        + "more time having you all to myself.\"</i> That's quite flattering coming from her, but why you specifically? Angel is openly bisexual, she could just as easily "
-                        + "take one of the other girls back with her. She looks back at you and blushes noticeably. <i>\"It's better with you, and not just because you have a cock. It is "
-                        + "a pretty good fit though. I don't know. It doesn't matter. I'm kidnapping you, so we're going to go back to my room, have sex, and you're going to stay the night "
-                        + "in case I want more sex in the morning.\"</i> You follow without protest. <br/>You lose a lot of sleep, but you don't regret it.");
+                    return Global.pickRandom(Arrays.asList(finalLines))
+                                 .get();
+            }
+        });
+        character.addLine(CharacterLine.NIGHT_LINER,
+                        (c, self, other) -> "As you start to head back after the match, Angel grabs your hand and drags you in the other direction. <i>\"You're officially kidnapped, because I haven't had "
+                                        + "enough sex yet tonight.\"</i> That makes sense... kinda? You did just finish three hours of intense sex-fighting. If she wants too much more than that, you're "
+                                        + "both going to end up pretty sleep deprived. Angel looks like she's struggling to put her thoughts into words. <i>\"I had enough sex in general, but I want some "
+                                        + "more time having you all to myself.\"</i> That's quite flattering coming from her, but why you specifically? Angel is openly bisexual, she could just as easily "
+                                        + "take one of the other girls back with her. She looks back at you and blushes noticeably. <i>\"It's better with you, and not just because you have a cock. It is "
+                                        + "a pretty good fit though. I don't know. It doesn't matter. I'm kidnapping you, so we're going to go back to my room, have sex, and you're going to stay the night "
+                                        + "in case I want more sex in the morning.\"</i> You follow without protest. <br/>You lose a lot of sleep, but you don't regret it.");
 
         character.addLine(CharacterLine.LEVEL_DRAIN_LINER, (c, self, other) -> {
             if (other.getLevel() < self.getLevel() - 5) {
@@ -421,12 +487,17 @@ public class Angel extends BasePersonality {
         character.arousal.empty();
         Character opponent = character.equals(c.p1) ? c.p2 : c.p1;
         String message = "";
-        if (c.getStance().anallyPenetrated(c, opponent)) {
+        if (c.getStance()
+             .anallyPenetrated(c, opponent) && !opponent.hasStatus(Stsflag.buttsluttraining)
+                        && !opponent.has(Trait.buttslut)) {
+            dominance += 1;
             message = "Angel leans over you as she grinds her hips against yours. <i>\"You're going to come for me, aren't you?\"</i> she purrs into your ear. You shake your head; "
                             + "no way could you live it down if you came while you had something in your ass. Angel frowns and gives your ass a firm slap. <i>\"No reach around for you "
                             + "then,\"</i> she snaps. <i>\"We'll just do this the old fashioned way.\"</i> She renews her assault on your poor ass and you feel your will slipping. Another solid slap "
                             + "to your ass sends you into a shuddering orgasm. Angel's triumphant laughter rings in your head as the shame makes you flush bright red.<br/><br/>Pulling her "
-                            + (character.hasDick() ? character.body.getRandomCock().describe(character) : "strapon")
+                            + (character.hasDick() ? character.body.getRandomCock()
+                                                                   .describe(character)
+                                            : "strapon")
                             + " from your ass with a wet slurp Angel flips you over"
                             + (!character.hasDick() ? " and removes the strapon." : ". ")
                             + "She then squats down and lines your cock up with her now soaked pussy, <i>\"Do "
@@ -436,7 +507,67 @@ public class Angel extends BasePersonality {
                             + "she could have been disappointed with that performance.  You can only gape as you look up to see Angel is gone along with your clothes. You sigh as you "
                             + "stand and ready yourself to move on. You wouldn't put past Angel to tell her girlfriends regardless of how well you performed, you just hope that's as "
                             + "far as that information goes.";
-        } else if (c.getStance().inserted(character)) {
+        } else if (c.getStance()
+                    .anallyPenetrated(c, opponent) && opponent.hasStatus(Stsflag.buttsluttraining)
+                        && !opponent.has(Trait.buttslut)) {
+            // This is supposed to be a mini-quest where the girls try to train you into a buttslut and you try to resist them. Every time you gain a level of the buttslut training status, you get
+            // 1 point in submissive, and every time you win by fucking one of them who is training you in the pussy from a dominant position, you gain a point of power (Jewel), cunning (Mara),
+            // seduction(angel) or willpower (Cassie). Losing to them by them fucking your ass gets you one step (of five) closer to irreversibly becoming a full buttslut, and causes you to present
+            // your ass the next time you see a cock. Being fucked in the ass by anyone also slowly increases you progress, and it slowly decreases over time.
+            // If you are trained to max sluttiness in any attribute (more are planned) then you get the trained slut trait, which causes any of your trainings being activated to convert some of your
+            // stats into submissive.
+            dominance += 1;
+            String cockdesc = (character.hasDick() ? character.body.getRandomCock()
+                                                                   .describe(character)
+                            : "strapon");
+            EnemyButtslutTrainingStatus.getThisTypeForPlayer()
+                                       .reactivate();
+            if (!opponent.has(Trait.buttslut)) {
+                message = "Angel's " + cockdesc
+                                + " in your ass feels so good, and you're <i>so</i> close to orgasm- you fail to "
+                                + "fully contain a moan, and Angel seems to take that as recognition that you no longer even have a chance to win, and have stopped trying. She takes that as her cue to "
+                                + "pause so she can edge you- likely trying to erotically torture some concession out of you.<br/><br/>Angel puts her hands on either side of your waist and slides them "
+                                + "slightly up and down. It's a subtly dominant gesture- if she applied a little more force she'd be pumping you up and down her "
+                                + cockdesc + ". You start moving obediently "
+                                + "with her hands, until you catch yourself and stop. Angel clearly noticed your aborted motion, and she chuckles softly. It's not a heartening sound- it seems to carry "
+                                + "the promise of something sexual coming up- something that Angel is looking forward to a lot more than you are.<br/><br/>\"You know, "
+                                + opponent.getName() + ", at first I "
+                                + "didn't think I'd enjoy this so much- but seeing you cum from your ass like a good little buttslut gives me such an amazing feeling that I'm not sure a great job of "
+                                + "fucking my cunt is going to be enough to get me to stay silent about this.\"<br/><br/>You roll your eyes and point out that last time she didn't stay silent about it "
+                                + "either- Mei and Caroline have been teasing you nonstop since last time- and you thought she seemed satisfied with your performance then.<br/><br/>\"Of course I told Mei "
+                                + "and Caroline- I trust them to keep quiet anything I ask them to, and watching them tease you is hilarious. The point is I didn't tell anyone <i>else</i>, and that's "
+                                + "what I think you care about, and what you're going to have to find some way to... entice me... to avoid. I just said that what you did last time won't cut it- do you "
+                                + "have any idea how you might make it up to me?\"<br/><br/>You suspect Angel has something specific in mind- she doesn't seem like the kind of person to blackmail you "
+                                + "for money, or to try to cheat in the games- as you continue to think, Angel wiggles her "
+                                + cockdesc + " in your ass a bit, and resumes "
+                                + "the motion of her hands.<br/><br/>You quickly notice the unsublte hint and sigh. She evidently wants to fuck your butt, but she could have just done that earlier- "
+                                + "you suspect that she wants to hear you say it: to \"willingly\" offer up your anus for her use as a bribe for not telling other people about it- she probably wants "
+                                + "that feeling of power or something. You explain your idea to Angel, trying to keep your voice as unamused-sounding as possible. Angel seems to only be encouraged by "
+                                + "your resistance- you can hearly hear the smug grin in her voice as she responds.<br/><br/>\"Hmmm... that's a good idea, but I don't think it's enough. As I just proved, "
+                                + "if all I want is to fuck your ass, I can do that any time I run into you in a game. There would have to be something special about what you're offering me now.\"<br/><br/>"
+                                + "Angel coaxes you through coming up with more ideas- all involving you acting like a complete buttslut- and insists that you do them until you can do them to her satisfaction. "
+                                + "By the time she's satisfied and lets you go, you've had to memorize how best to present your ass to her "
+                                + cockdesc + " and how to rub your prostate against it for maximum "
+                                + "stimulation- and you've done it so many times that by now it almost feels like second nature.";
+            } else {
+                message = "You're not sure when the training the girls were giving you in acting like a buttslut turned into you being the real thing- but at this point you're self-aware enough to admit "
+                                + "that that's what's happened. As Angel rails your ass, you find yourself eagerly grinding backwards against her, and when she pinned you down and pushed into you "
+                                + "earlier you only offered perfunctory resistance. You suspect that the you of before the games would be horrified to know how you've turned out- but as you cum for "
+                                + "the third time in five minutes you can't bring yourself to care.<br/><br/>Angel pulls out of you, panting heavily, and you glance up at her with pleading eyes. "
+                                + "<br/><br/>Angel shudders in pleasure. \"I don't think I'll ever get tired of seeing that look on your face- and knowing that I was part of making you into this.\"<br/><br/>"
+                                + "You aren't that happy with the way she is referring to you, but you know you'd lose any argument you made about it, so you elect to keep quiet. \"Well, I'm a bit tired, but "
+                                + "it's clear that what you're out of at this point is will to resist, not desire to have your ass taken- and ability to cum from that.\" Angel easily slips two fingers "
+                                + "into your hungry ass, and lightly prods your sensitive prostate, making you"
+                                + (opponent.hasDick() ? "r cock" : "")
+                                + " twitch. <br/><br/>\"Happily for you, I'm a generous "
+                                + "person who likes giving my friends what they want- and what you want is someone to fill that cute ass, and Mei and Caroline have decided they'd like to break you in- so "
+                                + "you're coming home with me tonight, kay? Caroline and Mei will take good care of you <i>all</i> night.\"";
+            }
+        } else if (c.getStance()
+                    .inserted(character)
+                        && character.getWillpower()
+                                    .percent() < 0.5) {
+            dominance += 1;
             message = "Angel stares you in the eye, while expertly thrusting in and out of your slobbering pussy. Your needy cunt quivers as she leans close and gives you a long steamy kiss, "
                             + "tongue and all. You try to get away from her, but she holds you down and merciless pounds away at your overused pussy. You can tell she is turned on as well, but "
                             + "it'll do you no good, as you're already feeling yourself slip over the edge. "
@@ -446,7 +577,58 @@ public class Angel extends BasePersonality {
                             + "in long leisurely strokes. <i>\"Hmm in fact, why don't I train you a bit? You know what they say, practice makes perfect!\" "
                             + "You groan in frustration as your oversensitive cunt receives her cock again. "
                             + "<br/><br/>This could be a long night.";
-        } else if (c.getStance().inserted(opponent)) {
+        } else if (c.getStance().inserted(character) && character.getWillpower().percent()>=0.5 && dominance>=10) {
+            dominance+=1;
+            minDominance=10;
+            message = "Angel holds you in place with her hands on your breasts, rubbing the sides and pinching and flicking your nipples.  She's no longer holding you down and "
+                            + "pounding your pussy mercilessly- she stopped doing that when you started moaning and grinding your hips back against her. Now she's lazily rocking "
+                            + "back and forth, watching your response as she thrusts from different angles and with different speeds. She's clearly no longer rushing to make you "
+                            + "cum before she does- at this point it's obvious that that's guaranteed to happen.<p>It seems that Angel's decided she's found the best way to fuck "
+                            + "your pussy- As she calmly pounds you along this new angle, you cum on the second stroke- and she just keeps thrusting. By the time she finally "
+                            + "brings herself to her first orgasm, you've cum three more times and your cunt is so sensitive that you're convinced you can feel every vein on her "
+                            + "cock. Angel reaches up and grabs your flushed, panting head and turns it so you're looking right at her grinning face.<p>Angel gives an obviously "
+                            + "fake sigh, and shakes her head in mock dissapointment. \"Honestly, "+opponent.getName()+", after all those times I helped you train, giving you "
+                            + "practice pleasing my cock with your pussy, you don't manage to make me cum until you've cum so many times I've lost count?\"<br>Shaking her head "
+                            + "again, Angel pulls out of you, eliciting a fresh groan from your lips. She riffles through her things, pulling out two dildos and several lengths "
+                            + "of some kind of fabric. \"It seems that you're too much of a slut for my nice, easy training to work properly, so we're going to have to do some "
+                            + "more involved work to turn you into a proper cock-milker.\" Normally when you're beaten, you go along with whatever the victor decides to do with "
+                            + "you out of a combination of arousal, a sense of fair play, and exhaustion, but this seems like a bit more than you're confortable with. You open "
+                            + "your mouth to protest, but Angel takes it as an invitation to shove one of the dildos she's holding in.<p> The dildo has a musky taste that at this "
+                            + "point you're familiar wih as belonging to Angel's pussy juices. The faux-cock is not overly thick and fits easily into your mouth- it's around the "
+                            + "girth of Angel's futanari dick- but it's alarmingly long, with the part outside of your lips being nearly fifteen inches long. Thankfully, Angel "
+                            + "only shoved perhaps four inches of it into your mouth, but you start feeling a lot less thankful as you notice that one of the bands Angel was holding "
+                            + "was actually attached to this dildo, and Angel wraps it around your head, fastening it somehow in back. The band is quite tight, though not to the "
+                            + "point of being painful, and is very inelastic. When you inhale, you hear a faint whistling noice, and notice that you can breathe through the "
+                            + "dildo- it must have holes running through it to make it easier to deepthroat. That would be somewhat reassuring if it didn't imply that Angel "
+                            + "intends to have you deepthroat it.<p>While you're preoccupied with this oral invader, Angel quickly wraps bands around your elbows and knees, forcing "
+                            + "you into a helpless, impossible-to-escape-from position. She finishes up by clipping a rod between the wraps on your knees, forcing you to keep your "
+                            + "legs spread in a way that opens your pussy up to anyone who might wish to use it to get off in. She rolls you over until you're resting on your knees "
+                            + "and elbows, ass in the air, horribly exposed.<p>Angel pats you on the ass and says \"Alright, this is how your training in pleasuring my cock is "
+                            + "going to go.\" She drapes herself over your back, her breasts over your shoulders and her cock rubbing across the dripping entrance to your cunt. "
+                            + "\"When I rub anything against the opening to your cunt like I'm doing now, you're going to push back into it.\"<br>You don't move- you have no "
+                            + "intention of acting like the slut she seems to want to make you. \"Oh, I forgot to mention something,\" Angel says, and you can almost hear the "
+                            + "devilish smile in her voice. Angel reaches up to where the dildo invading your mouth meets the band that holds it in place, and flips some switch "
+                            + "you can't see. Immediately, the dildo in your mouth begins slowly pumping in and out of the orfice, moving perhaps two inches between the ends of "
+                            + "its motion. At its deepest point, it's not pushing uncomfortably against the back of your throat, and if it were pushing any further you'd have to "
+                            + "start deepthroating it. You quickly realize that the motor and the band are too strong for you to make much progress trying to resist the facefuck, "
+                            + "and resign yourself to just letting it happen. Angel indulgently pats your cheek and continues, \"Every time you don't do something you're supposed "
+                            + "to, you get some spankings, and I press this button over here,\" Angel caresses something near the switch that started the device pumping into your "
+                            + "mouth, \"which makes it move a quarter inch deeper.\" That doesn't sound like much, but your eyes widen as you realize that the massive length of "
+                            + "the dildo means that it could probably hit your vocal cords, and the nearly fifty deepenings that would be required to get it all the way in says "
+                            + "alarming things about how long she intends to keep you here.<p>\"We'll keep doing this until you manage to make me cum without making a mistake, so "
+                            + "we could be here quite a while if you don't put everything you have into making sure you do all the slutty cock-pleasing things you're supposed to.\""
+                            + "<br>Angel rubs her cock's shaft over your entrance again. \"Now, what were you supposed to do, cock slut?\"<p>Angel seems to have done a lot to "
+                            + "prepare for this, and you suspect she intends to do exactly as she says. There's no way you're getting out of this without her letting you out, so "
+                            + "you decide to go along with her demands as best you can.<br>You push back against her dick, trying to rub your pussy against it. Angel pats you on "
+                            + "the ass again and says\"Good, just like that cock slut. Now, let me tell you what a good cock slut is supposed to do. Make sure you listen closely, "
+                            + "I'm not going to repeat this.\"<br>\"First, a clock slut grinds back against anything touching its pussy. Second, a cock slut deepthroats and licks "
+                            + "anything put in its mouth, and always sucks out and swallows any liquids it can get. The cock slut should make sure to lick the cock in its mouth right now, it's a special dildo and "
+                            + "I'll know whether you do.\"<p>You decide discretion is the better part of valour- or in this case, submission is the better part of getting out of "
+                            + "bondage- and immediately start licking the dildo fucking your face.<p>Angel pats you on the ass again- either able to tell you started licking, or "
+                            + "predicting it- and continues \"Good cock slut. Now third, whenever a cock slut has a cock in its cock hole, it clenches to try to keep the cock "
+                            + "inside on every thrust, and unclenches whenever anything tries to get inside.\"<p>INCOMPLETE";
+        } else if (c.getStance()
+                    .inserted(opponent)) {
             message = "Angel rides your cock passionately, pushing you inevitably closer to ejaculation. Her hot pussy is wrapped around your shaft like... well, exactly "
                             + "what it is. More importantly, she's a master with her hip movements and you've held out against her as long as you can. You can only hope her own orgasm is equally "
                             + "imminent. <i>\"Not even close,\"</i> She practically growls. <i>\"Don't give up now.\"</i> That's an impossible command. How can she expect you not to cum when "
@@ -483,7 +665,9 @@ public class Angel extends BasePersonality {
     @Override
     public String defeat(Combat c, Result flag) {
         Character opponent = c.getOpponent(character);
-        if (c.getStance().vaginallyPenetrated(c, character)) {
+        if (c.getStance()
+             .vaginallyPenetrated(c, character)) {
+            dominance=Math.min(dominance-1, minDominance);
             return "You thrust your cock continously into Angel's dripping pussy. Her hot insides feel amazing, but you're sure you have enough of an advantage to risk "
                             + "it. She lets out breathy moans in time to your thrusts and her arms are trembling too much to hold herself up. She's clearly about to cum, you just "
                             + "need to push her over the edge. You maul her soft, heavy boobs and suck on her neck. Angel closes her eyes tightly and whimpers in pleasure. <br/><br/>You keep "
@@ -498,7 +682,7 @@ public class Angel extends BasePersonality {
                             + "I had a continuous orgasm for at least two minutes and that's way more exhausting. It's been a long time since anyone's made me do that.\"</i> Wait, what? You'd "
                             + "never have guessed that she came if she hadn't said anything. <i>\"Just because you managed to beat me this time doesn't mean you can suddenly start acting "
                             + "lazy. If you let your guard down, I'm going to turn you into my own personal toy.\"</i> At that, she walks away naked.";
-        } 
+        }
         if (opponent.hasDick()) {
             return "Angel trembles and moans as you guide her closer and closer to orgasm. You pump two fingers in and out of her pussy and lick her sensitive nether lips. "
                             + "Her swollen clit peeks out from under its hood and you pinch it gently between your teeth. Angel instantly screams in pleasure and arches her back. A "
@@ -580,8 +764,9 @@ public class Angel extends BasePersonality {
                                             + " energy to control %s who is violently shaking in the throes of orgasm."
                                             + " You ease %s to the floor as %s goes completely limp, while Angel licks"
                                             + " the cum from her fingers.",
-                            target.getName(), target.getName(), target.getName(), target.possessiveAdjective(), target.getName(),
-                            target.getName(), target.pronoun(), target.getName(), target.directObject(), target.pronoun());
+                            target.getName(), target.getName(), target.getName(), target.possessiveAdjective(),
+                            target.getName(), target.getName(), target.pronoun(), target.getName(),
+                            target.directObject(), target.pronoun());
         }
         return "You present " + target.getName()
                         + "'s naked, helpless form to Angel's tender minstrations. Angel licks her lips and begins licking and stroking "
@@ -621,18 +806,26 @@ public class Angel extends BasePersonality {
 
     @Override
     public boolean fit() {
-        return !character.mostlyNude() && character.getStamina().percent() >= 50;
+        return !character.mostlyNude() && character.getStamina()
+                                                   .percent() >= 50;
     }
 
     public void advance() {
-        character.getGrowth().addTrait(10, Trait.demigoddess);
-        character.getGrowth().addTrait(10, Trait.divinity);
-        character.getGrowth().addTrait(10, Trait.proheels);
+        character.getGrowth()
+                 .addTrait(10, Trait.demigoddess);
+        character.getGrowth()
+                 .addTrait(10, Trait.divinity);
+        character.getGrowth()
+                 .addTrait(10, Trait.proheels);
         if (character.hasPussy()) {
-            character.body.addReplace(character.body.getRandomPussy().applyMod(new DivineMod()), 1);
+            character.body.addReplace(character.body.getRandomPussy()
+                                                    .applyMod(new DivineMod()),
+                            1);
         }
         if (character.hasDick()) {
-            character.body.addReplace(character.body.getRandomCock().applyMod(CockMod.blessed), 1);
+            character.body.addReplace(character.body.getRandomCock()
+                                                    .applyMod(CockMod.blessed),
+                            1);
         }
         character.body.addReplace(WingsPart.angelic, 5);
         character.unequipAllClothing();
@@ -641,7 +834,8 @@ public class Angel extends BasePersonality {
         character.outfitPlan.add(Clothing.getByID("bikinibottoms"));
         character.outfitPlan.add(Clothing.getByID("highheels"));
         character.modAttributeDontSaveData(Attribute.Divinity, 1);
-        character.getGrowth().addOrRemoveTraits(character);
+        character.getGrowth()
+                 .addOrRemoveTraits(character);
     }
 
     @Override
