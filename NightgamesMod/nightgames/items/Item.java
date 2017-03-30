@@ -197,6 +197,7 @@ public enum Item implements Loot {
     Tickler("Tickler", 300, "Tickles and pleasures your opponent's sensitive areas", "a "),
     Strapon("Strap-on Dildo", 600, "Penis envy much?", "a "),
     Dildo2("Sonic Dildo", 2000, "Apparently vibrates at the ideal frequency to produce pleasure", "a "),
+    Dildo3("Auto-Dildo", 2000, "In addition to vibrating, enlarges when inserted to make it stay in place", "a "),
     Crop2("Hunting Crop", 1500, "Equipped with the fearsome Treasure Hunter attachment", "a "),
     Onahole2("Wet Onahole", 3000, "As hot and wet as the real thing", "an "),
     Tickler2("Enhanced Tickler", 3000, "Coated with a substance that can increase sensitivity", "an "),
