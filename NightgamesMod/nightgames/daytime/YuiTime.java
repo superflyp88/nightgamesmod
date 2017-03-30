@@ -24,7 +24,7 @@ public class YuiTime extends BaseNPCTime {
 
     @Override
     public void buildTransformationPool() {
-        options = Collections.emptyList();
+        transformationOptions = Collections.emptyList();
     }
 
     @Override

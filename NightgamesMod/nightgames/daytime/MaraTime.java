@@ -45,7 +45,7 @@ public class MaraTime extends BaseNPCTime {
 
     @Override
     public void buildTransformationPool() {
-        options = new ArrayList<>();
+        transformationOptions = new ArrayList<>();
         {
             TransformationOption growCock = new TransformationOption();
             growCock.ingredients.put(Item.Dildo, 1);
@@ -56,7 +56,7 @@ public class MaraTime extends BaseNPCTime {
                 other.body.add(new CockPart().applyMod(new SizeMod(SizeMod.COCK_SIZE_BIG)).applyMod(CockMod.bionic));
                 return true;
             };
-            options.add(growCock);
+            transformationOptions.add(growCock);
         }
         {
             TransformationOption removeCock = new TransformationOption();
@@ -68,7 +68,7 @@ public class MaraTime extends BaseNPCTime {
                 other.body.removeAll("cock");
                 return true;
             };
-            options.add(removeCock);
+            transformationOptions.add(removeCock);
         }
         {
             TransformationOption bionicCock = new ApplyPartModOption("cock", CockMod.bionic);
@@ -79,7 +79,7 @@ public class MaraTime extends BaseNPCTime {
             bionicCock.ingredients.put(Item.Dildo, 1);
             bionicCock.option = "Bionic Cock";
             bionicCock.scene = "[Placeholder]<br/>Mara installs a bionic cock on you.";
-            options.add(bionicCock);
+            transformationOptions.add(bionicCock);
         }
         {
             TransformationOption cyberneticPussy = new ApplyPartModOption("pussy", CyberneticMod.INSTANCE);
@@ -89,7 +89,7 @@ public class MaraTime extends BaseNPCTime {
             cyberneticPussy.ingredients.put(Item.Onahole, 1);
             cyberneticPussy.option = "Cybernetic Pussy";
             cyberneticPussy.scene = "[Placeholder]<br/>Mara installs a cybernetic pussy on you.";
-            options.add(cyberneticPussy);
+            transformationOptions.add(cyberneticPussy);
         }
         {
             TransformationOption biomechAss = new ApplyPartModOption("ass", CyberneticMod.INSTANCE);
@@ -102,7 +102,7 @@ public class MaraTime extends BaseNPCTime {
                 return self.getLevel() >= 30;
             }, "At least level 30");
             biomechAss.scene = "[Placeholder]<br/>Mara installs a biomech rectum on you.";
-            options.add(biomechAss);
+            transformationOptions.add(biomechAss);
         }
         {
             TransformationOption prostheticMouth = new ApplyPartModOption("mouth", CyberneticMod.INSTANCE);
@@ -115,7 +115,7 @@ public class MaraTime extends BaseNPCTime {
                 return self.getLevel() >= 30;
             }, "At least level 30");
             prostheticMouth.scene = "[Placeholder]<br/>Mara replaces your mouth with advanced computer augmented prosthetics.";
-            options.add(prostheticMouth);
+            transformationOptions.add(prostheticMouth);
         }
     }
 

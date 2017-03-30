@@ -43,7 +43,7 @@ public class ReykaTime extends BaseNPCTime {
 
     @Override
     public void buildTransformationPool() {
-        options = new ArrayList<>();
+        transformationOptions = new ArrayList<>();
         {
             TransformationOption growCock = new TransformationOption();
             growCock.ingredients.put(Item.PriapusDraft, 1);
@@ -56,7 +56,7 @@ public class ReykaTime extends BaseNPCTime {
                 other.body.add(new CockPart().applyMod(new SizeMod(SizeMod.COCK_SIZE_BIG)).applyMod(CockMod.incubus));
                 return true;
             };
-            options.add(growCock);
+            transformationOptions.add(growCock);
         }
         {
             TransformationOption removeCock = new TransformationOption();
@@ -71,7 +71,7 @@ public class ReykaTime extends BaseNPCTime {
                 other.body.removeAll("cock");
                 return true;
             };
-            options.add(removeCock);
+            transformationOptions.add(removeCock);
         }
         {
             TransformationOption incubusCock = new ApplyPartModOption("cock", CockMod.incubus);
@@ -108,7 +108,7 @@ public class ReykaTime extends BaseNPCTime {
                             + "your opponent is. However, it wont work much against that high tech gizmo that you humans have now. Anyway, now that "
                             + "we're done, I have to get some rest. Even if it doesn't look like it, that ritual took a lot out of me.\" "
                             + "Recognizing that you are being shooed away, you profusely thank Reyka and leave her chapel with your new incubus cock.</i>";
-            options.add(incubusCock);
+            transformationOptions.add(incubusCock);
         }
         TransformationOption demonWings = new TransformationOption();
         demonWings.ingredients.put(Item.SuccubusDraft, 10);
@@ -125,7 +125,7 @@ public class ReykaTime extends BaseNPCTime {
             self.body.addReplace(WingsPart.demonic, 1);
             return true;
         };
-        options.add(demonWings);
+        transformationOptions.add(demonWings);
         TransformationOption demonTail = new TransformationOption();
         demonTail.ingredients.put(Item.SuccubusDraft, 10);
         demonTail.ingredients.put(Item.semen, 5);
@@ -137,7 +137,7 @@ public class ReykaTime extends BaseNPCTime {
             self.body.addReplace(TailPart.demonic, 1);
             return true;
         };
-        options.add(demonTail);
+        transformationOptions.add(demonTail);
         TransformationOption pointedEars = new TransformationOption();
         pointedEars.ingredients.put(Item.SuccubusDraft, 10);
         pointedEars.ingredients.put(Item.semen, 5);
@@ -158,7 +158,7 @@ public class ReykaTime extends BaseNPCTime {
             self.body.addReplace(EarPart.pointed, 1);
             return true;
         };
-        options.add(pointedEars);
+        transformationOptions.add(pointedEars);
         {
             TransformationOption succubusPussy = new ApplyPartModOption("pussy", DemonicMod.INSTANCE);
             succubusPussy.ingredients.put(Item.SuccubusDraft, 10);
@@ -167,7 +167,7 @@ public class ReykaTime extends BaseNPCTime {
             succubusPussy.ingredients.put(Item.semen, 5);
             succubusPussy.option = "Succubus Pussy";
             succubusPussy.scene = "[Placeholder]<br/>Reyka mixes the potions together with her tail and fucks you thoroughly with it, turning your once-human slit into a cock-hungry succubus pussy.";
-            options.add(succubusPussy);
+            transformationOptions.add(succubusPussy);
         }
         {
             TransformationOption devilishAss = new ApplyPartModOption("ass", DemonicMod.INSTANCE);
@@ -179,7 +179,7 @@ public class ReykaTime extends BaseNPCTime {
                 return self.getLevel() >= 30;
             }, "At least level 30");
             devilishAss.scene = "[Placeholder]<br/>Reyka mixes the potions together with her tail and fucks you thoroughly with it, turning your once-human ass into a cock-hungry corrupted hole.";
-            options.add(devilishAss);
+            transformationOptions.add(devilishAss);
         }
         {
             TransformationOption demonicMouth = new ApplyPartModOption("mouth", DemonicMod.INSTANCE);
@@ -191,7 +191,7 @@ public class ReykaTime extends BaseNPCTime {
                 return self.getLevel() >= 30;
             }, "At least level 30");
             demonicMouth.scene = "[Placeholder]<br/>Reyka drinks the potions and kisses you. Somehow the mixture corrupts the inside of your mouth into that of a demon's.";
-            options.add(demonicMouth);
+            transformationOptions.add(demonicMouth);
         }
     }
 

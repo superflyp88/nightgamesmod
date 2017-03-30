@@ -48,7 +48,7 @@ public class AngelTime extends BaseNPCTime {
 
     @Override
     public void buildTransformationPool() {
-        options = new ArrayList<>();
+        transformationOptions = new ArrayList<>();
         {
             TransformationOption growCock = new TransformationOption();
             growCock.ingredients.put(Item.PriapusDraft, 3);
@@ -59,7 +59,7 @@ public class AngelTime extends BaseNPCTime {
                 other.body.add(new CockPart().applyMod(new SizeMod(SizeMod.COCK_SIZE_BIG)).applyMod(CockMod.blessed));
                 return true;
             };
-            options.add(growCock);
+            transformationOptions.add(growCock);
         }
         {
             TransformationOption removeCock = new TransformationOption();
@@ -71,7 +71,7 @@ public class AngelTime extends BaseNPCTime {
                 other.body.removeAll("cock");
                 return true;
             };
-            options.add(removeCock);
+            transformationOptions.add(removeCock);
         }
         {
             TransformationOption blessedCock = new ApplyPartModOption("cock", CockMod.blessed);
@@ -81,7 +81,7 @@ public class AngelTime extends BaseNPCTime {
             }, "At least 10 Divinity");
             blessedCock.option = "Blessed Cock";
             blessedCock.scene = "[Placeholder]<br/>Angel performs a sacrament on your cock, imbuing it with holy powers.";
-            options.add(blessedCock);
+            transformationOptions.add(blessedCock);
         }
         {
             TransformationOption divinePussy = new ApplyPartModOption("pussy", DivineMod.INSTANCE);
@@ -92,7 +92,7 @@ public class AngelTime extends BaseNPCTime {
             divinePussy.option = "Divine Pussy";
             divinePussy.scene =
                             "[Placeholder]<br/>Angel performs a sacrament on your pussy, imbuing it with holy powers.";
-            options.add(divinePussy);
+            transformationOptions.add(divinePussy);
         }
         {
             TransformationOption sacredAss = new ApplyPartModOption("ass", DivineMod.INSTANCE);
@@ -103,7 +103,7 @@ public class AngelTime extends BaseNPCTime {
             sacredAss.option = "Sacred Ass";
             sacredAss.scene =
                             "[Placeholder]<br/>Angel blesses your ass, imbuing it with holy powers.";
-            options.add(sacredAss);
+            transformationOptions.add(sacredAss);
         }
         {
             TransformationOption angelWings = new TransformationOption();
@@ -121,7 +121,7 @@ public class AngelTime extends BaseNPCTime {
                 self.body.addReplace(WingsPart.angelic, 1);
                 return true;
             };
-            options.add(angelWings);
+            transformationOptions.add(angelWings);
         }
         {
             TransformationOption divinity = new TransformationOption();
@@ -132,7 +132,7 @@ public class AngelTime extends BaseNPCTime {
                 self.modAttributeDontSaveData(Attribute.Divinity, 1);
                 return true;
             };
-            options.add(divinity);
+            transformationOptions.add(divinity);
         }
     }
 
