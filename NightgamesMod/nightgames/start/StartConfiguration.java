@@ -17,6 +17,7 @@ import com.google.gson.JsonParseException;
 
 import nightgames.characters.Attribute;
 import nightgames.characters.CharacterSex;
+import nightgames.global.DebugFlags;
 import nightgames.items.clothing.Clothing;
 import nightgames.json.JsonUtils;
 
@@ -28,6 +29,7 @@ public class StartConfiguration {
     private Collection<NpcConfiguration> npcs;
     public NpcConfiguration npcCommon;
     private Collection<String> flags;
+    private Collection<DebugFlags> debugFlags;
 
     private StartConfiguration() {
     }
@@ -44,6 +46,10 @@ public class StartConfiguration {
         return enabled;
     }
 
+    public Collection<DebugFlags> getDebugFlags() {
+        return debugFlags;
+    }
+    
     public Collection<String> getFlags() {
         return flags;
     }
@@ -93,6 +99,8 @@ public class StartConfiguration {
         });
         JsonArray flags = root.getAsJsonArray("flags");
         cfg.flags = JsonUtils.collectionFromJson(flags, String.class);
+        JsonArray debugFlags = root.getAsJsonArray("debugFlags");
+        cfg.debugFlags = JsonUtils.collectionFromJson(debugFlags, DebugFlags.class);
         return cfg;
     }
 

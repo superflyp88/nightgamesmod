@@ -52,7 +52,7 @@ public class FluidAddiction extends DurationStatus {
         } else {
             if (affected.human()) {
                 return "You're not sure why " + target.nameOrPossessivePronoun()
-                                + " fluids is so tantalizing, but you know you want some more";
+                                + " fluids are so tantalizing, but you know you want some more";
             } else {
                 return affected.getName() + " seems to want more of "+c.getOpponent(affected).nameOrPossessivePronoun()+" fluids.";
             }

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import nightgames.actions.Action;
-import nightgames.actions.Movement;
+import nightgames.actions.IMovement;
 import nightgames.characters.body.BodyPart;
 import nightgames.characters.body.CockMod;
 import nightgames.characters.body.CockPart;
@@ -37,6 +37,9 @@ public abstract class BasePersonality implements Personality {
     protected List<PreferredAttribute> preferredAttributes;
     protected CockMod preferredCockMod;
     protected AiModifiers mods;
+    
+    protected int dominance=0;
+    protected int minDominance=0;
 
     protected BasePersonality(String name, boolean isStartCharacter) {
         // Make the built-in character
@@ -145,7 +148,7 @@ public abstract class BasePersonality implements Personality {
     }
 
     @Override
-    public Action move(Collection<Action> available, Collection<Movement> radar) {
+    public Action move(Collection<Action> available, Collection<IMovement> radar) {
         Action proposed = Decider.parseMoves(available, radar, character);
         return proposed;
     }
@@ -250,5 +253,13 @@ public abstract class BasePersonality implements Personality {
                          .isApplicable(c, character, c.getOpponent(character)))
            .forEach(e -> applicable.put(e.getKey(), e.getValue()));
         return applicable;
+    }
+    
+    public void handleQuests(Combat c) {
+        if (Global.getButtslutQuest().isPresent() 
+                        && c.getStance().anallyPenetratedBy(c, Global.getPlayer(),
+                                        character)) {
+            Global.getButtslutQuest().get().addPlayerLossPoint(character);
+        }
     }
 }

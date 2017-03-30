@@ -5,11 +5,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import nightgames.actions.IMovement;
 import nightgames.actions.Movement;
 import nightgames.characters.Character;
-import nightgames.combat.IEncounter;
 import nightgames.global.DebugFlags;
 import nightgames.global.Global;
+import nightgames.match.Encounter;
 import nightgames.status.Stsflag;
 import nightgames.trap.Trap;
 
@@ -24,18 +25,18 @@ public class Area implements Serializable {
     public HashSet<Area> jump;
     public ArrayList<Character> present;
     public String description;
-    public IEncounter fight;
+    public Encounter fight;
     public boolean alarm;
     public ArrayList<Deployable> env;
     public transient MapDrawHint drawHint;
-    private Movement enumerator;
+    private IMovement enumerator;
     private boolean pinged;
 
-    public Area(String name, String description, Movement enumerator) {
+    public Area(String name, String description, IMovement enumerator) {
         this(name, description, enumerator, new MapDrawHint());
     }
 
-    public Area(String name, String description, Movement enumerator, MapDrawHint drawHint) {
+    public Area(String name, String description, IMovement enumerator, MapDrawHint drawHint) {
         this.name = name;
         this.description = description;
         this.enumerator = enumerator;
@@ -110,7 +111,6 @@ public class Area implements Serializable {
 
     public void enter(Character p) {
         present.add(p);
-        System.out.printf("%s enters %s: %s\n", p.getTrueName(), name, env);
         List<Deployable> deps = new ArrayList<>(env);
         for (Deployable dep : deps) {
             if (dep != null && dep.resolve(p)) {
@@ -129,13 +129,12 @@ public class Area implements Serializable {
         // We can't run encounters if a fight is already occurring.
         if (fight != null && fight.checkIntrude(p)) {
             p.intervene(fight, fight.getPlayer(1), fight.getPlayer(2));
-            return false;
-        }
-        
-        if (present.size() > 1 && canFight(p)) {
-            for (Character opponent : Global.getMatch().combatants) {
-                if (present.contains(opponent) && opponent != p && canFight(opponent)) {
-                    fight = Global.getMatch().getType().buildEncounter(p, opponent, this);
+        } else if (present.size() > 1 && canFight(p)) {
+            for (Character opponent : Global.getMatch().getCombatants()) {
+                if (present.contains(opponent) && opponent != p
+                               && canFight(opponent)
+                               && Global.getMatch().canEngage(p, opponent)) {
+                    fight = Global.getMatch().buildEncounter(p, opponent, this);
                     return fight.spotCheck();
                 }
             }
@@ -152,7 +151,7 @@ public class Area implements Serializable {
             for (Character opponent : present) {
                 if (opponent != target) {
                     if (target.eligible(opponent) && opponent.eligible(target) && fight == null) {
-                        fight = Global.getMatch().getType().buildEncounter(opponent, target, this);
+                        fight = Global.getMatch().buildEncounter(opponent, target, this);
                         opponent.promptTrap(fight, target, trap);
                         return true;
                     }
@@ -184,7 +183,7 @@ public class Area implements Serializable {
         fight = null;
     }
 
-    public Movement id() {
+    public IMovement id() {
         return enumerator;
     }
 

@@ -12,6 +12,7 @@ import com.google.gson.JsonPrimitive;
 
 import nightgames.characters.Character;
 import nightgames.json.JsonUtils;
+import nightgames.quest.Quest;
 
 /**
  * SaveData specifies a schema for data that will be saved and loaded.
@@ -20,12 +21,15 @@ public class SaveData {
     public final Set<Character> players;
     public final Set<String> flags;
     public final Map<String, Float> counters;
+    public final Set<Quest> quests;
     public Time time;
     public int date;
     public int fontsize;
 
     private enum JSONKey {
-        PLAYERS("characters"), FLAGS("flags"), COUNTERS("counters"), TIME("time"), DATE("date"), FONTSIZE("fontsize");
+        PLAYERS("characters"), FLAGS("flags"), COUNTERS("counters"), 
+        TIME("time"), DATE("date"), FONTSIZE("fontsize"),
+        QUESTS("quests");
 
         final String key;
 
@@ -39,6 +43,7 @@ public class SaveData {
         players = new HashSet<>();
         flags = new HashSet<>();
         counters = new HashMap<>();
+        quests = new HashSet<>();
     }
 
     public SaveData(JsonObject rootJSON) {
@@ -65,6 +70,11 @@ public class SaveData {
         JsonObject countersJSON = rootJSON.getAsJsonObject(JSONKey.COUNTERS.key);
         counters.putAll(JsonUtils.mapFromJson(countersJSON, String.class, Float.class));
 
+        if (rootJSON.has(JSONKey.QUESTS.key)) {
+            JsonArray questsJSON = rootJSON.getAsJsonArray(JSONKey.QUESTS.key);
+            quests.addAll(JsonUtils.collectionFromJson(questsJSON, Quest.class));
+        }
+        
         date = rootJSON.get(JSONKey.DATE.key).getAsInt();
         if (rootJSON.has(JSONKey.FONTSIZE.key)) {
             fontsize = rootJSON.get(JSONKey.FONTSIZE.key).getAsInt();
@@ -90,6 +100,10 @@ public class SaveData {
         JsonObject counterJSON = new JsonObject();
         counters.forEach(counterJSON::addProperty);
         rootJSON.add(JSONKey.COUNTERS.key, counterJSON);
+        
+        JsonArray questJSON = new JsonArray();
+        quests.stream().map(q->q.saveToJson()).forEach(questJSON::add);
+        rootJSON.add(JSONKey.QUESTS.key, questJSON);
 
         rootJSON.addProperty(JSONKey.TIME.key, time.desc);
 
@@ -115,6 +129,8 @@ public class SaveData {
             return false;
         if (!counters.equals(saveData.counters))
             return false;
+        if (!quests.equals(saveData.quests))
+            return false;
         return time == saveData.time;
 
     }
@@ -125,11 +141,12 @@ public class SaveData {
         result = 31 * result + counters.hashCode();
         result = 31 * result + time.hashCode();
         result = 31 * result + date;
+        result = 31 * result + quests.hashCode();
         return result;
     }
 
     @Override public String toString() {
-        return "SaveData{" + "players=" + players + ", flags=" + flags + ", counters=" + counters + ", time=" + time
+        return "SaveData{" + "players=" + players + ", flags=" + flags + ", counters=" + counters + ", quests=" + quests + ", time=" + time
                         + ", date=" + date + '}';
     }
 }

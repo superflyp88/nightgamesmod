@@ -489,6 +489,7 @@ public class Airi extends BasePersonality {
         }
         character.arousal.empty();
         opponent.arousal.empty();
+
         if (character.is(Stsflag.disguised)) {
             StringBuilder sb = new StringBuilder();
             sb.append(Global.format("Just as {self:subject-action:are} about to bring you to mind bending orgasm, {self:possessive} face shifts and melts. "

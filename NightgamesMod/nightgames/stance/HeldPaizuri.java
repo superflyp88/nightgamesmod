@@ -2,6 +2,7 @@ package nightgames.stance;
 
 import java.util.Collections;
 import java.util.List;
+
 import nightgames.characters.Character;
 import nightgames.characters.body.BodyPart;
 import nightgames.combat.Combat;
@@ -17,6 +18,11 @@ public class HeldPaizuri extends AbstractFacingStance {
         return Global.format(
                         "{self:SUBJECT-ACTION:are|is} holding {other:name-do} down with {self:possessive} breasts nested around {other:possessive} cock.",
                         top, bottom);
+    }
+    
+    @Override
+    public boolean paizuri(Character c, Character target) {
+        return c==top && target==bottom;
     }
 
     @Override

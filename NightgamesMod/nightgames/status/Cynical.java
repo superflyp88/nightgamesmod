@@ -14,6 +14,11 @@ public class Cynical extends DurationStatus {
         super("Cynical", affected, 3);
         flag(Stsflag.cynical);
     }
+    
+    public Cynical(Character affected, int amount) {
+        super("Cynical", affected, amount);
+        flag(Stsflag.cynical);
+    }
 
     @Override
     public String describe(Combat c) {
@@ -34,6 +39,12 @@ public class Cynical extends DurationStatus {
         return 1;
     }
 
+    @Override
+    public int regen(Combat c) {
+        super.tick(1);
+        return 0;
+    }
+    
     @Override
     public int mod(Attribute a) {
         return 0;

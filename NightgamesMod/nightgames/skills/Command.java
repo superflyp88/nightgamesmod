@@ -48,7 +48,7 @@ public class Command extends Skill {
 
     @Override
     public float priorityMod(Combat c) {
-        return 10.0f;
+        return 20.0f;
     }
 
     @Override
@@ -179,7 +179,7 @@ public class Command extends Skill {
             if (target.body.getFetish("pussy").isPresent() && getSelf().hasPussy())
                 available.add(CommandType.WORSHIP_PUSSY);
 
-            if (getSelf().hasDick())
+            if (getSelf().hasDick() && !c.getStance().inserted(getSelf()))
                 available.add(CommandType.GIVE_BLOWJOB);
 
             if (getSelf().hasPussy())
@@ -389,13 +389,12 @@ public class Command extends Skill {
                 Clothing removed = getStripTarget(getSelf());
                 if (removed == null)
                     return;
-                getSelf().getOutfit()
-                         .unequip(removed);
+                getSelf().undress(c);
                 c.write(getSelf(),
                                 String.format("%s tells %s to remove %s %s for %s."
                                                 + " %s gladly %s, eager to see more of %s perfect physique.",
                                                 getSelf().subject(), target.subject(), 
-                                                getSelf().possessiveAdjective(), removed.getName(),
+                                                getSelf().possessiveAdjective(), "clothes",
                                                 getSelf().directObject(), 
                                                 Global.capitalizeFirstLetter(target.pronoun()),
                                                 target.action("comply", "complies"),
@@ -406,15 +405,14 @@ public class Command extends Skill {
                 removed = getStripTarget(target);
                 if (removed == null)
                     return;
-                target.getOutfit()
-                      .unequip(removed);
+                getSelf().undress(c);
                 c.write(getSelf(),
                                 String.format("With a dismissive gesture, %s tells %s"
                                                 + " that %s would feel far better without %s %s on. Of course!"
                                                 + " That would make <i>everything</i> better! %s eagerly %s"
                                                 + " the offending garment.", getSelf().getName(), 
                                                 target.subject(), target.pronoun(), 
-                                                target.possessiveAdjective(), removed.getName(),
+                                                target.possessiveAdjective(), "clothes",
                                                 Global.capitalizeFirstLetter(target.pronoun()),
                                                 target.action("remove")));
                 break;

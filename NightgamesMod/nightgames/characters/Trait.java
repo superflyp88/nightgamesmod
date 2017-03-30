@@ -159,6 +159,7 @@ public enum Trait {
     polecontrol("Pole Control", "Always hit the right spots"), // Dick damage upgrade
     hypnoticsemen("Hypnotic Semen", "Cum drains willpower"), // Semen willpower damage trait
     sweetlips("Sweet lips", "Enticing lips makes kissing dangerous"), // more kickback damage from kiss
+    heatedsemen("Heated Semen", "Cum drains stamina"), // Jewel stamina draining semen trait
     testosterone("Testosterone", "More powerful muscles"), // Having a cock gives + to power
     pussyhandler("Pussy Handler", "Expert at pleasing the pussy"), // Bonus damage to pussies
     dickhandler("Dick Handler", "Expert at pleasing cocks"), // Bonus damage to cocks
@@ -183,6 +184,7 @@ public enum Trait {
     oiledass("Oiled Ass", "Natural oils makes her ass always ready."),
     autonomousAss("Autonomous Ass", "Asshole instinctively forces anything inside of it to cum."),
     fetishTrainer("Fetish Trainer", "Capable of developing others' fetishes."),
+    fetishCharmer("Fetish Charmer", "Capable of using others' fetishes to charm them"),
     insertion("Insertion Master", "More pleasure on insertion"), // more damage on insertion.
     hawkeye("Hawk Eye", "More accurate"), // 5% additional accuracy
     proheels("Heels Pro", "Pro at walking around in heels"), // no speed penalty from heels
@@ -492,11 +494,18 @@ public enum Trait {
         } else {
             b.append("A large black strap-on dildo adorns " + c.nameOrPossessivePronoun() + " waists.");
         }
-    }), // currently wearing a strapon
+    }, null, null, true), // currently wearing a strapon
 
-    event("event", "special character"),
-    mindcontrolresistance("", "temporary resistance to mind games - hidden"),
-    none("", "");
+    event("event", "special character", true),
+    mindcontrolresistance("", "temporary resistance to mind games - hidden", true),
+    none("", "", true),
+    
+    //From the training miniquests
+    trainedslut("Trained Slut", "Has been trained to be a slut."
+                    + " Reinforcing that training causes increased submissiveness"),
+    buttsluttraining("not visible", "the duration of the "
+                    + "attached status represents the level ()", true);
+    
     
     private static void override(Map<Trait, Collection<Trait>> o, Trait key, Trait... overrides) {
         o.put(key, Arrays.asList(overrides));
@@ -507,6 +516,7 @@ public enum Trait {
     private String name;
     public Trait parent;
     public Status status;
+    private boolean hidden;
 
     public String getDesc() {
         return desc;
@@ -518,27 +528,33 @@ public enum Trait {
     }
 
     private Trait(String name, String description) {
-        this.name = name;
-        desc = description;
+        this(name, description, null, null, null, false);
+    }
+    
+    private Trait(String name, String description, boolean hidden) {
+        this(name, description, null, null, null, hidden);
     }
 
     private Trait(String name, String description, TraitDescription longDesc) {
-        this.name = name;
-        desc = description;
-        this.longDesc = longDesc;
+        this(name, description, longDesc, null, null, false);
     }
 
     private Trait(String name, String description, TraitDescription longDesc, Trait parent) {
+        this(name, description, longDesc, parent, null, false);
+    }
+
+    private Trait(String name, String description, Status status) {
+        this(name, description, null, null, status, false);
+    }
+    
+    private Trait(String name, String description, TraitDescription longDesc,
+                    Trait parent, Status status, boolean hidden) {
         this.name = name;
         desc = description;
         this.longDesc = longDesc;
         this.parent = parent;
-    }
-
-    private Trait(String name, String description, Status status) {
-        this.name = name;
-        desc = description;
         this.status = status;
+        this.hidden = hidden;
     }
 
     public boolean isFeat() {
@@ -661,5 +677,9 @@ public enum Trait {
         } else {
             return nullResistance;
         }
+    }
+    
+    public boolean isVisible() {
+        return !hidden;
     }
 }

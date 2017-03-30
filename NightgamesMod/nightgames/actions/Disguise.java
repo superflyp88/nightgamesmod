@@ -32,7 +32,7 @@ public class Disguise extends Action {
     }
 
     @Override
-    public Movement execute(Character user) {
+    public IMovement execute(Character user) {
         NPC target = getRandomNPC(user);
         if (target != null) {
             DisguiseHelper.disguiseCharacter(user, target);
@@ -41,7 +41,7 @@ public class Disguise extends Action {
     }
 
     @Override
-    public Movement consider() {
+    public IMovement consider() {
         return Movement.disguise;
     }
 

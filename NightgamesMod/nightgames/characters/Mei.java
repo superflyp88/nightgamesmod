@@ -4,14 +4,14 @@ import java.util.Collection;
 import java.util.Optional;
 
 import nightgames.actions.Action;
-import nightgames.actions.Movement;
+import nightgames.actions.IMovement;
 import nightgames.characters.body.BreastsPart;
 import nightgames.characters.body.CockMod;
 import nightgames.characters.body.FacePart;
 import nightgames.characters.body.TailPart;
 import nightgames.characters.body.WingsPart;
-import nightgames.characters.body.mods.ExtendedTonguedMod;
 import nightgames.characters.body.mods.DemonicMod;
+import nightgames.characters.body.mods.ExtendedTonguedMod;
 import nightgames.characters.custom.CharacterLine;
 import nightgames.combat.Combat;
 import nightgames.combat.Result;
@@ -91,7 +91,7 @@ public class Mei extends BasePersonality {
     }
 
     @Override
-    public Action move(Collection<Action> available, Collection<Movement> radar) {
+    public Action move(Collection<Action> available, Collection<IMovement> radar) {
         Action proposed = Decider.parseMoves(available, radar, character);
         return proposed;
     }

@@ -36,11 +36,10 @@ public class NpcConfiguration extends CharacterConfiguration {
             return secondaryConfig;
         } else if (secondaryConfig.isPresent()) {
             return Optional.of(new NpcConfiguration(primaryConfig.get(), secondaryConfig.get()));
-        } else {
-            return primaryConfig;
-        }
+            } else {
+                return primaryConfig;
+            }
     }
-
     public final void apply(NPC base) {
         if (gender.isPresent()) {
             CharacterSex sex = gender.get();
@@ -84,4 +83,5 @@ public class NpcConfiguration extends CharacterConfiguration {
 
         return config;
     }
+    @Override public String toString() {return "type: "+type+", start: "+isStartCharacter+"; "+super.toString();}
 }

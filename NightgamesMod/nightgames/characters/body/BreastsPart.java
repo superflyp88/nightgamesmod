@@ -5,6 +5,7 @@ import nightgames.characters.Character;
 import nightgames.characters.Trait;
 import nightgames.characters.body.mods.SizeMod;
 import nightgames.combat.Combat;
+import nightgames.global.DebugFlags;
 import nightgames.global.Global;
 import nightgames.items.clothing.Clothing;
 import nightgames.items.clothing.ClothingSlot;
@@ -25,6 +26,8 @@ public class BreastsPart extends GenericBodyPart {
     public static BreastsPart g = (BreastsPart) new BreastsPart().applyMod(new SizeMod(6));
     public static BreastsPart h = (BreastsPart) new BreastsPart().applyMod(new SizeMod(7));
 
+    private double bonusSensitivity = 0;
+    
     public static BreastsPart generateGeneric() {
         return new BreastsPart();
     }
@@ -66,8 +69,12 @@ public class BreastsPart extends GenericBodyPart {
 
     @Override
     public double getSensitivity(Character self, BodyPart target) {
-        return (.75 + getSize() * .2) * super.getSensitivity(self, target);
-    }
+        if (Global.isDebugOn(DebugFlags.DEBUG_SCENE)) {
+            System.out.println("checking sensitivity of breasts: "
+                            + self.getName()+" bonusSens: "+bonusSensitivity);
+        }
+        return (.75 + getSize() * .2 + bonusSensitivity)* super.getSensitivity(self, target);   
+   }
 
     public static BreastsPart maximumSize() {
         return h;

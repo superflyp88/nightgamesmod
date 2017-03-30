@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.CharacterSex;
+import nightgames.characters.Player;
 import nightgames.characters.Trait;
 import nightgames.characters.body.mods.PartMod;
 import nightgames.characters.body.mods.SizeMod;
@@ -38,6 +39,7 @@ import nightgames.skills.Divide;
 import nightgames.skills.Skill;
 import nightgames.status.Abuff;
 import nightgames.status.BodyFetish;
+import nightgames.status.Charmed;
 import nightgames.status.Status;
 import nightgames.status.Stsflag;
 import nightgames.status.addiction.AddictionType;
@@ -583,6 +585,10 @@ public class Body implements Cloneable {
         }
         return part;
     }
+    
+    public BodyPart getRandomErogenous() {
+        return Global.pickRandom(getCurrentPartsThatMatch(BodyPart::isErogenous)).get();
+    }
 
     public int pleasure(Character opponent, BodyPart with, BodyPart target, double magnitude, Combat c) {
         return pleasure(opponent, with, target, magnitude, 0, c, false, null);
@@ -615,12 +621,20 @@ public class Body implements Cloneable {
         if (target.isErogenous() && character.has(Trait.hairtrigger)) {
             sensitivity += 1;
         }
-
+        final BodyPart actualWith = with, actualTarget = target;
         final double moddedSensitivity = sensitivity;
         sensitivity += character.status.stream()
-                                       .mapToDouble(status -> status.sensitivity(moddedSensitivity))
+                                       .mapToDouble(status -> 
+                                           status.sensitivity(moddedSensitivity, 
+                                                           actualWith, actualTarget, skill))
                                        .sum();
-
+        if (opponent != null) {
+            sensitivity += opponent.status.stream()
+                                          .mapToDouble(status -> 
+                                            status.opponentSensitivity(moddedSensitivity,
+                                                           actualWith, actualTarget, skill))
+                                          .sum();
+        }
         double pleasure = 1;
         if (!with.isType("none")) {
             pleasure = with.getPleasure(opponent, target);
@@ -653,8 +667,11 @@ public class Body implements Cloneable {
 
         Optional<BodyFetish> fetish = getFetish(with.getType());
         if (fetish.isPresent()) {
-            perceptionBonus += fetish.get().magnitude * 3;
-            character.add(c, new BodyFetish(character, opponent, with.getType(), .05));
+            double fetishBonus = fetish.get().magnitude * 3 * with.getFetishEffectiveness();
+            if(with.getType().equals("ass") && character.has(Trait.analFanatic)) fetishBonus/=4;
+            perceptionBonus += fetishBonus;
+            // if a fetish is present, the chance of it intensifying is 4 times the chance of a new fetish occurring of that type with fetishtrainer
+            if(Global.random(100) > 4*100*with.getFetishChance()) {character.add(c, new BodyFetish(character, opponent, with.getType(), .05));}
         }
         double base = baseBonusDamage + magnitude;
 
@@ -685,7 +702,7 @@ public class Body implements Cloneable {
         double dominance = 0.0;
         if (character.checkAddiction(AddictionType.DOMINANCE, opponent) && c.getStance().dom(opponent)) {
             float mag = character.getAddiction(AddictionType.DOMINANCE).get().getMagnitude();
-            float dom = c.getStance().getDominanceOfStance(opponent);
+            double dom = c.getStance().getDominanceOfStance(c, opponent);
             dominance = mag * (dom / 5.0);
         }
         perceptionBonus += dominance;
@@ -793,13 +810,21 @@ public class Body implements Cloneable {
 
         character.resolvePleasure(result, c, opponent, target, with);
 
-        if (opponent != null && Arrays.asList(fetishParts)
-                                      .contains(with.getType())) {
-            if (opponent.has(Trait.fetishTrainer)
-                            && Global.random(100) < Math.min(opponent.get(Attribute.Fetish), 25)) {
+        if (opponent != null && Arrays.asList(fetishParts).contains(with.getType())) {
+            double chance = opponent.has(Trait.fetishTrainer)?4 * Math.min(opponent.get(Attribute.Fetish), 25):0;
+            if (with.getType().equals("cock") && target.getType().equals("ass") 
+                            && Global.getButtslutQuest().isPresent()) {
+                chance += Global.getButtslutQuest().get().getBonusFetishChance();
+            }
+            if (Global.random(100) < chance * with.getFetishChance()) {
                 c.write(character, character.subjectAction("now have", "now has") + " a new fetish, courtesy of "
                                 + opponent.directObject() + ".");
                 character.add(c, new BodyFetish(character, opponent, with.getType(), .25));
+            }
+            if (opponent.has(Trait.fetishCharmer) && Global.random(100) < 4 * Math.min(opponent.get(Attribute.Fetish), 25)) {
+                c.write(character, character.subjectAction("find yourself", "finds themself") + " hesitant to resist "
+                                + opponent.directObject() + " due to the demands of "+character.possessiveAdjective()+" fetish.");
+                character.add(c, new Charmed(character));
             }
         }
         lastPleasuredBy = with;
@@ -826,7 +851,7 @@ public class Body implements Cloneable {
         } else {
             double effectiveSeduction = character.get(Attribute.Seduction);
             if (c.getStance().dom(character) && character.has(Trait.brutesCharisma)) {
-                effectiveSeduction += c.getStance().getDominanceOfStance(character) * (character.get(Attribute.Power) / 5.0 + character.get(Attribute.Ki) / 5.0);
+                effectiveSeduction += c.getStance().getDominanceOfStance(c, character) * (character.get(Attribute.Power) / 5.0 + character.get(Attribute.Ki) / 5.0);
             }
 
             if (character.has(Trait.PrimalHeat) && character.is(Stsflag.frenzied)) {
@@ -1287,6 +1312,15 @@ public class Body implements Cloneable {
                             character, opponent));
             character.loseWillpower(c, 10 + Global.random(10));
         }
+        if (opponent.has(Trait.heatedsemen)) {
+            c.write(Global.format(
+                            "<br><b>{other:NAME-POSSESSIVE} boiling semen takes its toll on {self:name-possessive} stamina, rendering {self:direct-object} limp and compliant.</b>",
+                            character, opponent));
+            character.drain(c, opponent, character.getStamina().max()/3+20);
+        }
+        if (character instanceof Player && part.getType().equals("ass") && Global.getButtslutQuest().isPresent()) {
+            character.arouse(Global.getButtslutQuest().get().getAnalCreampieLust(), c);
+        }
         if (part.getType().equals("ass") || part.getType().equals("pussy")) {
             if (character.has(Trait.RapidMeiosis) && character.has(Trait.slime)) {
                 c.write(opponent, Global.format("{self:NAME-POSSESSIVE} hungry %s seems to vacuum {other:name-possessive} sperm into itself as {other:pronoun-action:cum|cums}. "
@@ -1425,7 +1459,7 @@ public class Body implements Cloneable {
     public void removeTemporaryPartMod(String type, PartMod mod) {
         List<PartModReplacement> replacements = modReplacements.get(type);
         if (replacements != null) {
-            replacements.remove(mod);
+            replacements.removeIf(r -> r.mod.equals(mod));
         }
     }
 

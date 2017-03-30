@@ -1,13 +1,17 @@
 package nightgames.characters.body;
 
+import java.util.Optional;
+
 import nightgames.characters.Attribute;
 import nightgames.characters.Character;
 import nightgames.characters.Trait;
+import nightgames.characters.body.mods.PartMod;
 import nightgames.characters.body.mods.SizeMod;
 import nightgames.combat.Combat;
 import nightgames.global.Global;
 import nightgames.items.clothing.Clothing;
 import nightgames.items.clothing.ClothingSlot;
+import nightgames.quest.ButtslutQuest;
 import nightgames.status.Drained;
 import nightgames.status.Stsflag;
 import nightgames.status.Trance;
@@ -18,6 +22,8 @@ public class AssPart extends GenericBodyPart {
         return new AssPart();
     }
 
+    private double bonusSensitivity;
+    
     public AssPart(String desc, double hotness, double pleasure, double sensitivity) {
         super(desc, "", hotness, pleasure, sensitivity, false, "ass", "a ");
     }
@@ -144,7 +150,7 @@ public class AssPart extends GenericBodyPart {
         }
         if (self.has(Trait.buttslut)) {
             bonus += 10;
-            if (Global.random(4) == 0 && self.is(Stsflag.trance)) {
+            if (Global.random(4) == 0 && !self.is(Stsflag.trance)) {
                 c.write(opponent, Global.format(
                                 "The foreign object rummaging around inside {self:name-possessive} ass <i><b>just feels so right</b></i>. {self:SUBJECT-ACTION:feel|feels} {self:reflective} slipping into a trance!",
                                                 self, opponent));
@@ -153,6 +159,10 @@ public class AssPart extends GenericBodyPart {
             c.write(opponent, Global.format(
                             "The foreign object rummaging around inside {self:name-possessive} ass feels so <i>right</i>. {self:SUBJECT} can't help moaning in time with the swelling pleasure.",
                                             self, opponent));
+            Optional<ButtslutQuest> bsq = Global.getButtslutQuest();
+            if (bsq.isPresent() && self==Global.getPlayer()) {
+                bonus += bsq.get().applyReceiveBonusesAnal(c, opponent, target);
+            }
         }
         return bonus;
     }
@@ -191,5 +201,24 @@ public class AssPart extends GenericBodyPart {
 
     public BodyPart downgrade() {
         return this.applyMod(new SizeMod(SizeMod.clampToValidSize(this, getSize() - 1)));
+    }
+    
+    @Override
+    public double getSensitivity(Character self, BodyPart target) {
+        double sensitivityMod = sensitivity;
+        double bonus = 1.0;
+        for (PartMod mod : mods) {
+            bonus += mod.modSensitivity(self);
+        }
+        sensitivityMod += bonusSensitivity;
+        return sensitivityMod * bonus;
+    }
+
+    public double getBonusSensitivity() {
+        return bonusSensitivity;
+    }
+
+    public void addBonusSensitivity(double bonusSensitivity) {
+        this.bonusSensitivity += bonusSensitivity;
     }
 }

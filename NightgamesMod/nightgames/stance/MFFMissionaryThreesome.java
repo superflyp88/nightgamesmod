@@ -22,6 +22,11 @@ public class MFFMissionaryThreesome extends MaledomSexStance {
     }
 
     @Override
+    public final boolean isThreesome() {
+        return true;
+    }
+    
+    @Override
     public boolean inserted(Character c) {
         return c == domSexCharacter;
     }

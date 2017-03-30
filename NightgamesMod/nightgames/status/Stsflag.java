@@ -82,5 +82,8 @@ public enum Stsflag {
     tailsucked, 
     tailfucked,
     permanent,
-    mindgames,
+    mindgames, 
+    focussed, 
+    buttsluttraining, 
+    buttslutificationReady,
 }
