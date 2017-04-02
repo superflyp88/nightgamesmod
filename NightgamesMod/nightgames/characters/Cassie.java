@@ -602,7 +602,7 @@ public class Cassie extends BasePersonality {
     @Override
     public String defeat(Combat c, Result flag) {
         if (c.getStance().vaginallyPenetrated(c, c.getOpponent(character))) {
-            dominance=Math.min(dominance-1,minDominance);
+            dominance=Math.max(dominance-1,minDominance);
         }
         Character opponent = c.getOpponent(character);
         if (character.has(Trait.witch) && Global.random(3) == 0) {

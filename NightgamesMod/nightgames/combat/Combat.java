@@ -670,14 +670,14 @@ private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new
     
     private void checkIndividualAuraEffects(Character self, Character other) {
         if (self.has(Trait.magicEyeEnthrall) && other.getArousal().percent() >= 50 && getStance().facing(other, self)
-                        && Global.random(20) == 0) {
+                        && !other.is(Stsflag.blinded) && Global.random(20) == 0) {
             write(self,
                             Global.format("<br/>{other:NAME-POSSESSIVE} eyes start glowing and captures both {self:name-possessive} gaze and consciousness.",
                                             other, self));
             other.add(this, new Enthralled(other, self, 2));
         }
         if (self.has(Trait.magicEyeTrance) && other.getArousal().percent() >= 50 && getStance().facing(other, self)
-                        && Global.random(10) == 0) {
+                        && !other.is(Stsflag.blinded) && Global.random(10) == 0) {
             write(self,
                             Global.format("<br/>{other:NAME-POSSESSIVE} eyes start glowing and send {self:subject} straight into a trance.",
                                             other, self));
@@ -685,7 +685,7 @@ private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new
         }
 
         if (self.has(Trait.magicEyeFrenzy) && other.getArousal().percent() >= 50 && getStance().facing(other, self)
-                        && Global.random(10) == 0) {
+                        && !other.is(Stsflag.blinded) && Global.random(10) == 0) {
             write(self,
                             Global.format("<br/>{other:NAME-POSSESSIVE} eyes start glowing and send {self:subject} into a frenzy.",
                                             other, self));
@@ -693,14 +693,15 @@ private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new
         }
 
         if (self.has(Trait.magicEyeArousal) && other.getArousal().percent() >= 50 && getStance().facing(other, self)
-                        && Global.random(5) == 0) {
+                        && !other.is(Stsflag.blinded) && Global.random(5) == 0) {
             write(self,
                             Global.format("<br/>{other:NAME-POSSESSIVE} eyes start glowing and {self:subject-action:feel|feels} a strong pleasure wherever {other:possessive} gaze lands. {self:SUBJECT-ACTION:are|is} literally being raped by {other:name-possessive} eyes!",
                                             other, self));
             other.temptNoSkillNoSource(this, self, self.get(Attribute.Seduction) / 2);
         }
 
-        if (getStance().facing(self, other) && other.breastsAvailable() && !self.has(Trait.temptingtits) && other.has(Trait.temptingtits)) {
+        if (getStance().facing(self, other) && other.breastsAvailable() && !self.has(Trait.temptingtits) 
+                        && other.has(Trait.temptingtits) && !other.is(Stsflag.blinded)) {
             write(self, Global.format("{self:SUBJECT-ACTION:can't avert|can't avert} {self:possessive} eyes from {other:NAME-POSSESSIVE} perfectly shaped tits sitting in front of {self:possessive} eyes.",
                                             self, other));
             self.temptNoSkill(this, other, other.body.getRandomBreasts(), 10 + Math.max(0, other.get(Attribute.Seduction) / 3 - 7));
