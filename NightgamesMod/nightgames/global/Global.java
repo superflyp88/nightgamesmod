@@ -96,6 +96,7 @@ import nightgames.characters.custom.JsonSourceNPCDataLoader;
 import nightgames.characters.custom.NPCData;
 import nightgames.combat.Combat;
 import nightgames.daytime.Daytime;
+import nightgames.debug.MatchTypePicker;
 import nightgames.gui.GUI;
 import nightgames.gui.HeadlessGui;
 import nightgames.items.Item;
@@ -814,8 +815,13 @@ public class Global {
     }
 
     public static void startNight() {
-        currentMatchType = decideMatchType();
-        currentMatchType.runPrematch();
+        if (isDebugOn(DebugFlags.DEBUG_MATCHTYPES)) {
+            current = new MatchTypePicker();
+            current.respond("Start");
+        } else {
+            currentMatchType = decideMatchType();
+            currentMatchType.runPrematch();
+        }
     }
 
     public static List<Character> getMatchParticipantsInAffectionOrder() {
