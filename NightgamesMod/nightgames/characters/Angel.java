@@ -667,7 +667,7 @@ public class Angel extends BasePersonality {
         Character opponent = c.getOpponent(character);
         if (c.getStance()
              .vaginallyPenetrated(c, character)) {
-            dominance=Math.min(dominance-1, minDominance);
+            dominance=Math.max(dominance-1, minDominance);
             return "You thrust your cock continously into Angel's dripping pussy. Her hot insides feel amazing, but you're sure you have enough of an advantage to risk "
                             + "it. She lets out breathy moans in time to your thrusts and her arms are trembling too much to hold herself up. She's clearly about to cum, you just "
                             + "need to push her over the edge. You maul her soft, heavy boobs and suck on her neck. Angel closes her eyes tightly and whimpers in pleasure. <br/><br/>You keep "

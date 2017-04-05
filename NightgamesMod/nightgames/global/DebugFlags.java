@@ -16,5 +16,6 @@ public enum DebugFlags {
     DEBUG_FTC,
     DEBUG_GUI,
     DEBUG_ADDICTION,
-    DEBUG_SPECTATE
+    DEBUG_SPECTATE,
+    DEBUG_MATCHTYPES
 }
