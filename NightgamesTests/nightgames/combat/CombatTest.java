@@ -7,7 +7,6 @@ import nightgames.characters.CharacterSex;
 import nightgames.characters.NPC;
 import nightgames.characters.Trait;
 import nightgames.global.Global;
-import nightgames.global.TestGlobal;
 import nightgames.modifier.standard.NoModifier;
 import nightgames.stance.Position;
 import nightgames.stance.Stance;
@@ -65,7 +64,7 @@ public class CombatTest {
         assertThat(combat.getStance().getCurrentDominance(combat, other), equalTo(Position.Dominance.NEUTRAL));
 
         // Self is dominant. Other should lose willpower but self should not. Trait increases effective stance dominance.
-        combat.setStance(new TestPosition(self, other, Stance.engulfed, Position.Dominance.NEUTRAL.ABSURD));
+        combat.setStance(new TestPosition(self, other, Stance.engulfed, Position.Dominance.ABSURD));
         assertThat(combat.getStance().getCurrentDominance(combat, self), equalTo(Position.Dominance.ABSURD));
         assertThat(combat.getStance().getCurrentDominance(combat, other), equalTo(Position.Dominance.NEUTRAL));
     }

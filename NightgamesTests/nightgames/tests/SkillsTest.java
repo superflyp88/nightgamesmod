@@ -62,7 +62,7 @@ public class SkillsTest {
 
 	@Before
 	public void prepare() throws JsonParseException, IOException {
-		new Global(true);
+		Global.initForTesting();
 		Global.newGame("Dummy", Optional.empty(), Collections.emptyList(),
 	                    CharacterSex.male, Collections.emptyMap());
 		npcs1 = new ArrayList<Personality>();
@@ -89,7 +89,8 @@ public class SkillsTest {
 		stances.add(new AnalCowgirl(npcs1.get(0).getCharacter(), npcs1.get(1).getCharacter()));
 		stances.add(new AnalProne(npcs1.get(0).getCharacter(), npcs1.get(1).getCharacter()));
 		stances.add(new Behind(npcs1.get(0).getCharacter(), npcs1.get(1).getCharacter()));
-		stances.add(new BehindFootjob(npcs1.get(0).getCharacter(), npcs1.get(1).getCharacter()));
+		stances.add(new BehindFootjob(npcs1.get(0).getCharacter(), npcs1.get(1).getCharacter(), false));
+        stances.add(new BehindFootjob(npcs1.get(0).getCharacter(), npcs1.get(1).getCharacter(), true));
 		stances.add(new CoiledSex(npcs1.get(0).getCharacter(), npcs1.get(1).getCharacter()));
 		stances.add(new Cowgirl(npcs1.get(0).getCharacter(), npcs1.get(1).getCharacter()));
 		stances.add(new Doggy(npcs1.get(0).getCharacter(), npcs1.get(1).getCharacter()));
