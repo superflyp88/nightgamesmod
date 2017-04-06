@@ -121,8 +121,8 @@ public class BehindFootjob extends AbstractBehindStance {
     }
     
     @Override
-    public int dominance() {
-        return analPenetration?6:4;
+    public Position.Dominance dominance() {
+        return analPenetration ? Position.Dominance.ABSURD : Position.Dominance.HIGH;
     }
 
     @Override

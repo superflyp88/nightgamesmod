@@ -1127,8 +1127,8 @@ private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new
     }
     
     private void doStanceTick(Character self) {
-        double stanceDominance = getStance().getDominanceOfStance(this, self);
-        if (!(stanceDominance > 0)) {
+        int stanceDominance = getStance().getCurrentDominance(this, self).ordinal();
+        if (stanceDominance <= Position.Dominance.NEUTRAL.ordinal()) {
             return;
         }
 
@@ -1145,7 +1145,7 @@ private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new
                             Global.format("{self:NAME-POSSESSIVE} cold gaze in {self:possessive} dominant position"
                                             + " makes {other:direct-object} shiver.",
                                             self, other));
-            other.loseWillpower(this, (int) stanceDominance, 0, false, " (SM Queen)");
+            other.loseWillpower(this, stanceDominance, 0, false, " (SM Queen)");
         } else if (getStance().time % 2 == 0 && getStance().time > 0) {
             if (other.has(Trait.indomitable)) {
                 write(self, Global.format("{other:SUBJECT}, typically being the dominant one,"
@@ -1156,7 +1156,7 @@ private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new
                 write(self, Global.format("{other:NAME-POSSESSIVE} compromising position takes a toll on {other:possessive} willpower.",
                                             self, other));
             }
-            other.loseWillpower(this, (int) stanceDominance, 0, false, " (Dominance)");
+            other.loseWillpower(this, stanceDominance, 0, false, " (Dominance)");
         }
         
         if (self.has(Trait.confidentdom) && Global.random(2) == 0) {

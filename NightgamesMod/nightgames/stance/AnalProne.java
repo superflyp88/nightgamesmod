@@ -144,9 +144,4 @@ public class AnalProne extends AnalSexStance {
             return "pegging.jpg";
         }
     }
-    
-    @Override
-    public int dominance() {
-        return 4;
-    }
 }

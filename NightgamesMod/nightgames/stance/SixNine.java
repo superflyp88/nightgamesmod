@@ -157,8 +157,8 @@ public class SixNine extends AbstractBehindStance {
     }
     
     @Override
-    public int dominance() {
-        return 1;
+    public Position.Dominance dominance() {
+        return Position.Dominance.GIVE_AND_TAKE;
     }
     
     @Override
