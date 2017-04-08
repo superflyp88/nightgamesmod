@@ -42,6 +42,7 @@ public class MatchTypePicker implements Scene {
         }
 
         private void startMatch(ActionEvent e) {
+            Global.currentMatchType = type;
             type.runPrematch();
         }
     }

@@ -169,7 +169,7 @@ public class Global {
     public static double xpRate = 1.0;
     public static ContextFactory factory;
     public static Context cx;
-    private static MatchType currentMatchType = MatchType.NORMAL;
+    public static MatchType currentMatchType = MatchType.NORMAL;
     private static Character noneCharacter = new NPC("none", 1, null);
     private static HashMap<String, MatchAction> matchActions;
     private static final int LINEUP_SIZE = 5;
