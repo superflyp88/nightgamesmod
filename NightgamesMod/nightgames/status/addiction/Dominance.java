@@ -35,7 +35,7 @@ public class Dominance extends Addiction {
             return false;
         int sev = player.getAddictionSeverity(AddictionType.DOMINANCE)
                         .ordinal();
-        double dom = c.getStance().getDominanceOfStance(c, opp);
+        double dom = c.getStance().getCurrentDominance(c, opp).ordinal();
 
         return sev >= 5 - dom;
     }

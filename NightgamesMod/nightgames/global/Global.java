@@ -231,7 +231,11 @@ public class Global {
     }
 
     protected static void makeGUI(boolean headless) {
-        gui = headless ? new HeadlessGui() : new GUI();
+        gui = new GUI();
+    }
+    
+    private static void makeTestGUI() {
+        gui = new HeadlessGui();
     }
 
     public static boolean meetsRequirements(Character c, Trait t) {
@@ -1381,6 +1385,11 @@ public class Global {
     
     public static void init(boolean headless) {
         makeGUI(headless);
+        gui.createCharacter();
+    }
+    
+    public static void initForTesting() {
+        makeTestGUI();
         gui.createCharacter();
     }
 

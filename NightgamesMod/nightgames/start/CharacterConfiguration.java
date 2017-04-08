@@ -149,7 +149,7 @@ public abstract class CharacterConfiguration {
             base.level = l;
             modMeters(base, l * 2); // multiplication to compensate for missed daytime gains
         });
-        xp.ifPresent(x -> base.gainXP(x));
+        xp.ifPresent(x -> base.gainXPPure(x));
         Map<Attribute, Integer> start = new HashMap<>(base.att);
         Map<Attribute, Integer> deltaAtts = attributes.keySet()
                         .stream()
@@ -170,7 +170,6 @@ public abstract class CharacterConfiguration {
             }
         });
         base.att.putAll(attributes);
-        xp.ifPresent(x -> base.gainXPPure(x));
         if (clothing.isPresent()) {
             List<Clothing> clothes = clothing.get().stream().map(Clothing::getByID).collect(Collectors.toList());
             base.outfitPlan = new ArrayList<>(clothes);

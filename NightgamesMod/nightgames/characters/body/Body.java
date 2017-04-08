@@ -37,6 +37,7 @@ import nightgames.nskills.tags.SkillTag;
 import nightgames.pet.PetCharacter;
 import nightgames.skills.Divide;
 import nightgames.skills.Skill;
+import nightgames.stance.Position;
 import nightgames.status.Abuff;
 import nightgames.status.BodyFetish;
 import nightgames.status.Charmed;
@@ -702,8 +703,8 @@ public class Body implements Cloneable {
         double dominance = 0.0;
         if (character.checkAddiction(AddictionType.DOMINANCE, opponent) && c.getStance().dom(opponent)) {
             float mag = character.getAddiction(AddictionType.DOMINANCE).get().getMagnitude();
-            double dom = c.getStance().getDominanceOfStance(c, opponent);
-            dominance = mag * (dom / 5.0);
+            Position.Dominance stanceDominance = c.getStance().getCurrentDominance(c, opponent);
+            dominance = mag * (stanceDominance.ordinal() / 5.0);
         }
         perceptionBonus += dominance;
 
@@ -851,7 +852,8 @@ public class Body implements Cloneable {
         } else {
             double effectiveSeduction = character.get(Attribute.Seduction);
             if (c.getStance().dom(character) && character.has(Trait.brutesCharisma)) {
-                effectiveSeduction += c.getStance().getDominanceOfStance(c, character) * (character.get(Attribute.Power) / 5.0 + character.get(Attribute.Ki) / 5.0);
+                int stanceDominance = c.getStance().getCurrentDominance(c, character).ordinal();
+                effectiveSeduction += stanceDominance * (character.get(Attribute.Power) / 5.0 + character.get(Attribute.Ki) / 5.0);
             }
 
             if (character.has(Trait.PrimalHeat) && character.is(Stsflag.frenzied)) {

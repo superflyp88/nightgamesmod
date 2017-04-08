@@ -129,7 +129,7 @@ public class FlyingCowgirl extends FemdomSexStance {
     }
     
     @Override
-    public int dominance() {
-        return 6;
+    public Position.Dominance dominance() {
+        return Position.Dominance.ABSURD;
     }
 }

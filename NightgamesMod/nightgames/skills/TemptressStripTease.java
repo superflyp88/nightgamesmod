@@ -41,7 +41,8 @@ public class TemptressStripTease extends StripTease {
     @Override
     public boolean usable(Combat c, Character target) {
         return canStrip(c, target) && getSelf().canAct() && c.getStance().mobile(getSelf())
-                        && !c.getStance().prone(getSelf());
+                        && !c.getStance().prone(getSelf())
+                        && !c.getStance().connected(c);
     }
 
     @Override

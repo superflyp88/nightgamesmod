@@ -3258,7 +3258,7 @@ public abstract class Character extends Observable implements Cloneable {
         }
         fit += Math.sqrt(totalAtts) * 5;
         // Always important: Position
-        fit += (c.getStance().priorityMod(this) + c.getStance().getDominanceOfStance(c, this)) * 4;
+        fit += (c.getStance().priorityMod(this) + c.getStance().getCurrentDominance(c, this).ordinal()) * 4;
         fit += c.getPetsFor(this).stream().mapToDouble(pet -> (10 + pet.getSelf().power()) * ((100 + pet.percentHealth()) / 200.0) / 2).sum();
 
         int escape = getEscape(c, other);
