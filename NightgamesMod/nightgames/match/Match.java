@@ -64,7 +64,7 @@ public class Match {
     }
     
     public List<CombatListener> getListeners(Combat c) {
-        return Collections.singletonList(new DefaultMatchEndListener(c, this));
+        return Collections.singletonList(new DefaultMatchEndListener(c));
     }
     
     public final void start() {

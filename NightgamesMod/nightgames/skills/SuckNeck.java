@@ -7,6 +7,7 @@ import nightgames.combat.Result;
 import nightgames.global.Global;
 import nightgames.nskills.tags.SkillTag;
 import nightgames.skills.damage.DamageType;
+import nightgames.skills.damage.Staleness;
 import nightgames.stance.Stance;
 
 public class SuckNeck extends Skill {
@@ -19,11 +20,11 @@ public class SuckNeck extends Skill {
 
     @Override
     public boolean usable(Combat c, Character target) {
-        return c.getStance().kiss(getSelf(), target) 
+        return (c.getStance().kiss(getSelf(), target) 
                         || (getSelf().get(Attribute.Dark) >= 1 
                             && c.getStance().dom(getSelf()) 
                             && c.getStance().en == Stance.oralpin
-                            )
+                            ))
                         && getSelf().canAct();
     }
 

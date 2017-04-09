@@ -41,7 +41,7 @@ public class TeamMatch extends Match {
 
     @Override
     public List<CombatListener> getListeners(Combat c) {
-        return Collections.singletonList(new TeamCombatListener(c, this));
+        return Collections.singletonList(new TeamCombatListener(c));
     }
 
     @Override
