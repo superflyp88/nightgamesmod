@@ -88,9 +88,9 @@ public class Reversal extends Skill {
     public String deal(Combat c, int damage, Result modifier, Character target) {
         if (modifier == Result.miss) {
             return "You try to get on top of " + target.getName()
-                            + ", but she's apparently more ready for it than you realized.";
+                            + ", but "+ target.pronoun()+ "'s apparently more ready for it than you realized.";
         } else {
-            return "You take advantage of " + target.getName() + "'s distraction and put her in a pin.";
+            return "You take advantage of " + target.getName() + "'s distraction and put " + target.directObject() + " in a pin.";
         }
     }
 
