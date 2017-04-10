@@ -702,11 +702,11 @@ private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new
 
         if (getStance().facing(self, other) && other.breastsAvailable() && !self.has(Trait.temptingtits) 
                         && other.has(Trait.temptingtits) && !other.is(Stsflag.blinded)) {
-            write(self, Global.format("{self:SUBJECT-ACTION:can't avert|can't avert} {self:possessive} eyes from {other:NAME-POSSESSIVE} perfectly shaped tits sitting in front of {self:possessive} eyes.",
+            write(self, Global.format("{self:SUBJECT-ACTION:can't avert|can't avert} {self:possessive} eyes from {other:name-possessive} perfectly shaped tits sitting in front of {self:possessive} eyes.",
                                             self, other));
             self.temptNoSkill(this, other, other.body.getRandomBreasts(), 10 + Math.max(0, other.get(Attribute.Seduction) / 3 - 7));
         } else if (getOpponent(self).has(Trait.temptingtits) && getStance().behind(other)) {
-            write(self, Global.format("{self:SUBJECT-ACTION:feel|feels} a heat in {self:possessive} groin as {other:name-possessive} enticing tits pressing against {self:possessive} back.",
+            write(self, Global.format("{self:SUBJECT-ACTION:feel|feels} a heat in {self:possessive} groin as {other:name-possessive} enticing tits press against {self:possessive} back.",
                             self, other));
             double selfTopExposure = self.outfit.getExposure(ClothingSlot.top);
             double otherTopExposure = other.outfit.getExposure(ClothingSlot.top);
