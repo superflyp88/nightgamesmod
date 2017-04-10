@@ -40,7 +40,7 @@ public class FocussedRecovery extends FocussedBase {
         if (c != null) {
             c.write(affected, Global.format("{self:SUBJECT-ACTION:take} a deep breath, restoring"
                         + " some of {self:possessive} energy and calming {self:possessive}"
-                        + " nerves", affected, c.getOpponent(affected)));
+                        + " nerves.", affected, c.getOpponent(affected)));
         }
         affected.calm(c, affected.getArousal().max() / 20);
         affected.heal(c, affected.getStamina().max() / 10);
