@@ -108,7 +108,7 @@ public class TemptressStripTease extends StripTease {
                             + " %s into her eyes as she gets back into a fighting stance.",
                             getSelf().subject(), target.subjectAction("cease"),
                             target.possessiveAdjective(), target.possessiveAdjective(),
-                            target.nameOrPossessivePronoun(), target.subjectAction("are", "is"),
+                            target.nameOrPossessivePronoun(), Global.capitalizeFirstLetter(target.subjectAction("are", "is")),
                             target.possessiveAdjective(), target.possessiveAdjective(), target.pronoun(),
                             target.action("gaze"));
         } else {
