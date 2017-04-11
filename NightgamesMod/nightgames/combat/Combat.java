@@ -1149,7 +1149,7 @@ private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new
         } else if (getStance().time % 2 == 0 && getStance().time > 0) {
             if (other.has(Trait.indomitable)) {
                 write(self, Global.format("{other:SUBJECT}, typically being the dominant one,"
-                                + "{other:action:are|is} simply refusing to acknowledge {self:name-possessive}"
+                                + " {other:action:are|is} simply refusing to acknowledge {self:name-possessive}"
                                 + " current dominance.", self, other));
                 stanceDominance = Math.max(1, stanceDominance - 3);
             } else {
