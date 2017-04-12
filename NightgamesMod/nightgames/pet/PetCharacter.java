@@ -43,7 +43,7 @@ public class PetCharacter extends Character {
     private Pet self;
 
     @Override
-    public int getPetLimit() {
+    public final int getPetLimit() {
         // NO PETS OF PETS ARGH
         return 0;
     }
@@ -290,7 +290,7 @@ public class PetCharacter extends Character {
     public String getType() {
         return type;
     }
-
+    
     @Override
     protected void resolveOrgasm(Combat c, Character opponent, BodyPart selfPart, BodyPart opponentPart, int times, int totalTimes) {
         super.resolveOrgasm(c, opponent, selfPart, opponentPart, times, totalTimes);

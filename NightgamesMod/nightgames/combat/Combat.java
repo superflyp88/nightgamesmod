@@ -1881,6 +1881,16 @@ private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new
             Thread.dumpStack();
             return;
         }
+        if (otherCombatants.contains(self)) {
+            write(String.format("<b>ERROR: Tried to add %s as a pet for %s,"
+                            + " but there is already a %s who is a pet for %s."
+                            + " Please report this as a bug. The extra pet will not"
+                            + " be added, and you can probably continue playing without"
+                            + " problems.</b>", self.getTrueName(), master.getTrueName(),
+                            self.getTrueName(), self.getSelf().owner().getTrueName()));
+            Thread.dumpStack();
+            return;
+        }
         if (master.has(Trait.leadership)) {
             int levelups = Math.max(5, master.getLevel() / 4);
             self.getSelf().setPower(self.getSelf().getPower() + levelups);
