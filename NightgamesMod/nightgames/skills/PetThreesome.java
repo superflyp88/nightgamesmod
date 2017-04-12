@@ -174,7 +174,7 @@ public class PetThreesome extends Skill {
             target.body.pleasure(fucker, selfO, targetO, otherm, c, this);
             fucker.body.pleasure(target, targetO, selfO, m, c, this);
         } else {
-            c.write(getSelf(), Global.format("{self:SUBJECT-ACTION:try|tries} to pull {other:name-do} into a threesome but {other:pronoun-action:are|is} not aroused enough yet.", 
+            c.write(getSelf(), Global.format("{self:SUBJECT-ACTION:try|tries} to pull {other:name-do} into a threesome, but {other:pronoun-action:are|is} not aroused enough yet.", 
                             getSelf(), target));
             return false;
         }

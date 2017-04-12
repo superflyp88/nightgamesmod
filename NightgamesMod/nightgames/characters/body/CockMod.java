@@ -80,7 +80,7 @@ public class CockMod extends PartMod {
             String message = "";
             if (target.moddedPartCountsAs(opponent, DemonicMod.INSTANCE)) {
                 message += String.format(
-                                "The fae energies inside %s %s radiate outward and into %s, causing %s %s to grow much more sensitve.",
+                                "The fae energies inside %s %s radiate outward and into %s, causing %s %s to grow much more sensitive. ",
                                 self.nameOrPossessivePronoun(), part.describe(self), opponent.nameOrPossessivePronoun(),
                                 opponent.possessiveAdjective(), target.describe(opponent));
                 bonus += damage * 0.5; // +50% damage

@@ -14,7 +14,7 @@ public class Anal extends AnalSexStance {
     @Override
     public String describe(Combat c) {
         if (top.human()) {
-            return String.format("%s behind %s and %s cock in buried in %s ass.",
+            return String.format("%s behind %s and %s cock is buried in %s ass.",
                             top.subjectAction("are", "is"),
                             bottom.nameDirectObject(), top.possessiveAdjective(),
                             bottom.possessiveAdjective());
