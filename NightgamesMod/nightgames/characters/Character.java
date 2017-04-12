@@ -3050,8 +3050,10 @@ public abstract class Character extends Observable implements Cloneable {
             List<Trait> traits = new ArrayList<>(getTraits());
             traits.sort((first, second) -> first.toString().compareTo(second.toString()));
             for (Trait t : traits) {
-                b.append(t + ": " + t.getDesc());
-                b.append("<br/>");
+                if (t.isVisible()) {
+                    b.append(t + ": " + t.getDesc());
+                    b.append("<br/>");
+                }
             }
         }
         b.append("</p>");
