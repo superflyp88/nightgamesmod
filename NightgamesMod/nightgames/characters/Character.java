@@ -1781,7 +1781,7 @@ public abstract class Character extends Observable implements Cloneable {
             if (!checkOrgasm()) {
                 return;
             } else {
-                c.write(this, Global.format("{other:if-human:Luckily }{self:pronoun} didn't seem to be able to shunt all {self:possessive arousal} "
+                c.write(this, Global.format("{other:if-human:Luckily }{self:pronoun} didn't seem to be able to shunt all {self:possessive} arousal} "
                                 + "into {self:possessive clones, and rapidly reaches the peak anyways."
                                 , this, c.getOpponent(this)));
             }
