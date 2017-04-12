@@ -2157,7 +2157,8 @@ public abstract class Character extends Observable implements Cloneable {
             if (selfOrganIt.hasNext() && otherOrganIt.hasNext()) {
                 BodyPart selfOrgan = selfOrganIt.next();
                 BodyPart otherOrgan = otherOrganIt.next();
-                if (has(Trait.energydrain) && selfOrgan != null && otherOrgan != null) {
+                if (has(Trait.energydrain) && selfOrgan != null && otherOrgan != null
+                                && selfOrgan.isErogenous() && otherOrgan.isErogenous()) {
                     c.write(this, Global.format(
                                     "{self:NAME-POSSESSIVE} body glows purple as {other:subject-action:feel|feels} {other:possessive} very spirit drained into {self:possessive} "
                                                     + selfOrgan.describe(this) + " through your connection.",
