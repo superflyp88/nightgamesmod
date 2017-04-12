@@ -563,12 +563,13 @@ private static HashMap<String, HashMap<String, List<Integer>>> resultTracker=new
             opponents.forEach(opponent -> opponent.weaken(this, opponent.getStamina().max() / 10));
         }
         String beguilingbreastCompletedFlag = Trait.beguilingbreasts.name() + "Completed";
-        if (character.has(Trait.beguilingbreasts) && character.body.getLargestBreasts().getSize() >= BreastsPart.dd.getSize() && !getCombatantData(character).getBooleanFlag(beguilingbreastCompletedFlag)
+        if (character.has(Trait.beguilingbreasts) && !getCombatantData(character).getBooleanFlag(beguilingbreastCompletedFlag)
                         && character.outfit.slotOpen(ClothingSlot.top)) {
             Character mainOpponent = getOpponent(character);
             write(character, Global.format("The instant {self:subject-action:lay|lays} {self:possessive} eyes on {other:name-possessive} bare breasts, {self:possessive} consciousness flies out of {self:possessive} mind. " +
-                            (character.canAct() ? "{other:SUBJECT-ACTION:giggle|giggles} a bit and cups her stupendous tits and gives them a little squeeze to which {self:subject} can only moan." : ""), 
-                            character, mainOpponent));
+                            (character.canAct() ? "{other:SUBJECT-ACTION:giggle|giggles} a bit and {other:action:cup} {other:possessive} {other:body-part:breasts}"
+                                                + "  and {other:action:give} them a little squeeze to which {self:subject} can only moan." : ""), 
+                            mainOpponent, character));
             opponents.forEach(opponent -> opponent.add(this, new Trance(opponent, 50)));
             getCombatantData(character).setBooleanFlag(beguilingbreastCompletedFlag, true);
         }
